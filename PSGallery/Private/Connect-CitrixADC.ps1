@@ -17,7 +17,8 @@ function Connect-CitrixADC {
         Ryan Butler - 27/03/2017 - Change to nssession scope 
         David Brett - 14/06/2018 - Edited the Function to remove positional parameters and cleaned up old code
         Adam Yarborough - 26/07/2018 - Edited to 
-#> 
+        
+    #> 
 
     [CmdletBinding()]
     Param
@@ -68,13 +69,10 @@ function Connect-CitrixADC {
             return $false
         }
 
-        #return [Microsoft.PowerShell.Commands.WebRequestSession]$Session 
-        # Build Script NetScaler Session Variable
+        # Build Script ADC Session Variable
         $Session = New-Object -TypeName PSObject
         $Session | Add-Member -NotePropertyName ADC -NotePropertyValue $ADC -TypeName String
         $Session | Add-Member -NotePropertyName WebSession -NotePropertyValue $saveSession -TypeName Microsoft.PowerShell.Commands.WebRequestSession
-
-        # Return NetScaler Session
    
         return $Session
     }

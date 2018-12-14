@@ -26,14 +26,13 @@ function Test-URL {
     )
 
     Begin { 
-        Write-Verbose "[$(Get-Date) BEGIN  ] Starting $($myinvocation.mycommand)"
-        Write-Verbose "[$(Get-Date) BEGIN  ] Setting Security Protocol"
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Starting $($myinvocation.mycommand)"
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Setting Security Protocol"
         [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
     } #Begin
 
     Process {
-        Write-Verbose "[$(Get-Date) PROCESS] Starting $($myinvocation.mycommand)"
-        Write-Verbose "[$(Get-Date) PROCESS] Connecting to URL: $URL"
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connecting to URL: $URL"
         $HTTP_Status = 400
 
         # Setup Request Object
@@ -44,7 +43,7 @@ function Test-URL {
             $HTTP_Response = $HTTP_Request.GetResponse() 
         }
         catch {
-            Write-Verbose "[$(Get-Date) PROCESS] Failure"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
             return $false
             break
         }
@@ -53,18 +52,18 @@ function Test-URL {
         $HTTP_Status = [int]$HTTP_Response.StatusCode
 	
         If ($HTTP_Status -eq 200) { 
-            Write-Verbose "[$(Get-Date) PROCESS] Status 200 - OK"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Status 200 - OK"
             $HTTP_Response.Close()
             return $true 
         }
         else {
-            Write-Verbose "[$(Get-Date) PROCESS] Status $HTTP_Status"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Status $HTTP_Status"
             $HTTP_Response.Close()
             return $false
         }
     } # Process
 
     End { 
-        Write-Verbose "[$(Get-Date) END    ] Ending $($myinvocation.mycommand)"
+        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     } # End
 }

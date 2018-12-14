@@ -1,5 +1,22 @@
 
 function Get-CitrixADCgatewayuser {
+    <#
+    .SYNOPSIS
+    Short description
+    
+    .DESCRIPTION
+    Long description
+    
+    .PARAMETER ADCSession
+    Parameter description
+    
+    .EXAMPLE
+    An example
+    
+    .NOTES
+    General notes
+    #>
+    
     [CmdletBinding()]
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -18,14 +35,9 @@ function Get-CitrixADCgatewayuser {
         $Method = "GET"
         $ContentType = 'application/json'
 
-        $ICAUsers = -1
-        $VPNUsers = -1
-        $TotalUsers = -1
-
         try { 
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Try to get gateway users"
-            $Method = "GET"
-            $ContentType = 'application/json'
+
             $Params = @{
                 uri         = "$ADC/nitro/v1/config/vpnicaconnection";
                 WebSession  = $Session;
@@ -33,6 +45,7 @@ function Get-CitrixADCgatewayuser {
                 Method      = $Method
             }
             $UserSessions = Invoke-RestMethod @Params -ErrorAction Stop
+            
             if ($null -eq $UserSessions) { 
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Could not retrieve ica user sessions"
             }
@@ -55,20 +68,26 @@ function Get-CitrixADCgatewayuser {
             }
 
             $TotalUsers = $ICAUsers + $VPNUsers
+            
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] ICAUsers: $ICAUsers, VPNUsers: $VPNUsers, TotalUsers: $TotalUsers"
+            $Results += [PSCustomObject]@{
+                Series     = "CitrixADCgatewayuser"
+                Host       = $ADC
+                ICAUsers   = $ICAUsers
+                VPNUsers   = $VPNUsers
+                TotalUsers = $TotalUsers
+            }
         }
         catch {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem getting gateway users"
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
-        }
-
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] ICAUsers: $ICAUsers, VPNUsers: $VPNUsers, TotalUsers: $TotalUsers"
-        $Results += [PSCustomObject]@{
-            Series     = "CitrixADC"
-            Test       = "gatewayusers"
-            Host       = $ADC
-            ICAUsers   = $ICAUsers
-            VPNUsers   = $VPNUsers
-            TotalUsers = $TotalUsers
+            $Results += [PSCustomObject]@{
+                Series     = "CitrixADCgatewayuser"
+                Host       = $ADC
+                ICAUsers   = -1
+                VPNUsers   = -1
+                TotalUsers = -1
+            }
         }
 
         if ($Results.Count -gt 0) {

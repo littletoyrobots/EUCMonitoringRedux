@@ -1,18 +1,22 @@
 function Disconnect-CitrixADC {
     <# 
-.SYNOPSIS 
+    .SYNOPSIS 
     Logs out of a Citrix NetScaler.
-.DESCRIPTION 
+
+    .DESCRIPTION 
     Logs out of a Citrix NetScaler and clears the NSSession Global Variable.
-.PARAMETER NSIP 
-    Citrix NetScaler NSIP. 
-.NOTES 
+
+    .PARAMETER ADCSession
+    CitrixADC Rest WebSession. 
+
+    .NOTES 
     Name: Disconnect-NetScaler
     Author: David Brett
     Date Created: 15/03/2017 
 .CHANGE LOG
     David Brett     1.0     15/03/2017          Initial Script Creation 
-    David Brett     1.1     14/06/2018          Edited the Function to remove positional parameters and cleaned out old code        
+    David Brett     1.1     14/06/2018          Edited the Function to remove positional parameters and cleaned out old code 
+
 #> 
 
     [CmdletBinding()]

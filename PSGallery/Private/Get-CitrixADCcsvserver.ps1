@@ -1,5 +1,22 @@
-
-function Get-CitrixADClbvserver {
+ 
+function Get-CitrixADCcsvserver {
+    <#
+    .SYNOPSIS
+    Short description
+    
+    .DESCRIPTION
+    Long description
+    
+    .PARAMETER ADCSession
+    Parameter description
+    
+    .EXAMPLE
+    An example
+    
+    .NOTES
+    General notes
+    #>
+    
     [CmdletBinding()]
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -19,29 +36,29 @@ function Get-CitrixADClbvserver {
         $ContentType = 'application/json'
 
         try {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching Load Balance Stats for $ADC"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching Content Switch Stats for $ADC"
             $Params = @{
-                uri         = "$ADC/nitro/v1/stat/lbvserver";
+                uri         = "$ADC/nitro/v1/stat/csvserver";
                 WebSession  = $Session;
                 ContentType = $ContentType;
                 Method      = $Method
             }
-            $LBVServers = Invoke-RestMethod @Params -ErrorAction Stop
+            $CSVServers = Invoke-RestMethod @Params -ErrorAction Stop
 
-            if ($null -eq $LBVServers) { 
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No LB VServers"
+            if ($null -eq $CSVServers) { 
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Could not retrieve cvservers"
             }
             else {
-                foreach ($lbvserver in $LBVServers.lbvserver) {
-                    $Name = $lbvserver.name
-                    $State = $lbvserver.state
-                    $Health = [int]$lbvserver.vslbhealth
-                    $HitsRate = [int]$lbvserver.hitsrate
-                    $RequestsRate = [int]$lbvserver.requestsrate
-                    $ResponsesRate = [int]$lbvserver.responsesrate
-                    $TotalHits = [int]$lbvserver.tothits
-                    $TotalRequests = [int]$lbvserver.totalrequests
-                    $TotalResponses = [int]$lbvserver.totalresponses
+                foreach ($csvserver in $CSVServers.csvserver) {
+                    $Name = $csvserver.Name
+                    $State = $csvserver.state
+                    $Health = [int]$csvserver.vslbhealth
+                    $HitsRate = [int]$csvserver.hitsrate
+                    $RequestsRate = [int]$csvserver.requestsrate
+                    $ResponsesRate = [int]$csvserver.responsesrate
+                    $TotalHits = [int]$csvserver.tothits
+                    $TotalRequests = [int]$csvserver.totalrequests
+                    $TotalResponses = [int]$csvserver.totalresponses
                     $CurrentClientConnections = [int]$lbserver.curclntconnections 
                     $CurrentServerConnections = [int]$lbserver.cursrvrconnections 
                         
@@ -49,8 +66,7 @@ function Get-CitrixADClbvserver {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - TotalHits: $TotalHits, TotalRequests: $TotalRequests, TotalResponses: $TotalResponses"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Current Client Connections: $CurrentClientConnections, Current Server Connections: $CurrentServerConnections"
                     $Results += [PSCustomObject]@{
-                        Series                   = "CitrixADCGateway"
-                        Test                     = "lbvserver"
+                        Series                   = "CitrixADCcsvserver"
                         Host                     = $ADC
                         Name                     = $Name
                         State                    = $State
@@ -71,10 +87,10 @@ function Get-CitrixADClbvserver {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem getting load balancing vservers"
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
             $Results += [PSCustomObject]@{
-                Series                   = "CitrixADCGateway"
-                Test                     = "lbvserver"
+                Series                   = "CitrixADCcsvserver"
                 Host                     = $ADC
                 Name                     = "ERROR"
+                State                    = "ERROR"
                 Health                   = -1
                 HitsRate                 = -1
                 RequestsRate             = -1
@@ -86,6 +102,7 @@ function Get-CitrixADClbvserver {
                 CurrentServerConnections = -1
             }
         }
+            
         if ($Results.Count -gt 0) {
             return $Results
         }

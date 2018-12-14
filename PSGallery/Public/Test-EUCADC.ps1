@@ -8,7 +8,9 @@ Function Test-EUCADC {
         
         # Will return Netscaler information
         [switch]$CitrixADC,
+        [switch]$All, 
 
+        [switch]$System,
         # Load Balancing
         # Caching
         # Compression
@@ -18,19 +20,12 @@ Function Test-EUCADC {
         [switch]$GatewayUsers,
         [switch]$LoadBalance,
         [switch]$ContentSwitch,
-        <# 
-        HitsRate
-
-        Errors
-        RequestRate (msec)
-        Current Client Connections,
-        Current Server Connections
-        #>
         [switch]$Cache,
         [switch]$Compression,
         [switch]$SSLOffload,
         [switch]$ContentRoute,
    
+
         [pscredential]$Credential
     )
     
@@ -49,22 +44,24 @@ Function Test-EUCADC {
             if ($false -eq $ADCSession) {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Invalid ADC Session"
                 Write-Warning "Could not log into the Citrix ADC"
-                return $false # This is so that Test-Series will handle appropriately.
+                return
             }
             else {
-                # $Session = $ADCSession.WebSession
-
-                if ($GatewayUsers) {
+                if ($System -or $All) {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] System Stats Enabled"
+                    $Results += Get-CitrixADCsystemstat -ADCSession $ADCSession
+                }
+                if ($GatewayUsers -or $All) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Gateway Users Enabled"
                     $Results += Get-CitrixADCgatewayuser -ADCSession $ADCSession
                 }
 
-                if ($LoadBalance) {
+                if ($LoadBalance -or $All) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Load Balance Enabled"
                     $Results += Get-CitrixADClbvserver -ADCSession $ADCSession
                 }
 
-                if ($ContentSwitch) {
+                if ($ContentSwitch -or $All) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Content Switch Enabled"
                     $Results += Get-CitrixADCcsvserver -ADCSession $ADCSession
                 }
