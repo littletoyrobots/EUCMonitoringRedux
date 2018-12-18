@@ -34,6 +34,7 @@ Function Get-RDSLicense {
                     $TotalIssued = 0
                     $TotalLicenses = 0
 
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting license type $Type"
                     $LicResults = Get-WmiObject Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
                         Where-Object TypeAndModel -eq $Type | `
                         Select-Object TypeAndModel, IssuedLicenses, AvailableLicenses, TotalLicenses -ErrorAction Stop
@@ -64,7 +65,6 @@ Function Get-RDSLicense {
                     AvailableLicenses = -1
                     IssuedLicenses    = -1
                     TotalLicenses     = -1
-                    #    Error             = "$_"
                 }
             }
         }
@@ -78,5 +78,3 @@ Function Get-RDSLicense {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     }
 }
-
-# Test-RDSLicense -ComputerName "keymgr" -LicenseType "RDS Per User CAL" -Verbose

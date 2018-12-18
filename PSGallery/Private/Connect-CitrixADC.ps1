@@ -29,11 +29,12 @@ function Connect-CitrixADC {
 
     begin {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Changing TLS Settings"
+        [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
     }
 
     process {
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Changing TLS Settings"
-        [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+        
 
         # Strip the Secure Password back to a basic text password
         $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Credential.Password)

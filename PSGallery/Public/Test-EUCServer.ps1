@@ -75,7 +75,7 @@ function Test-EUCServer {
                 # Ports
                 foreach ($Port in $Ports) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing Port $Port"
-                    if ( Test-NetConnection $Computer -Port $Port -InformationLevel Quiet ) {
+                    if (Test-NetConnection $Computer -Port $Port -InformationLevel Quiet) {
                         $Result | Add-Member -NotePropertyName "Port$Port" -NotePropertyValue 1 -TypeName int
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                     }
@@ -91,8 +91,8 @@ function Test-EUCServer {
                 # Windows Services
                 foreach ($Service in $Services) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing Service $Service"
-                    $CurrentServiceStatus = Test-Service $Computer $Service
-                    If ($CurrentServiceStatus -eq "Running") {
+
+                    if ("Running" -eq (Get-Service -ErrorAction SilentlyContinue -ComputerName $ServerName -Name $ServiceName).Status) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                         $Result | Add-Member -NotePropertyName "$Service" -NotePropertyValue 1 -TypeName int
                     }

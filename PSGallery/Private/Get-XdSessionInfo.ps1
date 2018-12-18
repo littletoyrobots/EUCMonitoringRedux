@@ -20,8 +20,10 @@ Function Test-XdSessionInfo {
 #>
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]$Broker,
+        [parameter]$SiteName,
         [parameter]$ZoneName,
-        [parameter]$CatalogName
+        [parameter]$CatalogName,
+        [parameter]$DeliveryGroupName
     )
 
     Begin { 
@@ -52,105 +54,98 @@ Function Test-XdSessionInfo {
 
     Process { 
         $Results = @()
-        $Errors = @()
         
-        $SiteName = (Get-BrokerSite -AdminAddress $Broker).Name
-        $ZoneNames = (Get-ConfigZone -AdminAddress $Broker).Name
-        $CatalogNames = (Get-BrokerCatalog -AdminAddress $Broker).Name
-        $DeliveryGroups = (Get-BrokerDesktopGroup -AdminAddress $Broker).Name
-        Foreach ($ZoneName in $ZoneNames) {
-            Foreach ($CatalogName in $CatalogNames) {
-                Foreach ($DeliveryGroupName in $DeliveryGroups) {
-                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting session details: $ZoneName / $CatalogName / $DeliveryGroupName"
-                    try { 
-                        $params = @{
-                            AdminAddress     = $Broker;
-                            CatalogName      = $CatalogName;
-                            DesktopGroupName = $DeliveryGroupName;
-                            #SessionState     = "Active";
-                            Maxrecordcount   = 99999
-                        }
-                        $TotalSessions = (Get-BrokerSession @params).Count
+        
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting session details: $ZoneName / $CatalogName / $DeliveryGroupName"
+        # Throw in try catch loop 
+        try {          
+            $params = @{
+                AdminAddress     = $Broker;
+                CatalogName      = $CatalogName;
+                DesktopGroupName = $DeliveryGroupName;
+                #SessionState     = "Active";
+                Maxrecordcount   = 99999
+            }
+            $TotalSessions = (Get-BrokerSession @params).Count
 
-                        if ($TotalSessions -gt 0) {                        
-                            $params = @{
-                                AdminAddress     = $Broker;
-                                CatalogName      = $CatalogName;
-                                DesktopGroupName = $DeliveryGroupName;
-                                SessionState     = "Active";
-                                Maxrecordcount   = 99999
-                            }
-                            $Sessions = Get-BrokerSession @params
+            if ($TotalSessions -gt 0) {                        
+                $params = @{
+                    AdminAddress     = $Broker;
+                    CatalogName      = $CatalogName;
+                    DesktopGroupName = $DeliveryGroupName;
+                    SessionState     = "Active";
+                    Maxrecordcount   = 99999
+                }
+                $Sessions = Get-BrokerSession @params
 
-                            $ActiveSessions = ($Sessions | Where-Object IdleDuration -lt 00:00:01).Count
-                            $IdleSessions = ($Sessions | Where-Object IdleDuration -gt 00:00:00).Count
-                            $params = @{
-                                AdminAddress     = $Broker;
-                                DesktopGroupName = $DeliveryGroupName;
-                                SessionState     = "Disconnected";
-                                Maxrecordcount   = 99999
-                            }
-                            $DisconnectedSessions = (Get-BrokerSession @params).Count
-                            # $OtherSessions = $TotalSessions - ($ActiveSessions + $IdleSessions + $DisconnectedSessions)
+                $ActiveSessions = ($Sessions | Where-Object IdleDuration -lt 00:00:01).Count
+                $IdleSessions = ($Sessions | Where-Object IdleDuration -gt 00:00:00).Count
+                $params = @{
+                    AdminAddress     = $Broker;
+                    DesktopGroupName = $DeliveryGroupName;
+                    SessionState     = "Disconnected";
+                    Maxrecordcount   = 99999
+                }
+                $DisconnectedSessions = (Get-BrokerSession @params).Count
+                # $OtherSessions = $TotalSessions - ($ActiveSessions + $IdleSessions + $DisconnectedSessions)
                         
-                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalSessions            = $TotalSessions"
-                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] ActiveSessions           = $ActiveSessions"
-                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] IdleSessions             = $IdleSessions"
-                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] DisconnectedSessions     = $DisconnectedSessions"
-                            # Add Session Totals to Results
-                            $Results += [PSCustomObject]@{
-                                Series               = "XdSessionInfo"
-                                Host                 = $Broker
-                                SiteName             = $SiteName   
-                                ZoneName             = $ZoneName
-                                CatalogName          = $CatalogName
-                                DeliveryGroupName    = $DeliveryGroupName
-                                TotalSessions        = $TotalSessions
-                                ActiveSessions       = $ActiveSessions
-                                IdleSessions         = $IdleSessions
-                                DisconnectedSessions = $DisconnectedSessions
-                            }
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Total: $TotalSessions, Active: $ActiveSessions"
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Idle: $IdleSessions, Disconnected: $DisconnectedSessions"
+                # Add Session Totals to Results
+                $Results += [PSCustomObject]@{
+                    Series               = "XdSessionInfo"
+                    Host                 = $Broker
+                    SiteName             = $SiteName   
+                    ZoneName             = $ZoneName
+                    CatalogName          = $CatalogName
+                    DeliveryGroupName    = $DeliveryGroupName
+                    TotalSessions        = $TotalSessions
+                    ActiveSessions       = $ActiveSessions
+                    IdleSessions         = $IdleSessions
+                    DisconnectedSessions = $DisconnectedSessions
+                }
 
-                            $BrokeringDurationAvg = ($Sessions | `
-                                    Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
-                                    Select-Object -ExpandProperty BrokeringDuration | Measure-Object -Average).Average
-                            $BrokeringDurationMax = ($Sessions | `
-                                    Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
-                                    Select-Object -ExpandProperty BrokeringDuration | Measure-Object -Maximum).Maximum
-                            $EstablishmentDurationAvg = ($Sessions | `
-                                    Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
-                                    Select-Object -ExpandProperty EstablishmentDuration | Measure-Object -Average).Average
-                            $EstablishmentDurationMax = ($Sessions | `
-                                    Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
-                                    Select-Object -ExpandProperty EstablishmentDuration | Measure-Object -Maximum).Maximum
+                $BrokeringDurationAvg = ($Sessions | `
+                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Select-Object -ExpandProperty BrokeringDuration | Measure-Object -Average).Average
+                $BrokeringDurationMax = ($Sessions | `
+                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Select-Object -ExpandProperty BrokeringDuration | Measure-Object -Maximum).Maximum
+                $EstablishmentDurationAvg = ($Sessions | `
+                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Select-Object -ExpandProperty EstablishmentDuration | Measure-Object -Average).Average
+                $EstablishmentDurationMax = ($Sessions | `
+                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Select-Object -ExpandProperty EstablishmentDuration | Measure-Object -Maximum).Maximum
                     
-                            # If one gets a value, all should.  
-                            if ($null -ne $BrokeringDurationAvg) {
-                                Write-Verbose "BrokeringDurationAvg     = $BrokeringDurationAvg"
-                                Write-Verbose "BrokeringDurationMax     = $BrokeringDurationMax"
-                                Write-Verbose "EstablishmentDurationAvg = $EstablishmentDurationAvg"
-                                Write-Verbose "EstablishmentDurationMax = $EstablishmentDurationMax"
+                # If one gets a value, all should.  
+                if ($null -ne $BrokeringDurationAvg) {
+                    Write-Verbose "BrokeringDurationAvg     = $BrokeringDurationAvg"
+                    Write-Verbose "BrokeringDurationMax     = $BrokeringDurationMax"
+                    Write-Verbose "EstablishmentDurationAvg = $EstablishmentDurationAvg"
+                    Write-Verbose "EstablishmentDurationMax = $EstablishmentDurationMax"
 
-                                $Results += [PSCustomObject]@{
-                                    'SiteName'                 = $SiteName   
-                                    'ZoneName'                 = $ZoneName
-                                    'CatalogName'              = $CatalogName
-                                    'DeliveryGroupName'        = $DeliveryGroupName
-                                    'BrokeringDurationAvg'     = $BrokeringDurationAvg
-                                    'BrokeringDurationMax'     = $BrokeringDurationMax
-                                    'EstablishmentDurationAvg' = $EstablishmentDurationAvg
-                                    'EstablishmentDurationMax' = $EstablishmentDurationMax
-                                }
-                            }
-                        }
-                    }
-                    catch { 
-
+                    $Results += [PSCustomObject]@{
+                        Series                     = "XdSessionInfo"
+                        'SiteName'                 = $SiteName   
+                        'ZoneName'                 = $ZoneName
+                        'CatalogName'              = $CatalogName
+                        'DeliveryGroupName'        = $DeliveryGroupName
+                        'BrokeringDurationAvg'     = $BrokeringDurationAvg
+                        'BrokeringDurationMax'     = $BrokeringDurationMax
+                        'EstablishmentDurationAvg' = $EstablishmentDurationAvg
+                        'EstablishmentDurationMax' = $EstablishmentDurationMax
                     }
                 }
+                   
             }
+        
+
+            return $Results
         }
-        return $Results
+        catch {
+            
+        }
     }
 
     End { }

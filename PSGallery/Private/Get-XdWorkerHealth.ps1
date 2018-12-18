@@ -55,10 +55,10 @@ Function Get-XdWorkerHealth {
             }
             else {
                 $opt = New-CimSessionOption -Protocol Dcom
-                $session = new-cimsession -ComputerName $machine -SessionOption $opt
-                $os = $session | Get-Ciminstance -ClassName win32_operatingsystem
+                $Session = new-cimsession -ComputerName $Machine -SessionOption $opt
+                $OS = $Session | Get-Ciminstance -ClassName win32_operatingsystem
             }
-            $Uptime = $OS.LocalDateTime - $os.LastBootUpTime
+            $Uptime = $OS.LocalDateTime - $OS.LastBootUpTime
             $UptimeDays = $Uptime.Days
 
             If ($UptimeDays -lt [int]$BootThreshold) {
@@ -84,6 +84,8 @@ Function Get-XdWorkerHealth {
                 'Errors'   = $Errors
             }
         }
+
+
         $Results = @()
 
         foreach ($Machine in $Machines) {

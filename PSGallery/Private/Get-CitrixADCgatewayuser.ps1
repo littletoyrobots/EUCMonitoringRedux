@@ -1,22 +1,5 @@
 
 function Get-CitrixADCgatewayuser {
-    <#
-    .SYNOPSIS
-    Short description
-    
-    .DESCRIPTION
-    Long description
-    
-    .PARAMETER ADCSession
-    Parameter description
-    
-    .EXAMPLE
-    An example
-    
-    .NOTES
-    General notes
-    #>
-    
     [CmdletBinding()]
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]

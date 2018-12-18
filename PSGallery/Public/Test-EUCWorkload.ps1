@@ -3,7 +3,7 @@ function Test-EUCWorkload {
     [CmdletBinding()]
     param (
         # Specifies the name of the series to run against. 
-        [Parameter(ValueFromPipeline, Mandatory = $true)]
+        #[Parameter(ValueFromPipeline, Mandatory = $true)]
         #    [string]$SeriesName,
 
         # The names of the servers to run against. 
@@ -49,32 +49,35 @@ function Test-EUCWorkload {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer" 
 
             if ($XdDesktop) {
+                
                 if ($XdDesktopComplete) { 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping XdDesktop"
                 } 
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdDesktop"
-                    
-                    if ($Advanced) {
-                        $TestMode = "advanced" 
-                    }
-                    else {
-                        $TestMode = "basic"
-                    }
-                    $params = @{
-                        Broker         = $Computer;
-                        WorkerTestMode = $Testmode;
-                        Workload       = 'desktop';
-                        BootThreshold  = $BootThreshold;
-                        HighLoad       = $HighLoad
-                    }
-                    $Results += Test-XdWorker @params
-                    $XdDesktopComplete = $true
+                    try {       
+                        if ($Advanced) {
+                            $TestMode = "advanced" 
+                        }
+                        else {
+                            $TestMode = "basic"
+                        }
+                        $params = @{
+                            Broker            = $Computer;
+                            Workload          = 'desktop';
+                            SessionInfo       = $SessionInfo;
+                            WorkerHealthCount = $WorkerHealthCount;
+                            BootThreshold     = $BootThreshold;
+                            HighLoad          = $HighLoad
+                        }
+                        $Results += Test-XdWorker @params
+                        $XdDesktopComplete = $true
 
-                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                      
-                    if ($XdSessionInfo) {    
-                        $Results += Test-XdSessionInfo -Broker $Broker -Advanced $Advanced
+                    }
+                    catch {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failed"
                     }
                 }
             }
@@ -86,18 +89,11 @@ function Test-EUCWorkload {
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] Testing XdServer"
                     try {
-                        if ($Advanced) {
-                            $TestMode = "advanced" 
-                        }
-                        else {
-                            $TestMode = "basic"
-                        }
                         $params = @{
-                            Broker         = $Computer;
-                            WorkerTestMode = $Testmode;
-                            Workload       = 'server';
-                            BootThreshold  = $BootThreshold;
-                            HighLoad       = $HighLoad
+                            Broker        = $Computer;
+                            Workload      = 'server';
+                            BootThreshold = $BootThreshold;
+                            HighLoad      = $HighLoad
                         }
                         $Results += Test-XdWorker @params
                         $XdServerComplete = $true

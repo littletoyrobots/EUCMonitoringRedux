@@ -6,10 +6,11 @@ Function Test-XdWorker {
         [string]$Broker, 
         [string]$Workload,
         [switch]$SessionInfo,
-        [switch]$WorkerHealth,
         
+        [switch]$WorkerHealth,
         [int]$BootThreshold = 7,
         [int]$HighLoad = 8000,
+
         [switch]$All
     )
 
@@ -21,8 +22,7 @@ Function Test-XdWorker {
 
         if ($null -eq $ctxsnap) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Powershell Snapin Load Failed"
-            Write-Error "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Cannot Load XenDesktop Powershell SDK"
-            Return
+            throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Cannot Load XenDesktop Powershell SDK"
         }
         else {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Powershell SDK Snapin Loaded"
@@ -43,7 +43,7 @@ Function Test-XdWorker {
             $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "SessionSession"}
         }
         else {
-            throw "Unable "
+            throw "Unable to determine the workload type."
         }
         try { 
             foreach ($ZoneName in $ZoneNames) {
@@ -100,12 +100,28 @@ Function Test-XdWorker {
                                 
                             if ($WorkerHealth -or $All) {
                                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching worker health count"
-                                $Results += Get-XdWorkerHealth -Broker $Broker -Machines $Machines
+                                $Params = @{
+                                    Broker           = $Broker;
+                                    SiteName         = $SiteName;
+                                    ZoneName         = $ZoneName;
+                                    CatalogName      = $CatalogName;
+                                    DesktopGroupName = $DeliveryGroupName;
+                                    Machines         = $Machines
+                                }
+                                $Results += Get-XdWorkerHealth @Params
                             }
 
                             if ($SessionInfo -or $All) {
                                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching worker health count"
-                                $Results += Get-XdSessionInfo -Broker $Broker -Machines $Machines
+                                $Params = @{
+                                    Broker           = $Broker;
+                                    SiteName         = $SiteName;
+                                    ZoneName         = $ZoneName;
+                                    CatalogName      = $CatalogName;
+                                    DesktopGroupName = $DeliveryGroupName;
+                                    #    Machines         = $Machines
+                                }
+                                $Results += Get-XdSessionInfo @Params
                             }
                         }
                     }
