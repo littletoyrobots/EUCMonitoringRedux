@@ -4,7 +4,7 @@ Function Get-RDSLicense {
     Param(
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [string]$ComputerName,
+        [string[]]$ComputerName,
 
         
         [Parameter(ValueFromPipeline, Mandatory = $false)]

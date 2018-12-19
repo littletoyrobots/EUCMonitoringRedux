@@ -23,10 +23,7 @@ function Test-EUCWorkload {
         [switch]$SessionInfo,
         [switch]$WorkerHealthCount,
 
-      
-        # Specifies the level of detail being returned.  Basic by default. 
-        [switch]$Advanced,
-
+        [switch]$All,
         [Parameter(ValueFromPipeline, Mandatory = $false)]
         [pscredential]$Credential
     )
@@ -56,19 +53,14 @@ function Test-EUCWorkload {
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdDesktop"
                     try {       
-                        if ($Advanced) {
-                            $TestMode = "advanced" 
-                        }
-                        else {
-                            $TestMode = "basic"
-                        }
                         $params = @{
                             Broker            = $Computer;
                             Workload          = 'desktop';
                             SessionInfo       = $SessionInfo;
                             WorkerHealthCount = $WorkerHealthCount;
                             BootThreshold     = $BootThreshold;
-                            HighLoad          = $HighLoad
+                            HighLoad          = $HighLoad;
+                            $All              = $All
                         }
                         $Results += Test-XdWorker @params
                         $XdDesktopComplete = $true
@@ -84,16 +76,19 @@ function Test-EUCWorkload {
 
             if ($XdServer) {
                 if ($XdServerComplete) {
-                    Write-Verbose "[$(Get-Date) PROCESS] Skipping XdServer"
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping XdServer"
                 } 
                 else {
-                    Write-Verbose "[$(Get-Date) PROCESS] Testing XdServer"
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdServer"
                     try {
                         $params = @{
-                            Broker        = $Computer;
-                            Workload      = 'server';
-                            BootThreshold = $BootThreshold;
-                            HighLoad      = $HighLoad
+                            Broker            = $Computer;
+                            Workload          = 'server';
+                            SessionInfo       = $SessionInfo;
+                            WorkerHealthCount = $WorkerHealthCount;
+                            BootThreshold     = $BootThreshold;
+                            HighLoad          = $HighLoad;
+                            All               = $All
                         }
                         $Results += Test-XdWorker @params
                         $XdServerComplete = $true
@@ -120,6 +115,6 @@ function Test-EUCWorkload {
     } #PROCESS
 
     End {
-        Write-Verbose "[$(Get-Date) END    ] $($myinvocation.mycommand)"
+        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     }
 }

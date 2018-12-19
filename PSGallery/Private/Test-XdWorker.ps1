@@ -22,7 +22,7 @@ Function Test-XdWorker {
 
         if ($null -eq $ctxsnap) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Powershell Snapin Load Failed"
-            throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Cannot Load XenDesktop Powershell SDK"
+            throw "Cannot Load XenDesktop Powershell SDK"
         }
         else {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Powershell SDK Snapin Loaded"
@@ -37,12 +37,15 @@ Function Test-XdWorker {
         $ZoneNames = (Get-ConfigZone -AdminAddress $Broker).Name
 
         if ($Workload -match "server") {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
             $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "MultiSession"} 
         }
         elseif ($Workload -match "desktop") {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
             $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "SessionSession"}
         }
         else {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type" 
             throw "Unable to determine the workload type."
         }
         try { 
@@ -156,6 +159,5 @@ Function Test-XdWorker {
 
     End {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
-
     }
 }

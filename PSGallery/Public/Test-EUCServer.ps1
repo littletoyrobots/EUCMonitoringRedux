@@ -37,7 +37,7 @@ function Test-EUCServer {
     }
     
     Process {
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Series"
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series: $Series"
         $Results = @()
         #       $Errors = @()
 
@@ -74,7 +74,7 @@ function Test-EUCServer {
 
                 # Ports
                 foreach ($Port in $Ports) {
-                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing Port $Port"
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer Port $Port"
                     if (Test-NetConnection $Computer -Port $Port -InformationLevel Quiet) {
                         $Result | Add-Member -NotePropertyName "Port$Port" -NotePropertyValue 1 -TypeName int
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
@@ -90,9 +90,9 @@ function Test-EUCServer {
 
                 # Windows Services
                 foreach ($Service in $Services) {
-                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing Service $Service"
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer Service $Service"
 
-                    if ("Running" -eq (Get-Service -ErrorAction SilentlyContinue -ComputerName $ServerName -Name $ServiceName).Status) {
+                    if ("Running" -eq (Get-Service -ErrorAction SilentlyContinue -ComputerName $Computer -Name $ServiceName).Status) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                         $Result | Add-Member -NotePropertyName "$Service" -NotePropertyValue 1 -TypeName int
                     }
@@ -121,7 +121,7 @@ function Test-EUCServer {
                 }
 
                 foreach ($Path in $HTTPSPath) {      
-                    $Url = "http://$($Computer):$($HTTPSPort)$($Path)"
+                    $Url = "https://$($Computer):$($HTTPSPort)$($Path)"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] HTTPS Test $Url"
                     
                     if (Test-Url $Url) {
@@ -137,7 +137,7 @@ function Test-EUCServer {
 
                 foreach ($Port in $ValidCertPort) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Valid Cert Port $Url"
-                    if (Test-ValidCert -ComputerName $ComputerName -Port $Port) {
+                    if (Test-ValidCert -ComputerName $Computer -Port $Port) {
                         $Result | Add-Member -NotePropertyName "ValidCert_Port$($Port)" -NotePropertyValue 1 -TypeName int
                     }
                     else {
@@ -148,7 +148,7 @@ function Test-EUCServer {
                 }                
             }
             catch {
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem occured testing $Series"
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem occured testing $Series - $Computer"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
 
                 $Result.Status = "ERROR"

@@ -21,7 +21,7 @@ Citrix License Type, commonly XDT / MPS
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]$ComputerName,
+        [string[]]$ComputerName,
         [string[]]$LicenseType = ""
     )
     
