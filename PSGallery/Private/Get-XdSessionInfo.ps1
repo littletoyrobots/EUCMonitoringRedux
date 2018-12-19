@@ -1,4 +1,4 @@
-Function Test-XdSessionInfo {
+Function Get-XdSessionInfo {
     <#   
 .SYNOPSIS   
     Returns Stats of the XenDesktop Sessions
@@ -20,43 +20,25 @@ Function Test-XdSessionInfo {
 #>
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]$Broker,
-        [parameter]$SiteName,
-        [parameter]$ZoneName,
-        [parameter]$CatalogName,
-        [parameter]$DeliveryGroupName
+        [string]$SiteName,
+        [string]$ZoneName,
+        [string]$CatalogName,
+        [string]$DeliveryGroupName,
+        [int]$DurationLength = 600
     )
 
-    Begin { 
-        $ctxsnap = Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
-        $ctxsnap = Get-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Citrix Broker Powershell Snapin Load Failed"
-            Write-Error "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Cannot Load Citrix Broker Powershell SDK"
-            Return 
-        }
-        else {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Citrix Broker Powershell SDK Snapin Loaded"
-        }
-
-        $ctxsnap = Add-PSSnapin Citrix.Configuration.Admin.* -ErrorAction SilentlyContinue
-        $ctxsnap = Get-PSSnapin Citrix.Configuration.Admin.* -ErrorAction SilentlyContinue
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Powershell Snapin Load Failed"
-            Write-Error "Cannot Load XenDesktop Powershell SDK"
-            Return 
-        }
-        else {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Powershell SDK Snapin Loaded"
-        }
+    Begin {
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
     }
 
     Process { 
         $Results = @()
         
-        
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting session details: $ZoneName / $CatalogName / $DeliveryGroupName"
+        $Results = @()
+        
+        
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting session durations: $ZoneName / $CatalogName / $DeliveryGroupName"
         # Throw in try catch loop 
         try {          
             $params = @{
@@ -77,56 +59,27 @@ Function Test-XdSessionInfo {
                     Maxrecordcount   = 99999
                 }
                 $Sessions = Get-BrokerSession @params
-
-                $ActiveSessions = ($Sessions | Where-Object IdleDuration -lt 00:00:01).Count
-                $IdleSessions = ($Sessions | Where-Object IdleDuration -gt 00:00:00).Count
-                $params = @{
-                    AdminAddress     = $Broker;
-                    DesktopGroupName = $DeliveryGroupName;
-                    SessionState     = "Disconnected";
-                    Maxrecordcount   = 99999
-                }
-                $DisconnectedSessions = (Get-BrokerSession @params).Count
-                # $OtherSessions = $TotalSessions - ($ActiveSessions + $IdleSessions + $DisconnectedSessions)
-                        
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Total: $TotalSessions, Active: $ActiveSessions"
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Idle: $IdleSessions, Disconnected: $DisconnectedSessions"
-                # Add Session Totals to Results
-                $Results += [PSCustomObject]@{
-                    Series               = "XdSessionInfo"
-                    Host                 = $Broker
-                    SiteName             = $SiteName   
-                    ZoneName             = $ZoneName
-                    CatalogName          = $CatalogName
-                    DeliveryGroupName    = $DeliveryGroupName
-                    TotalSessions        = $TotalSessions
-                    ActiveSessions       = $ActiveSessions
-                    IdleSessions         = $IdleSessions
-                    DisconnectedSessions = $DisconnectedSessions
-                }
-
+                $TimeSpan = New-TimeSpan -Seconds (-1 * $DurationLength)
                 $BrokeringDurationAvg = ($Sessions | `
-                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Where-Object BrokeringTime -gt ((get-date) + $TimeSpan) | `
                         Select-Object -ExpandProperty BrokeringDuration | Measure-Object -Average).Average
                 $BrokeringDurationMax = ($Sessions | `
-                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Where-Object BrokeringTime -gt ((get-date) + $TimeSpan) | `
                         Select-Object -ExpandProperty BrokeringDuration | Measure-Object -Maximum).Maximum
                 $EstablishmentDurationAvg = ($Sessions | `
-                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Where-Object BrokeringTime -gt ((get-date) + $TimeSpan) | `
                         Select-Object -ExpandProperty EstablishmentDuration | Measure-Object -Average).Average
                 $EstablishmentDurationMax = ($Sessions | `
-                        Where-Object BrokeringTime -gt ((get-date) + (New-TimeSpan -Hours -1)) | `
+                        Where-Object BrokeringTime -gt ((get-date) + $TimeSpan) | `
                         Select-Object -ExpandProperty EstablishmentDuration | Measure-Object -Maximum).Maximum
-                    
+
                 # If one gets a value, all should.  
                 if ($null -ne $BrokeringDurationAvg) {
-                    Write-Verbose "BrokeringDurationAvg     = $BrokeringDurationAvg"
-                    Write-Verbose "BrokeringDurationMax     = $BrokeringDurationMax"
-                    Write-Verbose "EstablishmentDurationAvg = $EstablishmentDurationAvg"
-                    Write-Verbose "EstablishmentDurationMax = $EstablishmentDurationMax"
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] BrokeringDurationAvg = $BrokeringDurationAvg, BrokeringDurationMax = $BrokeringDurationMax"
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] EstablishmentDurationAvg = $EstablishmentDurationAvg, EstablishmentDurationMax = $EstablishmentDurationMax"
 
                     $Results += [PSCustomObject]@{
-                        Series                     = "XdSessionInfo"
+                        Series                     = "XdSessionDuration"
                         'SiteName'                 = $SiteName   
                         'ZoneName'                 = $ZoneName
                         'CatalogName'              = $CatalogName
@@ -137,16 +90,30 @@ Function Test-XdSessionInfo {
                         'EstablishmentDurationMax' = $EstablishmentDurationMax
                     }
                 }
-                   
+                else {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No new sessions"
+                }  
             }
-        
-
-            return $Results
         }
         catch {
-            
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem getting session info"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+            $Results += [PSCustomObject]@{
+                Series                     = "XdSessionDuration"
+                'SiteName'                 = $SiteName   
+                'ZoneName'                 = $ZoneName
+                'CatalogName'              = $CatalogName
+                'DeliveryGroupName'        = $DeliveryGroupName
+                'BrokeringDurationAvg'     = -1
+                'BrokeringDurationMax'     = -1
+                'EstablishmentDurationAvg' = -1
+                'EstablishmentDurationMax' = -1
+            }
         }
+        return $Results
     }
 
-    End { }
+    End { 
+        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+    }
 }

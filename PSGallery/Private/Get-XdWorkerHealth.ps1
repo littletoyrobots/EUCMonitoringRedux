@@ -3,6 +3,11 @@ Function Get-XdWorkerHealth {
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()][string]$Broker, 
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$Workload, 
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$SiteName,
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$ZoneName,
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$CatalogName,
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$DeliveryGroupName,
 
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]$Machines, 
@@ -13,28 +18,15 @@ Function Get-XdWorkerHealth {
 
     Begin { 
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading Citrix Broker Powershell Snapin"
-        $ctxsnap = Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
-        $ctxsnap = Get-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Powershell Snapin Load Failed"
-            Write-Error "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Cannot Load XenDesktop Powershell SDK"
-            Return
-        }
-        else {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Powershell SDK Snapin Loaded"
-        }
-
+        
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Setting Up Runspace pool"
         $Pool = [RunspaceFactory]::CreateRunspacePool(1, [int]$env:NUMBER_OF_PROCESSORS + 1)
         $Pool.ApartmentState = "MTA"
         $Pool.Open()
-        $Runspaces = @()
+        
     }
 
     Process {
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)]"
 
         $Scriptblock = {
             Param (
@@ -66,15 +58,15 @@ Function Get-XdWorkerHealth {
                 $Load = Get-BrokerMachine  -AdminAddress $Broker -HostedMachineName $Machine -Property LoadIndex
                 $CurrentLoad = $Load.LoadIndex
                 If ($CurrentLoad -lt $HighLoad) {
-                    $Status = "Passed"
+                    $Status = "Healthy"
                 }
                 else {
-                    $Status = "Degraded"
+                    $Status = "Unhealthy"
                     $errors += "$Machine has a high load of $CurrentLoad"
                 }
             }
             else {
-                $Status = "Degraded"
+                $Status = "Unhealthy"
                 $errors += "$Machine has not been booted in $UptimeDays days"
             }
 
@@ -85,11 +77,15 @@ Function Get-XdWorkerHealth {
             }
         }
 
-
+        
         $Results = @()
 
-        foreach ($Machine in $Machines) {
+        $Runspaces = @()
+        $RunspaceResults = @()
+        $Healthy = 0
+        $Unhealthy = 0
 
+        foreach ($Machine in $Machines) {
             $MachineName = $Machine.HostedMachineName
             $Runspace = [PowerShell]::Create()
             $null = $Runspace.AddScript($Scriptblock)
@@ -100,18 +96,39 @@ Function Get-XdWorkerHealth {
             $Runspaces += [PSCustomObject]@{ Pipe = $Runspace; Status = $Runspace.BeginInvoke() }
         }
 
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Runspace executing"
         while ($Runspaces.Status.IsCompleted -notcontains $true) {}
 
-        foreach ($Runspace in $Runspaces ) {
-            $results += $Runspace.Pipe.EndInvoke($Runspace.Status)
+        foreach ($Runspace in $Runspaces) {
+            $RunspaceResults += $Runspace.Pipe.EndInvoke($Runspace.Status)
             $Runspace.Pipe.Dispose()
         }
 
+        # Parsing Results
+        foreach ($Result in $RunspaceResults.Services) {
+            if ($Result -eq "Healthy") { $Healthy++ }
+            else { $Unhealthy++ }
+        }
+
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Healthy: $Healthy, Unhealthy: $Unhealthy"
+        $Results += [PSCustomObject]@{
+            Series            = "XdWorkerHealth"
+            Type              = $Workload
+            Host              = $Broker
+            SiteName          = $SiteName
+            ZoneName          = $ZoneName
+            CatalogName       = $CatalogName
+            DeliveryGroupName = $DeliveryGroupName
+            Healthy           = $Healthy
+            Unhealthy         = $Unhealthy                    
+        }
+        <#
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disposing of Runspace pool"
         $pool.Close()
         $pool.Dispose()
 
         Remove-Variable Runspaces -Force
-
+#>
         if ($Results.Count -gt 0) {
             return $Results
         }

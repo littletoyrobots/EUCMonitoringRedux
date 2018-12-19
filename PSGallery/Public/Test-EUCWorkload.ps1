@@ -16,13 +16,15 @@ function Test-EUCWorkload {
         [switch]$XdServer,
 
         # Default values for XdDesktop and XdServer Tests. 
+        [switch]$WorkerHealth,
         [int]$BootThreshold = 7,
         [int]$HighLoad = 8000,
 
-        # Will return session information based on site, catalog, delivery group, etc
-        [switch]$SessionInfo,
-        [switch]$WorkerHealthCount,
-
+        # Will return extended session information based on site, catalog, delivery group, etc
+        #    [switch]$SessionInfo,
+        #    [switch]$SessionDuration,
+        #    [int]$DurationLength = 600,
+        
         [switch]$All,
         [Parameter(ValueFromPipeline, Mandatory = $false)]
         [pscredential]$Credential
@@ -40,7 +42,6 @@ function Test-EUCWorkload {
 
         $XdDesktopComplete = $false
         $XdServerComplete = $false
-        $XdSessionInfo = $false 
 
         foreach ($Computer in $ComputerName) {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer" 
@@ -52,26 +53,28 @@ function Test-EUCWorkload {
                 } 
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdDesktop"
-                    try {       
-                        $params = @{
-                            Broker            = $Computer;
-                            Workload          = 'desktop';
-                            SessionInfo       = $SessionInfo;
-                            WorkerHealthCount = $WorkerHealthCount;
-                            BootThreshold     = $BootThreshold;
-                            HighLoad          = $HighLoad;
-                            $All              = $All
-                        }
-                        $Results += Test-XdWorker @params
-                        $XdDesktopComplete = $true
+                    #        try {       
+                    $params = @{
+                        Broker        = $Computer;
+                        Workload      = 'Desktop';
+                        #    SessionInfo     = $SessionInfo;
+                        #    SessionDuration = $SessionDuration;
+                        #    DurationLength  = $DurationLength;
+                        WorkerHealth  = $WorkerHealth;
+                        BootThreshold = $BootThreshold;
+                        HighLoad      = $HighLoad;
+                        All           = $All
+                    }
+                    $Results += Test-XdWorkload @params
+                    $XdDesktopComplete = $true
 
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                      
-                    }
-                    catch {
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failed"
-                    }
                 }
+                #catch {
+                #    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failed"
+                #}
+                #    }
             }
 
             if ($XdServer) {
@@ -82,26 +85,24 @@ function Test-EUCWorkload {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdServer"
                     try {
                         $params = @{
-                            Broker            = $Computer;
-                            Workload          = 'server';
-                            SessionInfo       = $SessionInfo;
-                            WorkerHealthCount = $WorkerHealthCount;
-                            BootThreshold     = $BootThreshold;
-                            HighLoad          = $HighLoad;
-                            All               = $All
+                            Broker        = $Computer;
+                            Workload      = 'Server';
+                            #    SessionInfo     = $SessionInfo;
+                            #    SessionDuration = $SessionDuration;
+                            #    DurationLength  = $DurationLength;
+                            WorkerHealth  = $WorkerHealth;
+                            BootThreshold = $BootThreshold;
+                            HighLoad      = $HighLoad;
+                            All           = $All
                         }
-                        $Results += Test-XdWorker @params
+                        $Results += Test-XdWorkload @params
                         $XdServerComplete = $true
-                        
-                        if ($XdSessionInfo) {    
-                            $Results += Test-XdSessionInfo -Broker $Broker -Advanced $Advanced
-                        }
+
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                     }
                     catch {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
-                        #                $TestsDown += "XdServer"
-                        #                $Errors += "Could not retrieve XdDesktop worker values"
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
                     }
                 }
             }
