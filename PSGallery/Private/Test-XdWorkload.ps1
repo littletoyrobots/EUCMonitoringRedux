@@ -121,6 +121,8 @@ Function Test-XdWorkload {
                             }
                             $DisconnectedSessions = (Get-BrokerSession @params).Count
 
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalSessions: $TotalSessions, ActiveSessions: $ActiveSessions"
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] IdleSessions: $IdleSessions, DisconnectedSessions: $DisconnectedSessions"
                             $Results += [PSCustomObject]@{
                                 Series               = "XdWorker"
                                 Type                 = $Workload
