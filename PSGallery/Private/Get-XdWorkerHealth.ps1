@@ -130,7 +130,7 @@ Function Get-XdWorkerHealth {
         Remove-Variable Runspaces -Force
 #>
         if ($Results.Count -gt 0) {
-            return $Results
+            return , $Results
         }
     }
 

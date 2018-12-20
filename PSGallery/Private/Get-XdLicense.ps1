@@ -55,11 +55,21 @@ Citrix License Type, commonly XDT / MPS
                 }
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting all available XD licenses from $Computer"
                 $LicResults = Get-LicInventory -AdminAddress $Computer -CertHash $cert.CertHash
-
+                    
                 foreach ($Type in $LicenseType) { 
+                    $Status = "UP"
+                    $StatusValue = 2
                     $TotalAvailable = 0
                     $TotalIssued = 0
                     $TotalLicenses = 0
+
+                    if ($null -eq $LicResults) {
+                        $Status = "ERROR"
+                        $Status = -1
+                        $TotalAvailable = -1
+                        $TotalIssued = -1
+                        $TotalLicenses = -1
+                    }
 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting license type $Type "
                     foreach ($License in $LicResults) {

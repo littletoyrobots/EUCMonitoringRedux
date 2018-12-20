@@ -213,7 +213,7 @@ Function Test-XdWorkload {
         }
 
         if ($Results.Count -gt 0) {
-            return $Results
+            return , $Results
         }
         else {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No results to return"

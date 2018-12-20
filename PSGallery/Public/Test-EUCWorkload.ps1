@@ -111,7 +111,7 @@ function Test-EUCWorkload {
         }
 
         if ($Results.Count -gt 0) {
-            return $Results
+            return , $Results
         }
     } #PROCESS
 

@@ -70,6 +70,11 @@ Function Test-EUCADC {
                 Disconnect-CitrixADC -ADCSession $ADCSession
             }
         }
+        
+        if ($Results.Count -gt 0) {
+            return , $Results
+        }
+
 
     } #PROCESS
 
