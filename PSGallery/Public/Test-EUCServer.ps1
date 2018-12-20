@@ -161,19 +161,19 @@ function Test-EUCServer {
                 $Result.Status = "ERROR"
                 $Result.StatusValue = -1
                 foreach ($Port in $Ports) {
-                    $Result | Add-Member -NotePropertyName "Port$Port" -NotePropertyValue -1 #
+                    $Result | Add-Member -NotePropertyName "Port$Port" -Value $Result.StatusValue
                 }
                 foreach ($Service in $Services) {
-                    $Result | Add-Member -NotePropertyName "$Service" -NotePropertyValue -1 # 
+                    $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value $Result.StatusValue
                 }
                 foreach ($Path in $HTTPPath) {
-                    $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -NotePropertyValue -1 #
+                    $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value $Result.StatusValue
                 }
                 foreach ($Path in $HTTPSPath) {
-                    $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -NotePropertyValue -1 # 
+                    $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value $Result.StatusValue
                 }
                 foreach ($Port in $ValidCertPort) {
-                    $Result | Add-Member -NotePropertyName "ValidCert_Port$($Port)" -NotePropertyValue -1 # 
+                    $Result | Add-Member -NotePropertyName "ValidCert_Port$($Port)" -Value $Result.StatusValue
                 }
 
             }

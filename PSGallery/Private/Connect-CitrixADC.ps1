@@ -58,9 +58,9 @@ function Connect-CitrixADC {
             $Params = @{
                 uri             = "$ADC/nitro/v1/config/login"
                 body            = $PayLoad
-                SessionVariable = saveSession
+                SessionVariable = "saveSession"
                 Headers         = @{"Content-Type" = "application/vnd.com.citrix.netscaler.login+json"}
-                Method          = POST
+                Method          = "POST"
             }
             Invoke-RestMethod @Params -ErrorAction Stop
         } 

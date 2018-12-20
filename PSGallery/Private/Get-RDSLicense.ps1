@@ -45,7 +45,7 @@ Function Get-RDSLicense {
                     # This covered the 
                     if ($null -eq $LicResults) {
                         $Status = "ERROR"
-                        $Status = -1
+                        $StatusValue = -1
                         $TotalAvailable = -1
                         $TotalIssued = -1
                         $TotalLicenses = -1
