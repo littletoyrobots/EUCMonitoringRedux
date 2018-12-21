@@ -6,7 +6,7 @@ Function ConvertTo-InfluxLineProtocol {
         [ValidateNotNullOrEmpty()]
         [object[]]$InputObject,
         [Parameter(Mandatory = $false)]
-        [string]$SeriesName,
+        [string]$Series,
         [switch]$IncludeTimeStamp
     )
     Begin {
@@ -31,10 +31,10 @@ Function ConvertTo-InfluxLineProtocol {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting obj $($Result.Host)"
             
             $ParamString = ""
-            if ($SeriesName) { $SeriesString = $SeriesName}
+            if ("" -ne $Series) { $SeriesString = $Series}
             else { $SeriesString = "$($Obj.Series)" }
             if ("" -eq $SeriesString) {
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series "
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series Blank!"
             }
 
             $Obj.PSObject.Properties | ForEach-Object {

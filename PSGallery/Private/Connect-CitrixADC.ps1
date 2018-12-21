@@ -16,7 +16,7 @@ function Connect-CitrixADC {
         David Brett - 15/03/2017 - Initial Script Creation
         Ryan Butler - 27/03/2017 - Change to nssession scope 
         David Brett - 14/06/2018 - Edited the Function to remove positional parameters and cleaned up old code
-        Adam Yarborough - 26/07/2018 - Edited to 
+        Adam Yarborough - 26/07/2018 - Edited to change return values
         
     #> 
 
