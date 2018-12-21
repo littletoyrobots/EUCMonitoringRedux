@@ -32,7 +32,7 @@ Function Get-RDSLicense {
 
                 foreach ($Type in $LicenseType) { 
                     $Status = "UP"
-                    $StatusValue = 2
+                    $State = 2
                     $TotalAvailable = 0
                     $TotalIssued = 0
                     $TotalLicenses = 0
@@ -41,15 +41,7 @@ Function Get-RDSLicense {
                     $LicResults = Get-WmiObject Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
                         Where-Object TypeAndModel -eq $Type | `
                         Select-Object TypeAndModel, IssuedLicenses, AvailableLicenses, TotalLicenses -ErrorAction Stop
-
-                    # This covered the 
-                    if ($null -eq $LicResults) {
-                        $Status = "ERROR"
-                        $StatusValue = -1
-                        $TotalAvailable = -1
-                        $TotalIssued = -1
-                        $TotalLicenses = -1
-                    }
+         
                     foreach ($License in $LicResults) {
                         $TotalIssued += $License.IssuedLicenses
                         $TotalAvailable += $License.AvailableLicenses
@@ -61,7 +53,7 @@ Function Get-RDSLicense {
                         Host              = $Computer
                         Type              = $Type
                         Status            = $Status
-                        StatusValue       = $StatusValue
+                        State             = $State
                         AvailableLicenses = $TotalAvailable
                         IssuedLicenses    = $TotalIssued
                         TotalLicenses     = $TotalLicenses
@@ -76,7 +68,7 @@ Function Get-RDSLicense {
                     Host              = $Computer
                     Type              = "Error"
                     Status            = "Error"
-                    StatusValue       = -1
+                    State             = -1
                     AvailableLicenses = -1
                     IssuedLicenses    = -1
                     TotalLicenses     = -1

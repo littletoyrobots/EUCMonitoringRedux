@@ -58,18 +58,10 @@ Citrix License Type, commonly XDT / MPS
                     
                 foreach ($Type in $LicenseType) { 
                     $Status = "UP"
-                    $StatusValue = 2
+                    $State = 2
                     $TotalAvailable = 0
                     $TotalIssued = 0
                     $TotalLicenses = 0
-
-                    if ($null -eq $LicResults) {
-                        $Status = "ERROR"
-                        $Status = -1
-                        $TotalAvailable = -1
-                        $TotalIssued = -1
-                        $TotalLicenses = -1
-                    }
 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting license type $Type "
                     foreach ($License in $LicResults) {
@@ -84,6 +76,8 @@ Citrix License Type, commonly XDT / MPS
                     $Results += [PSCustomObject]@{
                         Series            = "XdLicense"
                         Host              = $Computer
+                        Status            = $Status
+                        State             = $State
                         Type              = $Type    
                         AvailableLicenses = $TotalAvailable
                         IssuedLicenses    = $TotalIssued
@@ -99,6 +93,8 @@ Citrix License Type, commonly XDT / MPS
                 $Results += [PSCustomObject]@{
                     Series            = "XdLicense"
                     Host              = $Computer
+                    Status            = "Error"
+                    State             = -1
                     Type              = "Error"    
                     AvailableLicenses = -1
                     IssuedLicenses    = -1
