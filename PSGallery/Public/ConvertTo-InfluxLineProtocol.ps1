@@ -7,6 +7,7 @@ Function ConvertTo-InfluxLineProtocol {
         [object[]]$InputObject,
         [Parameter(Mandatory = $false)]
         [string]$Series,
+        [int]$Timestamp,
         [switch]$IncludeTimeStamp
     )
     Begin {
@@ -17,7 +18,10 @@ Function ConvertTo-InfluxLineProtocol {
     Process { 
         
         # We grab here so that all output will have the same associated timestamp.
-        if ($IncludeTimeStamp) {
+        if ($null -ne $Timestamp) {
+            $IncludeTimeStamp = $true
+        }
+        else if ($IncludeTimeStamp) {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching timestamp"
             $Timestamp = Get-InfluxTimestamp
         }
@@ -63,8 +67,6 @@ Function ConvertTo-InfluxLineProtocol {
             }
             
         }
-
-       
 
     } #PROCESS
 
