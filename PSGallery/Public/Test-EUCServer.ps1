@@ -61,19 +61,19 @@ function Test-EUCServer {
                     $Result.Status = "DOWN"
                     $Result.State = 0
                     foreach ($Port in $Ports) {
-                        $Result | Add-Member -NotePropertyName "Port$Port" -NotePropertyValue 0 # 
+                        $Result | Add-Member -MemberType NoteProperty -Name "Port$Port" -Value 0 # 
                     }
                     foreach ($Service in $Services) {
-                        $Result | Add-Member -NotePropertyName "$Service" -NotePropertyValue 0 # 
+                        $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 0 # 
                     }
                     foreach ($Path in $HTTPPath) {
-                        $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -NotePropertyValue 0 #
+                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 0 #
                     }
                     foreach ($Path in $HTTPSPath) {
-                        $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -NotePropertyValue 0 # 
+                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 # 
                     }
                     foreach ($Port in $ValidCertPort) {
-                        $Result | Add-Member -NotePropertyName "ValidCert_Port$($Port)" -NotePropertyValue 0 # 
+                        $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 0 # 
                     }
                 }
                 
@@ -82,12 +82,12 @@ function Test-EUCServer {
                     foreach ($Port in $Ports) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer Port $Port"
                         if (Test-NetConnection $Computer -Port $Port -InformationLevel Quiet) {
-                            $Result | Add-Member -NotePropertyName "Port$Port" -NotePropertyValue 1 
+                            $Result | Add-Member -MemberType NoteProperty -Name "Port$($Port)" -Value 1 
                             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                         }
                         else {
                             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
-                            $Result | Add-Member -NotePropertyName "Port$Port" -NotePropertyValue 0 
+                            $Result | Add-Member -MemberType NoteProperty -Name "Port$($Port)" -Value 0 
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Errors += "Port $Port closed"
@@ -98,13 +98,15 @@ function Test-EUCServer {
                     foreach ($Service in $Services) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer Service $Service"
 
-                        if ("Running" -eq (Get-Service -ErrorAction SilentlyContinue -ComputerName $Computer -Name $ServiceName).Status) {
+                        $SvcStatus = (Get-Service -ErrorAction SilentlyContinue -ComputerName $Computer -Name $Service).Status
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $SvcStatus"
+                        if ("Running" -eq $SvcStatus) {
                             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
-                            $Result | Add-Member -NotePropertyName "$Service" -NotePropertyValue 1 
+                            $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 1 
                         }
                         else {
                             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
-                            $Result | Add-Member -NotePropertyName "$Service" -NotePropertyValue 0 
+                            $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 0 
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Errors += "$Service not running"
@@ -117,12 +119,12 @@ function Test-EUCServer {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] HTTP Test $url"
                     
                         if (Test-Url $Url) {
-                            $Result | Add-Member -NotePropertyName "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -NotePropertyValue 1 
+                            $Result | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 1 
                         }
                         else {
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
-                            $Result | Add-Member -NotePropertyName "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -NotePropertyValue 0 
+                            $Result | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 0 
                         }
                     }
 
@@ -131,12 +133,12 @@ function Test-EUCServer {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] HTTPS Test $Url"
                     
                         if (Test-Url $Url) {
-                            $Result | Add-Member -NotePropertyName "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -NotePropertyValue 1 
+                            $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 1 
                         }
                         else {
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
-                            $Result | Add-Member -NotePropertyName "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -NotePropertyValue 0 
+                            $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 
                         }
                     }
 
@@ -144,12 +146,12 @@ function Test-EUCServer {
                     foreach ($Port in $ValidCertPort) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Valid Cert Port $Url"
                         if (Test-ValidCert -ComputerName $Computer -Port $Port) {
-                            $Result | Add-Member -NotePropertyName "ValidCert_Port$($Port)" -NotePropertyValue 1 
+                            $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 1 
                         }
                         else {
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
-                            $Result | Add-Member -NotePropertyName "ValidCert_Port$($Port)" -NotePropertyValue 0 
+                            $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 0 
                         }
                     }  
                 }              
@@ -157,24 +159,29 @@ function Test-EUCServer {
             catch {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem occured testing $Series - $Computer"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
-
+                
                 $ErrorState = -1
-                $Result.Status = "ERROR"
-                $Result.State = -1
+                $ErrorResult = [PSCustomObject]@{
+                    Series = $Series
+                    Status = "Error"
+                    State  = $ErrorState
+                    Host   = $Computer
+                }
+             
                 foreach ($Port in $Ports) {
-                    $Result | Add-Member -NotePropertyName "Port$Port" -Value $ErrorState
+                    $Result | Add-Member -MemberType NoteProperty -Name "Port$Port" -Value $ErrorState
                 }
                 foreach ($Service in $Services) {
                     $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value $ErrorState
                 }
                 foreach ($Path in $HTTPPath) {
-                    $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value $ErrorState
+                    $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value $ErrorState
                 }
                 foreach ($Path in $HTTPSPath) {
-                    $Result | Add-Member -NotePropertyName "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value $ErrorState
+                    $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value $ErrorState
                 }
                 foreach ($Port in $ValidCertPort) {
-                    $Result | Add-Member -NotePropertyName "ValidCert_Port$($Port)" -Value $ErrorState
+                    $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value $ErrorState
                 }
 
             }
