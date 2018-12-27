@@ -67,10 +67,10 @@ function Test-EUCServer {
                         $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 0 # 
                     }
                     foreach ($Path in $HTTPPath) {
-                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 0 #
+                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 0 #
                     }
                     foreach ($Path in $HTTPSPath) {
-                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 # 
+                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPATH_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 # 
                     }
                     foreach ($Port in $ValidCertPort) {
                         $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 0 # 
@@ -154,7 +154,10 @@ function Test-EUCServer {
                             $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 0 
                         }
                     }  
-                }              
+                    
+                }        
+
+                $Results += $Result      
             }
             catch {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem occured testing $Series - $Computer"
@@ -169,23 +172,23 @@ function Test-EUCServer {
                 }
              
                 foreach ($Port in $Ports) {
-                    $Result | Add-Member -MemberType NoteProperty -Name "Port$Port" -Value $ErrorState
+                    $ErrorResult | Add-Member -MemberType NoteProperty -Name "Port$Port" -Value $ErrorState
                 }
                 foreach ($Service in $Services) {
-                    $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value $ErrorState
+                    $ErrorResult | Add-Member -MemberType NoteProperty -Name "$Service" -Value $ErrorState
                 }
                 foreach ($Path in $HTTPPath) {
-                    $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value $ErrorState
+                    $ErrorResult | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value $ErrorState
                 }
                 foreach ($Path in $HTTPSPath) {
-                    $Result | Add-Member -MemberType NoteProperty -Name "HTTPUrl_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value $ErrorState
+                    $ErrorResult | Add-Member -MemberType NoteProperty -Name "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value $ErrorState
                 }
                 foreach ($Port in $ValidCertPort) {
-                    $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value $ErrorState
+                    $ErrorResult | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value $ErrorState
                 }
-
+                $Results += $ErrorResult
             }
-            $Results += $Result
+            
         }
 
 
