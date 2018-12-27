@@ -1,11 +1,10 @@
-Function Get-DomainUser {
+Function Get-TheThing {
    
     [cmdletbinding()]
     Param(
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [string]$OU = "", #hard coded maybe OK
-        [string]$Department
+        [string[]]$ComputerName
     )
     
     Begin {
