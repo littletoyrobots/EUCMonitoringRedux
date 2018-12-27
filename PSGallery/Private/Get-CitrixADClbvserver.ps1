@@ -51,7 +51,7 @@ function Get-CitrixADClbvserver {
             else {
                 foreach ($lbvserver in $LBVServers.lbvserver) {
                     $Name = $lbvserver.name
-                    $State = $lbvserver.state
+                    $Status = $lbvserver.state
                     $Health = [int]$lbvserver.vslbhealth
                     $HitsRate = [int]$lbvserver.hitsrate
                     $RequestsRate = [int]$lbvserver.requestsrate
@@ -62,6 +62,10 @@ function Get-CitrixADClbvserver {
                     $CurrentClientConnections = [int]$lbserver.curclntconnections 
                     $CurrentServerConnections = [int]$lbserver.cursrvrconnections 
                         
+                    if ($Health -eq 100) { $State = 2 }
+                    elseif ($Health -gt 0) { $State = 1 }
+                    else { $State = 0 }
+
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Health: $Health, HitsRate: $HitsRate, RequestsRate: $RequestsRate, ResponsesRate: $ResponsesRate"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - TotalHits: $TotalHits, TotalRequests: $TotalRequests, TotalResponses: $TotalResponses"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Current Client Connections: $CurrentClientConnections, Current Server Connections: $CurrentServerConnections"
@@ -69,6 +73,7 @@ function Get-CitrixADClbvserver {
                         Series                   = "CitrixADClbvserver"
                         Host                     = $ADC
                         Name                     = $Name
+                        Status                   = $Status
                         State                    = $State
                         Health                   = $Health
                         HitsRate                 = $HitsRate
@@ -90,6 +95,8 @@ function Get-CitrixADClbvserver {
                 Series                   = "CitrixADClbvserver"
                 Host                     = $ADC
                 Name                     = "ERROR"
+                Status                   = "ERROR"
+                State                    = -1
                 Health                   = -1
                 HitsRate                 = -1
                 RequestsRate             = -1

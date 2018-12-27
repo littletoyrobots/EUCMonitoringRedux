@@ -51,7 +51,7 @@ function Get-CitrixADCcsvserver {
             else {
                 foreach ($csvserver in $CSVServers.csvserver) {
                     $Name = $csvserver.Name
-                    $State = $csvserver.state
+                    $Status = $csvserver.state
                     $Health = [int]$csvserver.vslbhealth
                     $HitsRate = [int]$csvserver.hitsrate
                     $RequestsRate = [int]$csvserver.requestsrate
@@ -65,10 +65,15 @@ function Get-CitrixADCcsvserver {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Health: $Health, HitsRate: $HitsRate, RequestsRate: $RequestsRate, ResponsesRate: $ResponsesRate"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - TotalHits: $TotalHits, TotalRequests: $TotalRequests, TotalResponses: $TotalResponses"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Current Client Connections: $CurrentClientConnections, Current Server Connections: $CurrentServerConnections"
+                    if ($Health -eq 100) { $State = 2 }
+                    elseif ($Health -gt 0) { $State = 1 }
+                    else { $State = 0 }
+
                     $Results += [PSCustomObject]@{
                         Series                   = "CitrixADCcsvserver"
                         Host                     = $ADC
                         Name                     = $Name
+                        Status                   = $Status
                         State                    = $State
                         Health                   = $Health
                         HitsRate                 = $HitsRate
@@ -90,7 +95,8 @@ function Get-CitrixADCcsvserver {
                 Series                   = "CitrixADCcsvserver"
                 Host                     = $ADC
                 Name                     = "ERROR"
-                State                    = "ERROR"
+                Status                   = "ERROR"
+                State                    = -1
                 Health                   = -1
                 HitsRate                 = -1
                 RequestsRate             = -1

@@ -21,7 +21,7 @@ Function ConvertTo-InfluxLineProtocol {
         if ($null -ne $Timestamp) {
             $IncludeTimeStamp = $true
         }
-        else if ($IncludeTimeStamp) {
+        elseif ($IncludeTimeStamp) {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching timestamp"
             $Timestamp = Get-InfluxTimestamp
         }
@@ -37,6 +37,7 @@ Function ConvertTo-InfluxLineProtocol {
             $ParamString = ""
             if ("" -ne $Series) { $SeriesString = $Series}
             else { $SeriesString = "$($Obj.Series)" }
+
             if ("" -eq $SeriesString) {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series Blank!"
             }

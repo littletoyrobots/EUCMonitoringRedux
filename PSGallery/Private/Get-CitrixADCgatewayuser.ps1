@@ -56,6 +56,8 @@ function Get-CitrixADCgatewayuser {
             $Results += [PSCustomObject]@{
                 Series     = "CitrixADCgatewayuser"
                 Host       = $ADC
+                Status     = "UP"
+                State      = 2
                 ICAUsers   = $ICAUsers
                 VPNUsers   = $VPNUsers
                 TotalUsers = $TotalUsers
@@ -67,6 +69,8 @@ function Get-CitrixADCgatewayuser {
             $Results += [PSCustomObject]@{
                 Series     = "CitrixADCgatewayuser"
                 Host       = $ADC
+                Status     = "ERROR"
+                State      = -1
                 ICAUsers   = -1
                 VPNUsers   = -1
                 TotalUsers = -1
