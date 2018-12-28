@@ -7,7 +7,7 @@ Function ConvertTo-InfluxLineProtocol {
         [object[]]$InputObject,
         [Parameter(Mandatory = $false)]
         [string]$Series,
-        [int]$Timestamp,
+        [int64]$Timestamp,
         [switch]$IncludeTimeStamp
     )
     Begin {

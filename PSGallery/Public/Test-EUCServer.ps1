@@ -166,7 +166,7 @@ function Test-EUCServer {
                 $ErrorState = -1
                 $ErrorResult = [PSCustomObject]@{
                     Series = $Series
-                    Status = "Error"
+                    Status = "ERROR"
                     State  = $ErrorState
                     Host   = $Computer
                 }

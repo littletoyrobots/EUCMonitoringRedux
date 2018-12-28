@@ -93,9 +93,9 @@ Citrix License Type, commonly XDT / MPS
                 $Results += [PSCustomObject]@{
                     Series            = "XdLicense"
                     Host              = $Computer
-                    Status            = "Error"
+                    Status            = "ERROR"
                     State             = -1
-                    Type              = "Error"    
+                    Type              = "ERROR"    
                     AvailableLicenses = -1
                     IssuedLicenses    = -1
                     TotalLicenses     = -1

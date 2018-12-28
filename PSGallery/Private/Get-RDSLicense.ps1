@@ -66,8 +66,8 @@ Function Get-RDSLicense {
                 $Results += [PSCustomObject]@{
                     Series            = "RdsLicense"
                     Host              = $Computer
-                    Type              = "Error"
-                    Status            = "Error"
+                    Type              = "ERROR"
+                    Status            = "ERROR"
                     State             = -1
                     AvailableLicenses = -1
                     IssuedLicenses    = -1
