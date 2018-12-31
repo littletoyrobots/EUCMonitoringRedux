@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/2yb4ai0n72nrsm2x/branch/master?retina=true)](https://ci.appveyor.com/project/littletoyrobots/eucmonitoringredux/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/2vqac71nlbma0vx2?svg=true)](https://ci.appveyor.com/project/littletoyrobots/eucmonitoringredux)
 
 # EUCMonitoringRedux
 
@@ -42,9 +42,7 @@ Note the Customer ID located in this same page, this is case senstitive.
 Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 ```
 
-NOTE: **xdbrokerprimary/xdbrokerfailover** should be set as the Citrix Cloud Connector, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
-
-NOTE: xdbrokerprimary/xdbrokerfailover should be set as the Citrix Cloud Connector, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
+NOTE: **XdServerBrokers/XdDesktopBrokers** should be set as the Citrix Cloud Connector, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
 
 #### InfluxDB
 

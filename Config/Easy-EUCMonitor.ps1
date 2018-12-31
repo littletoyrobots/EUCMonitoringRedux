@@ -1,52 +1,77 @@
-
-Import-Module EUCMonitoringRedux
-$TimeStamp = Get-InfluxTimestamp
-
 # This is for single-site configuration.  Its easiest to copy this file and 
 # edit the copy per site.   Do not comment out any of these lines.  We suggest
 # using fqdn for servernames, so any valid certificate checks associated will pass.
 
-
-# Citrix Apps and Desktops
+############################
+# Citrix Apps and Desktops #
+############################
+# These brokers can be either Delivery Controllers or Cloud Connectors, but not both.  
 $XdDesktopBrokers = $null   # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
 $XdServerBrokers = $null    # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
+# If Citrix Cloud, follow the Readme.md and then uncomment and alter this line. 
+# Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 
-# RDS Site coming in the future. 
+# Citrix Delivery Controllers
+$XdControllers = $null      # Put your Citrix delivery controllers here.
+# Citrix Cloud Connector
+$CCServers = $null          # Put your Citrix cloud connectors here.
 
-# Citrix ADCs
+#################################
+# RDS Site coming in the future #
+#################################
+
+#################
+# VMware Too... #
+#################
+
+###############
+# Citrix ADCs #
+###############
 # $ADCCred = (Get-Credential) # Uncomment this for testing. 
 
-$ADCUser = "nsroot" # Or whatever
+$ADCUser = "nsroot"         # Or whatever
 # Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -Path "C:\Monitoring\ADCcred.txt"
 $ADCPass = Get-Content -Path "C:\Monitoring\ADCcred.txt" | ConvertTo-SecureString
 $ADCCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ADCUser, $ADCPass
 
-$CitrixADCs = $null         #
-$CitrixADCGateways = $null  #
+$CitrixADCs = $null         # These would be your NSIPs
+$CitrixADCGateways = $null  # These would be your ADC Gateway IPs
 
-# Licensing Servers
-$RdsLicenseServers = $null  #
-$XdLicenseServers = $null   #
+#####################
+# Licensing Servers #
+#####################
+$RdsLicenseServers = $null  # Put your RDS license servers here.
+$XdLicenseServers = $null   # Put your Citrix license servers here. 
 
-# Common Microsoft Server groups
-$ADServers = $null          #
-$SQLServers = $null         #
-$AppVServers = $null        # 
+##################################
+# Common Microsoft Server groups #
+##################################
+$ADServers = $null          # Put your Domain Controllers here.
+$SQLServers = $null         # Put your SQL Servers here.
+$AppVServers = $null        # Put your AppV Servers here. 
 
-# Common Citrix Server groups.
+###############################
+# Common Citrix Server groups #
+###############################
+$XdControllers = $null      # Put your Citrix delivery controllers here.
+$CCServers = $null          # Put your Citrix cloud connectors here.
+
 $StoreFrontServers = $null  # E.g - "store1.domain.org", "store2.domain.org"
 $StoreFrontPaths = "/Citrix/StoreWeb"   # Can be multiple paths.  
 $DirectorServers = $null    # Put your director servers here.
-$XdControllers = $null      # Put your delivery controllers here.
+
 $PVSServers = $null         # Put your provisioning servers here.
 $WEMBrokers = $null         # Put your WEM brokers here.
 $UPSServers = $null         # Put your UPS servers here.
 $FASServers = $null         # Put your FAS servers here.
 
-# Citrix Cloud Connector
-$CCServers = $null          # Put your cloud connectors here.
+#########################################
+# End of easy implementation config.    #
+# Edit below this line with discretion. #
+#########################################
 
-
+Import-Module EUCMonitoringRedux
+$TimeStamp = Get-InfluxTimestamp
 
 # Workload
 if ($null -ne $XdDesktopBrokers) {
