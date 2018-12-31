@@ -8,13 +8,20 @@
 # These brokers can be either Delivery Controllers or Cloud Connectors, but not both.  
 $XdDesktopBrokers = $null   # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
 $XdServerBrokers = $null    # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
-# If Citrix Cloud, follow the Readme.md and then uncomment and alter this line. 
-# Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 
-# Citrix Delivery Controllers
-$XdControllers = $null      # Put your Citrix delivery controllers here.
-# Citrix Cloud Connector
-$CCServers = $null          # Put your Citrix cloud connectors here.
+# If On-Premises:
+$XdControllers = $null      # Put your Citrix delivery controllers here. e.g "ddc1.domain.com", "ddc2.domain.com"
+
+# If Citrix Cloud: 
+# 1 - Login to https://citrix.cloud.com
+# 2 - Navigate to "Identity and Access Management"
+# 3 - Click "API Access"
+# 4 - Enter a name for Secure Client and click Create Client.
+# 5 - Once Secure Client is created, download Secure Client Credentials file,
+#     and save to C:\Monitoring\secureclient.csv
+# 6 - Uncomment the following line. 
+# Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
+$CCServers = $null          # Put your Citrix cloud connectors here. e.g. "cc1.domain.com", "cc2.domain.com"
 
 #################################
 # RDS Site coming in the future #
@@ -100,7 +107,7 @@ if ($null -ne $XdServerBrokers) {
 
 # ! Placeholder for RDS 
 
-
+# ! Placeholder for VMware
 
 # Netscalers
 if ($null -ne $CitrixADCs) {
