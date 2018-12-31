@@ -60,8 +60,6 @@ $AppVServers = $null        # Put your AppV Servers here.
 ###############################
 # Common Citrix Server groups #
 ###############################
-$XdControllers = $null      # Put your Citrix delivery controllers here.
-$CCServers = $null          # Put your Citrix cloud connectors here.
 
 $StoreFrontServers = $null  # E.g - "store1.domain.org", "store2.domain.org"
 $StoreFrontPaths = "/Citrix/StoreWeb"   # Can be multiple paths.  
