@@ -37,6 +37,7 @@ function Get-CitrixADCsystemstat {
 
         }
         catch {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
 
 
         }
