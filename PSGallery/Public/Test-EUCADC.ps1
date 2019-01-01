@@ -16,13 +16,13 @@ Function Test-EUCADC {
    Returns all available stats for the ADC
    
    .PARAMETER SystemStats
-   Returns basic cpu/mem/load stats.
+   Includes basic cpu/mem/load type stats in returned objects
    
    .PARAMETER GatewayUsers
-   Returns VpnUsers/ IcaUsers / TotalUsers
+   Includes gateway user stats in returned objects
    
    .PARAMETER LoadBalance
-   Returns Load Balance stats
+   Includes Load Balance stats in returned objects
    
    .PARAMETER ContentSwitch
    Includes Content Switch / Content Route stats in returned objects
@@ -71,9 +71,9 @@ Function Test-EUCADC {
         [switch]$GatewayUsers,
         [switch]$LoadBalance,
         [switch]$ContentSwitch,
-        [switch]$Cache,
-        [switch]$Compression,
-        [switch]$SSLOffload,
+        [switch]$Cache, # Placeholder
+        [switch]$Compression, # Placeholder
+        [switch]$SSLOffload, # Placeholder
 
         [pscredential]$Credential
     )
