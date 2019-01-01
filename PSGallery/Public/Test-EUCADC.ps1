@@ -1,30 +1,79 @@
 Function Test-EUCADC {
+    <#
+   .SYNOPSIS
+   Return values on various l
+   
+   .DESCRIPTION
+   Long description
+   
+   .PARAMETER ADC
+   Hostname / IP address of ADC
+   
+   .PARAMETER CitrixADC
+   Connects to ADC as a Citrix ADC
+   
+   .PARAMETER All
+   Returns all available stats for the ADC
+   
+   .PARAMETER SystemStats
+   Returns basic cpu/mem/load stats.
+   
+   .PARAMETER GatewayUsers
+   Returns VpnUsers/ IcaUsers / TotalUsers
+   
+   .PARAMETER LoadBalance
+   Returns Load Balance stats
+   
+   .PARAMETER ContentSwitch
+   Includes Content Switch / Content Route stats in returned objects
+   
+   .PARAMETER Cache
+   Includes cache stats in returned objects
+   
+   .PARAMETER Compression
+   Includes compression stats in returned objects
+   
+   .PARAMETER SSLOffload
+   Includes ssl offload stats in returned objects
+   
+   .PARAMETER Credential
+   Parameter description
+   
+   .EXAMPLE
+   An example
+   
+   .NOTES
+   Current Version:    1.0
+   Creation Date:      2019/01/01
+
+   .CHANGE CONTROL
+   Name                 Version         Date            Change Detail
+   Adam Yarborough      1.0             2019/01/01      Function Creation
+   #>
    
     [cmdletbinding()]
     Param(
         [Parameter(ValueFromPipeline, Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]$ADC, #hard coded maybe OK
+        #[string]$ADC, #hard coded maybe OK
         
         # Will return Netscaler information
-        [switch]$CitrixADC,
+        [string[]]$CitrixADC,
+
+        [string[]]$BarracudaADC,
+        # Return all stats
         [switch]$All, 
 
-        [switch]$System,
-        # Load Balancing
-        # Caching
-        # Compression
-        # SSL Offloading
-        # Content Switching
-        # WAN Optimize?
+        # Mainly for 
+        [switch]$SystemStats,
+
+        # Mainly for gateways
         [switch]$GatewayUsers,
         [switch]$LoadBalance,
         [switch]$ContentSwitch,
         [switch]$Cache,
         [switch]$Compression,
         [switch]$SSLOffload,
-        [switch]$ContentRoute,
-   
 
         [pscredential]$Credential
     )
@@ -37,7 +86,7 @@ Function Test-EUCADC {
     Process { 
         $Results = @()
 
-        if ($CitrixADC) {
+        foreach ($ADC in $CitrixADC) {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connect Citrix ADC Session"
             $ADCSession = Connect-CitrixADC -ADC $ADC -Credential $Credential  
 
@@ -66,9 +115,15 @@ Function Test-EUCADC {
                     $Results += Get-CitrixADCcsvserver -ADCSession $ADCSession
                 }
 
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disconnect ADC Session"
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disconnect Citrix ADC Session"
                 Disconnect-CitrixADC -ADCSession $ADCSession
             }
+        }
+
+        foreach ($ADC in $BarracudaADC) {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connect Barracuda ADC Session"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Not yet implemented"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disconnect Barracuda ADC Session"
         }
         
         if ($Results.Count -gt 0) {

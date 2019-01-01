@@ -25,8 +25,7 @@ Test-EUCWorkload @XdServerParams | ConvertTo-InfluxLineProtocol -Timestamp $Time
 
 # Netscalers
 $ADCParams = @{
-    ADC           = $null; # Example value = "10.1.2.3","10.1.2.4"
-    CitrixADC     = $true;
+    CitrixADC     = $null;
     SystemStats   = $true;
     GatewayUsers  = $false;
     LoadBalance   = $false;
@@ -41,8 +40,7 @@ Test-EUCADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 # Netscaler Gateways, now called Citrix ADC Gateway
 $ADCCred = (Get-Credential) # This won't work.
 $ADCParams = @{
-    ADC           = $null; # Example value = "10.1.2.5"
-    CitrixADC     = $true;
+    CitrixADC     = $null; # Example value = "10.1.2.5"
     SystemStats   = $false;
     GatewayUsers  = $true;
     LoadBalance   = $true;

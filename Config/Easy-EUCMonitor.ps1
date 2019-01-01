@@ -34,15 +34,21 @@ $CCServers = $null          # Put your Citrix cloud connectors here. e.g. "cc1.d
 ###############
 # Citrix ADCs #
 ###############
+
+# Here's a simple way to save a password without leaving it in plaintext.  There are surely better ways,
+# and you should use them. 
+# 
+# Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -Path "C:\Monitoring\ADCcred.txt"
+# 
+# Then uncomment the following three lines
+# $ADCUser = "nsroot"         # Or whatever
+# $ADCPass = Get-Content -Path "C:\Monitoring\ADCcred.txt" | ConvertTo-SecureString
+# $ADCCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ADCUser, $ADCPass
+
 # $ADCCred = (Get-Credential) # Uncomment this for testing. 
 
-$ADCUser = "nsroot"         # Or whatever
-# Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -Path "C:\Monitoring\ADCcred.txt"
-$ADCPass = Get-Content -Path "C:\Monitoring\ADCcred.txt" | ConvertTo-SecureString
-$ADCCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ADCUser, $ADCPass
-
-$CitrixADCs = $null         # These would be your NSIPs
-$CitrixADCGateways = $null  # These would be your ADC Gateway IPs
+$CitrixADCs = $null         # These would be your NSIPs, needs $ADCCred defined
+$CitrixADCGateways = $null  # These would be your ADC Gateway IPs, $needs ADCCred defined
 
 #####################
 # Licensing Servers #
@@ -114,8 +120,7 @@ if ($null -ne $XdServerBrokers) {
 # Netscalers
 if ($null -ne $CitrixADCs) {
     $ADCParams = @{
-        ADC           = $null; # Example value = "10.1.2.3","10.1.2.4"
-        CitrixADC     = $CitrixADCs;
+        CitrixADC     = $CitrixADCs; # Example value = "10.1.2.3","10.1.2.4"
         SystemStats   = $true;
         GatewayUsers  = $false;
         LoadBalance   = $false;
@@ -132,8 +137,7 @@ if ($null -ne $CitrixADCs) {
 
 if ($null -ne $CitrixADCGateways) {
     $ADCParams = @{
-        ADC           = $null; # Example value = "10.1.2.5"
-        CitrixADC     = $CitrixADCGateways;
+        CitrixADC     = $CitrixADCGateways; # Example value = "10.1.2.5"
         SystemStats   = $false;
         GatewayUsers  = $true;
         LoadBalance   = $true;
