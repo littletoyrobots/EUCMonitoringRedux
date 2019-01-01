@@ -60,7 +60,6 @@ $AppVServers = $null        # Put your AppV Servers here.
 ###############################
 # Common Citrix Server groups #
 ###############################
-
 $StoreFrontServers = $null  # E.g - "store1.domain.org", "store2.domain.org"
 $StoreFrontPaths = "/Citrix/StoreWeb"   # Can be multiple paths.  
 $DirectorServers = $null    # Put your director servers here.
@@ -75,8 +74,13 @@ $FASServers = $null         # Put your FAS servers here.
 # Edit below this line with discretion. #
 #########################################
 
-Import-Module EUCMonitoringRedux
+Import-Module C:\Monitoring\EUCMonitoring\PSGallery\EUCMonitoringRedux.psm1
+# Import-Module EUCMonitoringRedux 
 $TimeStamp = Get-InfluxTimestamp
+
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    throw "You must be administrator in order to execute this script"
+}
 
 # Workload
 if ($null -ne $XdDesktopBrokers) {

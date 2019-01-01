@@ -25,7 +25,7 @@ Function Get-RDSLicense {
 
                 if ("" -eq $LicenseType) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Querying available licenses"
-                    $LicenseType = Get-WmiObject Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
+                    $LicenseType = Get-CimInstance -ClassName  Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
                         Where-Object TypeAndModel -NotLike "Built-in TS Per Device Cal" | `
                         Select-Object -ExpandProperty TypeAndModel -Unique -ErrorAction Stop
                 }
@@ -38,7 +38,7 @@ Function Get-RDSLicense {
                     $TotalLicenses = 0
                     
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting license type $Type"
-                    $LicResults = Get-WmiObject Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
+                    $LicResults = Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
                         Where-Object TypeAndModel -eq $Type | `
                         Select-Object TypeAndModel, IssuedLicenses, AvailableLicenses, TotalLicenses -ErrorAction Stop
          
