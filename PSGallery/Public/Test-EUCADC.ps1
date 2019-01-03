@@ -1,56 +1,52 @@
 Function Test-EUCADC {
     <#
-   .SYNOPSIS
-   Return values on various l
-   
-   .DESCRIPTION
-   Long description
-   
-   .PARAMETER ADC
-   Hostname / IP address of ADC
-   
-   .PARAMETER CitrixADC
-   Connects to ADC as a Citrix ADC
-   
-   .PARAMETER All
-   Returns all available stats for the ADC
-   
-   .PARAMETER SystemStats
-   Includes basic cpu/mem/load type stats in returned objects
-   
-   .PARAMETER GatewayUsers
-   Includes gateway user stats in returned objects
-   
-   .PARAMETER LoadBalance
-   Includes Load Balance stats in returned objects
-   
-   .PARAMETER ContentSwitch
-   Includes Content Switch / Content Route stats in returned objects
-   
-   .PARAMETER Cache
-   Includes cache stats in returned objects
-   
-   .PARAMETER Compression
-   Includes compression stats in returned objects
-   
-   .PARAMETER SSLOffload
-   Includes ssl offload stats in returned objects
-   
-   .PARAMETER Credential
-   Parameter description
-   
-   .EXAMPLE
-   An example
-   
-   .NOTES
-   Current Version:    1.0
-   Creation Date:      2019/01/01
+    .SYNOPSIS
+    Return values on various l
+    
+    .DESCRIPTION
+    Long description
+    
+    .PARAMETER CitrixADC
+    Hostname / IP of the CitrixADCs
+    
+    .PARAMETER All
+    Returns all available stats for the ADC
+    
+    .PARAMETER SystemStats
+    Includes basic cpu/mem/load type stats in returned objects
+    
+    .PARAMETER GatewayUsers
+    Includes gateway user stats in returned objects
+    
+    .PARAMETER LoadBalance
+    Includes Load Balance stats in returned objects
+    
+    .PARAMETER ContentSwitch
+    Includes Content Switch / Content Route stats in returned objects
+    
+    .PARAMETER Cache
+    Includes cache stats in returned objects
+    
+    .PARAMETER Compression
+    Includes compression stats in returned objects
+    
+    .PARAMETER SSLOffload
+    Includes ssl offload stats in returned objects
+    
+    .PARAMETER Credential
+    Parameter description
+    
+    .EXAMPLE
+    An example
+    
+    .NOTES
+    Current Version:    1.0
+    Creation Date:      2019/01/01
 
-   .CHANGE CONTROL
-   Name                 Version         Date            Change Detail
-   Adam Yarborough      1.0             2019/01/01      Function Creation
-   #>
-   
+    .CHANGE CONTROL
+    Name                 Version         Date            Change Detail
+    Adam Yarborough      1.0             2019/01/01      Function Creation
+    #>
     [cmdletbinding()]
     Param(
         [Parameter(ValueFromPipeline, Mandatory = $true)]

@@ -38,7 +38,7 @@ $CCServers = $null          # Put your Citrix cloud connectors here. e.g. "cc1.d
 # Here's a simple way to save a password without leaving it in plaintext.  There are surely better ways,
 # and you should use them. 
 # 
-# Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -Path "C:\Monitoring\ADCcred.txt"
+# Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -FilePath "C:\Monitoring\ADCcred.txt"
 # 
 # Then uncomment the following three lines
 # $ADCUser = "nsroot"         # Or whatever
@@ -83,6 +83,8 @@ $FASServers = $null         # Put your FAS servers here.
 Import-Module C:\Monitoring\EUCMonitoring\PSGallery\EUCMonitoringRedux.psm1
 # Import-Module EUCMonitoringRedux 
 $TimeStamp = Get-InfluxTimestamp
+$Global:ProgressPreference = 'SilentlyContinue' # Stop that little popup.  
+$WarningPreference = 'SilentlyContinue' # Telegraf doesn't differientiate between different powershell streams
 
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     throw "You must be administrator in order to execute this script"

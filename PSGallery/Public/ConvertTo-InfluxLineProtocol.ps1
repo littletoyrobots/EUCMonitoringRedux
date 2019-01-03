@@ -73,7 +73,6 @@ Function ConvertTo-InfluxLineProtocol {
 
     End {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
-
     }
 }
 

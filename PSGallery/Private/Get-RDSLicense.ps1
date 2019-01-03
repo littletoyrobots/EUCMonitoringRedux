@@ -1,11 +1,43 @@
 Function Get-RDSLicense {
-   
+    <#
+    .SYNOPSIS
+    Returns RDS Licensing info
+    
+    .DESCRIPTION
+    Returns 
+    
+    .PARAMETER ComputerName
+    Gets the TSLicenseKeyPack on the specified computers. 
+
+    Type the NetBIOS name, an IP Address, or a fully qualified domain name (FQDN) of a remote computer.
+    
+    .PARAMETER LicenseType
+    The 'TypeAndModel' of the license pack.  If specified, will return only the licenses of that TypeAndModel.
+    If unspecified, includes all but "Built-in TS Per Device Cal"
+    
+    .OUTPUTS
+    System.Management.Automation.PSCustomObject
+
+    .EXAMPLE
+    Get-RDSLicense -ComputerName "rdslic1", "rdslic2"
+
+    .EXAMPLE
+    Get-RDSLicense -ComputerName "rdslic1.domain.org" -LicenseType "RDS Per User CAL"
+    
+    .NOTES
+    Current Version:    1.0
+    Creation Date:      2019/01/01
+
+    .CHANGE CONTROL
+    Name                 Version         Date            Change Detail
+    Adam Yarborough      1.0             2019/01/01      Function Creation
+    #>
+    
     [cmdletbinding()]
     Param(
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [string[]]$ComputerName,
-
         
         [Parameter(ValueFromPipeline, Mandatory = $false)]
         [string[]]$LicenseType = ""

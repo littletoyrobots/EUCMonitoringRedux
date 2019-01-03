@@ -1,21 +1,23 @@
 Function Get-XdLicense {
     <#
     .SYNOPSIS
-Returns some simple stats on a License Server
-    
+    Returns some simple stats on a License Server
+
     .DESCRIPTION
-Returns some simple stats on a License Server
+    Returns some simple stats on a License Server
     
     .PARAMETER ComputerName
-Target License server to grab information from.
+    Target License server to grab information from.
+
     .PARAMETER LicenseType
-Citrix License Type, commonly XDT / MPS
+    Citrix License Type, commonly XDT / MPS
 
     
     .NOTES
     .CHANGE CONTROL
     Name                    Version         Date                Change Detail
-    Adam Yarborough         1.0             20/06/2018          Function Creation
+    Adam Yarborough         1.0             2018/06/20          Function Creation
+    Adam Yarborough         1.1             2019/01/01          Update return format
     #>
     [CmdletBinding()]
     Param(

@@ -1,4 +1,50 @@
 Function Get-XdWorkerHealth {
+    <#
+    .SYNOPSIS
+    Short description
+    
+    .DESCRIPTION
+    Long description
+    
+    .PARAMETER Broker
+    Parameter description
+    
+    .PARAMETER Workload
+    Parameter description
+    
+    .PARAMETER SiteName
+    Parameter description
+    
+    .PARAMETER ZoneName
+    Parameter description
+    
+    .PARAMETER CatalogName
+    Parameter description
+    
+    .PARAMETER DeliveryGroupName
+    Parameter description
+    
+    .PARAMETER Machines
+    Parameter description
+    
+    .PARAMETER BootThreshold
+    Parameter description
+    
+    .PARAMETER HighLoad
+    Parameter description
+    
+    .EXAMPLE
+    An example
+    
+    .NOTES
+    Current Version:    1.0
+    Creation Date:      2019/01/01
+
+    .CHANGE CONTROL
+    Name                 Version         Date            Change Detail
+    Adam Yarborough      1.0             2019/01/01      Function Creation
+    #>
+    
     [cmdletbinding()]
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]

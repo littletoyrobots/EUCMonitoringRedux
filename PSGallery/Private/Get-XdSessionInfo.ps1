@@ -1,21 +1,25 @@
 Function Get-XdSessionInfo {
     <#   
-.SYNOPSIS   
+    .SYNOPSIS   
     Returns Stats of the XenDesktop Sessions
-.DESCRIPTION 
+    
+    .DESCRIPTION 
     Returns Stats of the XenDesktop Sessions
-.PARAMETER Broker 
+    
+    .PARAMETER Broker 
     XenDesktop Broker to use for the checks
 
-.NOTES
+    .NOTES
     Current Version:        1.0
     Creation Date:          29/03/2018
-.CHANGE CONTROL
+    
+    .CHANGE CONTROL
     Name                    Version         Date                Change Detail
     David Brett             1.0             29/03/2018          Function Creation
     Adam Yarborough         1.1             07/06/2018          Update to new object model
     Adam Yarborough         1.2             20/06/2018          Session Information
-.EXAMPLE
+    
+    .EXAMPLE
     None Required
 #>
     Param (
