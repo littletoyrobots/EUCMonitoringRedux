@@ -1,4 +1,51 @@
 function Test-EUCServer {
+    <#
+    .SYNOPSIS
+    Short description
+    
+    .DESCRIPTION
+    Long description
+    
+    .PARAMETER Series
+    Parameter description
+    
+    .PARAMETER ComputerName
+    Parameter description
+    
+    .PARAMETER Ports
+    Parameter description
+    
+    .PARAMETER Services
+    Parameter description
+    
+    .PARAMETER HTTPPath
+    Parameter description
+    
+    .PARAMETER HTTPPort
+    Parameter description
+    
+    .PARAMETER HTTPSPath
+    Parameter description
+    
+    .PARAMETER HTTPSPort
+    Parameter description
+    
+    .PARAMETER ValidCertPort
+    Parameter description
+    
+    .PARAMETER Advanced
+    Parameter description
+    
+    .PARAMETER Credential
+    Currently a placeholder, but will be to run tests with different permissions. 
+    
+    .EXAMPLE
+    An example
+    
+    .NOTES
+    General notes
+    #>
+    
     [CmdletBinding()]
     param (
         # Specifies the name of the series to run against. 
@@ -23,10 +70,6 @@ function Test-EUCServer {
         [string[]]$HTTPSPath,
         [int]$HTTPSPort = 443,
         [int[]]$ValidCertPort,
-      
-        
-        # Specifies the level of detail being returned.  Basic by default. 
-        [switch]$Advanced,
 
         [Parameter(ValueFromPipeline, Mandatory = $false)]
         [pscredential]$Credential

@@ -160,6 +160,14 @@ if ($null -ne $RdsLicenseServers) {
         XdLicense    = $false
     }
     Test-EUCLicense @RDSLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+
+    $RDSLicenseParams = @{
+        Series       = "RdsLicensing";
+        ComputerName = $RdsLicenseServers;
+        Ports        = 7279, 27000, 8082, 8083;
+        Services     = "TermService", "TermServLicensing", "UmRdpService"
+    }
+    Test-EUCServer @RdsLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
 
 if ($null -ne $XdLicenseServers) {
@@ -169,6 +177,14 @@ if ($null -ne $XdLicenseServers) {
         XdLicense    = $true
     }
     Test-EUCLicense @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    
+    $XdLicenseParams = @{
+        Series       = "XdLicense";
+        ComputerName = $XdLicenseServers;
+        Ports        = 7279, 27000, 8082, 8083;
+        Services     = "Citrix Licensing", "CitrixWebServicesforLicensing"
+    }
+    Test-EUCServer @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
 
 # Server checks.  
