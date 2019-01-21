@@ -18,7 +18,7 @@ function Test-EUCWorkload {
         # Default values for XdDesktop and XdServer Tests. 
         [switch]$WorkerHealth,
         [int]$BootThreshold = 7,
-        [int]$HighLoad = 8000,
+        [int]$LoadThreshold = 8000,
 
         # Will return extended session information based on site, catalog, delivery group, etc
         #    [switch]$SessionInfo,
@@ -62,7 +62,7 @@ function Test-EUCWorkload {
                         #    DurationLength  = $DurationLength;
                         WorkerHealth  = $WorkerHealth;
                         BootThreshold = $BootThreshold;
-                        HighLoad      = $HighLoad;
+                        LoadThreshold = $LoadThreshold;
                         All           = $All
                     }
                     $Results += Test-XdWorkload @params
@@ -92,7 +92,7 @@ function Test-EUCWorkload {
                             #    DurationLength  = $DurationLength;
                             WorkerHealth  = $WorkerHealth;
                             BootThreshold = $BootThreshold;
-                            HighLoad      = $HighLoad;
+                            LoadThreshold = $LoadThreshold;
                             All           = $All
                         }
                         $Results += Test-XdWorkload @params

@@ -98,7 +98,7 @@ if ($null -ne $XdDesktopBrokers) {
         XdServer      = $false;
         WorkerHealth  = $true;
         BootThreshold = 7;
-        Highload      = 8000
+        LoadThreshold = 8000;
     }
     Test-EUCWorkload @XdDesktopParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -110,7 +110,7 @@ if ($null -ne $XdServerBrokers) {
         XdServer      = $true;
         WorkerHealth  = $true;
         BootThreshold = 7;
-        Highload      = 8000
+        LoadThreshold = 8000    
     }
     Test-EUCWorkload @XdServerParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }

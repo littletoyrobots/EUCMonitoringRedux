@@ -11,7 +11,7 @@ Function Test-XdWorkload {
         
         [switch]$WorkerHealth,
         [int]$BootThreshold = 7,
-        [int]$HighLoad = 8000,
+        [int]$LoadThreshold = 8000,
 
         [switch]$All
     )
@@ -47,8 +47,6 @@ Function Test-XdWorkload {
         $Results = @()
 
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Querying Delivery Groups for type $Workload"
-        $SiteName = (Get-BrokerSite -AdminAddress $Broker).Name
-        $ZoneNames = (Get-ConfigZone -AdminAddress $Broker).Name
 
         if ($Workload -match "Server") {
             $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "MultiSession"} 
@@ -61,6 +59,9 @@ Function Test-XdWorkload {
             throw "Unable to determine the workload type."
         }
         try { 
+            $SiteName = (Get-BrokerSite -AdminAddress $Broker).Name
+            $ZoneNames = (Get-ConfigZone -AdminAddress $Broker).Name
+
             foreach ($ZoneName in $ZoneNames) {
                 $CatalogNames = (Get-BrokerCatalog -AdminAddress $Broker -ZoneName $ZoneName).Name
                 foreach ($CatalogName in $CatalogNames) {
@@ -144,6 +145,7 @@ Function Test-XdWorkload {
                                 ActiveSessions       = $ActiveSessions
                                 IdleSessions         = $IdleSessions
                                 DisconnectedSessions = $DisconnectedSessions    
+                                OtherSessions        = $TotalSessions - ($ActiveSessions + $IdleSessions + $DisconnectedSessions)
                             }
                                 
                             if ($WorkerHealth -or $All) {
@@ -157,7 +159,7 @@ Function Test-XdWorkload {
                                     DeliveryGroupName = $DeliveryGroupName;
                                     Machines          = $Machines;
                                     BootThreshold     = $BootThreshold;
-                                    HighLoad          = $HighLoad
+                                    LoadThreshold     = $LoadThreshold
                                 }
                                 $Results += Get-XdWorkerHealth @Params
                                 #Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Not fully implemented"
@@ -190,6 +192,12 @@ Function Test-XdWorkload {
         catch {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Error Occured"
             Write-Warning "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+
+            if ($null -eq $SiteName) { $SiteName = "ERROR" }
+            if ($null -eq $ZoneName) { $ZoneName = "ERROR"}
+            if ($null -eq $CatalogName) { $CatalogName = "ERROR" }
+            if ($null -eq $DeliveryGroupName) { $DeliveryGroupName = "ERROR" }
+
             $Results += [PSCustomObject]@{
                 Series               = "XdWorker"
                 Type                 = $Workload
@@ -211,6 +219,7 @@ Function Test-XdWorkload {
                 ActiveSessions       = -1
                 IdleSessions         = -1
                 DisconnectedSessions = -1    
+                OtherSessions        = -1
             }
         }
 

@@ -30,7 +30,7 @@ Function Get-XdWorkerHealth {
     .PARAMETER BootThreshold
     Parameter description
     
-    .PARAMETER HighLoad
+    .PARAMETER LoadThreshold
     Parameter description
     
     .EXAMPLE
@@ -49,6 +49,7 @@ Function Get-XdWorkerHealth {
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()][string]$Broker, 
+        # This section is for returned objects
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]$Workload, 
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]$SiteName,
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]$ZoneName,
@@ -57,9 +58,11 @@ Function Get-XdWorkerHealth {
 
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]$Machines, 
-
+        # These are the tests.  If set to -1, then tests skipped. 
         [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$BootThreshold,
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$HighLoad
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$LoadThreshold,
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$DiskSpaceThreshold,
+        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$DiskQueueThreshold
     )
 
     Begin { 
@@ -77,49 +80,79 @@ Function Get-XdWorkerHealth {
         $Scriptblock = {
             Param (
                 [string]$Machine,
-                [string]$BootThreshold,
-                [string]$HighLoad
+                [string]$BootThreshold = -1,
+                [string]$LoadThreshold = -1,
+                
+                [string]$DiskSpaceThreshold = -1,
+                [string]$DiskQueueThreshold = -1
             )
 
             $Errors = @()
             $Status = "Not Run"
 
-            # Test for Uptime of Machine
-            [regex]$rx = "\d\.\d$"
-            $data = test-wsman $Machine
-            $rx.match($data.ProductVersion)
-            if ($rx.match($data.ProductVersion).value -eq '3.0') {
-                $os = Get-Ciminstance -ClassName win32_operatingsystem -ComputerName $Machine -ErrorAction Continue
-            }
-            else {
-                $opt = New-CimSessionOption -Protocol Dcom
-                $Session = new-cimsession -ComputerName $Machine -SessionOption $opt
-                $OS = $Session | Get-Ciminstance -ClassName win32_operatingsystem
-            }
-            $Uptime = $OS.LocalDateTime - $OS.LastBootUpTime
-            $UptimeDays = $Uptime.Days
+            $HighUptime = $false
+            $HighLoad = $false
+            $High
+            
+            try { 
+                # Little setup for the tests that need it.  Provides $OS and $DISK
+                if ((-1 -ne $BootThreshold) -or (-1 -ne $DiskSpaceThreshold) -or (-1 -ne $DiskQueueThreshold)) {
+                    [regex]$rx = "\d\.\d$"
+                    $data = test-wsman $Machine
+                    $rx.match($data.ProductVersion)
+                    if ($rx.match($data.ProductVersion).value -eq '3.0') {
+                        $OS = Get-Ciminstance -ClassName win32_operatingsystem -ComputerName $Machine -ErrorAction Continue
+                        $Disk = Get-Ciminstance -ClassName win32_logicaldisk -ComputerName $Machine -ErrorAction Continue
+                    }
+                    else {
+                        $opt = New-CimSessionOption -Protocol Dcom
+                        $Session = new-cimsession -ComputerName $Machine -SessionOption $opt
+                        $OS = $Session | Get-Ciminstance -ClassName win32_operatingsystem
+                        $Disk = $Session | Get-Ciminstance -ClassName win32_logicaldisk
+                    }
 
-            If ($UptimeDays -lt [int]$BootThreshold) {
-                Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
-                $Load = Get-BrokerMachine  -AdminAddress $Broker -HostedMachineName $Machine -Property LoadIndex
-                $CurrentLoad = $Load.LoadIndex
-                If ($CurrentLoad -lt $HighLoad) {
+
+                }
+
+                # Test for Uptime of Machine
+                if (-1 -ne $BootThreshold) {
+                    $Uptime = $OS.LocalDateTime - $OS.LastBootUpTime
+                    $UptimeDays = $Uptime.Days
+
+                    If ($UptimeDays -ge [int]$BootThreshold) {
+                        $Status = "HighUptime"
+                        $errors += "$Machine has not been booted in $UptimeDays days"
+                    }
+                }
+
+                # Load PSSnapin if checking load or registration
+                # Test for Load of machine
+
+                if (-1 -ne $LoadThreshold) {
+                    Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
+                    $Load = Get-BrokerMachine  -AdminAddress $Broker -HostedMachineName $Machine -Property LoadIndex
+                    $CurrentLoad = $Load.LoadIndex
+                    If ($CurrentLoad -ge $LoadThreshold) {
+                        $Status = "Unhealthy"
+                        $errors += "$Machine has a high load of $CurrentLoad"
+                    }
+                }
+
+                # If status not changed, we're good.  
+                if ($Status -eq "Not Run") { 
                     $Status = "Healthy"
                 }
-                else {
-                    $Status = "Unhealthy"
-                    $errors += "$Machine has a high load of $CurrentLoad"
-                }
             }
-            else {
-                $Status = "Unhealthy"
-                $errors += "$Machine has not been booted in $UptimeDays days"
+            catch {
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Error checking worker health on $Machine"
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+                $Status = "ERROR"
             }
 
             return [PSCustomObject]@{
-                'Server'   = $Machine
-                'Services' = $Status
-                'Errors'   = $Errors
+                'Host'   = $Machine
+                'Status' = $Status
+                #    'Errors'   = $Errors
             }
         }
 
@@ -128,8 +161,7 @@ Function Get-XdWorkerHealth {
 
         $Runspaces = @()
         $RunspaceResults = @()
-        $Healthy = 0
-        $Unhealthy = 0
+       
 
         foreach ($Machine in $Machines) {
             $MachineName = $Machine.HostedMachineName
@@ -137,7 +169,7 @@ Function Get-XdWorkerHealth {
             $null = $Runspace.AddScript($Scriptblock)
             $null = $Runspace.AddArgument($MachineName)
             $null = $Runspace.AddArgument($BootThreshold)
-            $null = $Runspace.AddArgument($HighLoad)
+            $null = $Runspace.AddArgument($LoadThreshold)
             $Runspace.RunspacePool = $pool
             $Runspaces += [PSCustomObject]@{ Pipe = $Runspace; Status = $Runspace.BeginInvoke() }
         }
@@ -151,9 +183,21 @@ Function Get-XdWorkerHealth {
         }
 
         # Parsing Results
-        foreach ($Result in $RunspaceResults.Services) {
+        $Healthy = 0
+        $Unhealthy = 0
+        $HighLoad = 0
+        $HighUptime = 0 
+        $HighDiskUsage = 0
+        $HighDiskQueue = 0
+
+        foreach ($Result in $RunspaceResults.Status) {
             if ($Result -eq "Healthy") { $Healthy++ }
-            else { $Unhealthy++ }
+            else {
+                $Unhealthy++ 
+                if ($Result.HighLoad) { $LoadThreshold++ }
+                if ($Result.HighUptime) { $HighUptime++ }
+
+            }
         }
 
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Healthy: $Healthy, Unhealthy: $Unhealthy"
@@ -167,6 +211,9 @@ Function Get-XdWorkerHealth {
             DeliveryGroupName = $DeliveryGroupName
             Healthy           = $Healthy
             Unhealthy         = $Unhealthy                    
+            HighLoad          = $HighLoad
+            HighUptime        = $HighUptime
+            
         }
         <#
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disposing of Runspace pool"
