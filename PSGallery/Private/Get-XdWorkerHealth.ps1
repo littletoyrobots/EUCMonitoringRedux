@@ -217,11 +217,11 @@ Function Get-XdWorkerHealth {
         $HighDiskSpaceUsage = 0
         $HighDiskQueue = 0
 
-        foreach ($Result in $RunspaceResults.Status) {
-            if ($Result -eq "Healthy") { $Healthy++ }
+        foreach ($Result in $RunspaceResults) {
+            if ($Result.Status -eq "Healthy") { $Healthy++ }
             else {
                 $Unhealthy++ 
-                if ($Result.HighLoad) { $LoadThreshold++ }
+                if ($Result.HighLoad) { $HighLoad++ }
                 if ($Result.HighUptime) { $HighUptime++ }
                 if ($Result.HighDiskSpaceUsage) { $HighDiskSpaceUsage++ }
                 if ($Result.HighDiskQueue) { $HighDiskQueue++ }

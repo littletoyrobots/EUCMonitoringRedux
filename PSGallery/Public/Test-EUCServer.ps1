@@ -101,6 +101,7 @@ function Test-EUCServer {
                     if ($null -eq $Connected.RemoteAddress) {
                         throw "Name resolution of $($Connected.ComputerName) failed"
                     }
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
                     $Result.Status = "DOWN"
                     $Result.State = 0
                     foreach ($Port in $Ports) {
@@ -121,6 +122,7 @@ function Test-EUCServer {
                 }
                 
                 else {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                     # Ports
                     foreach ($Port in $Ports) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer Port $Port"
@@ -162,9 +164,11 @@ function Test-EUCServer {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] HTTP Test $url"
                     
                         if (Test-Url $Url) {
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                             $Result | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 1 
                         }
                         else {
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Result | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 0 
@@ -176,9 +180,11 @@ function Test-EUCServer {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] HTTPS Test $Url"
                     
                         if (Test-Url $Url) {
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                             $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 1 
                         }
                         else {
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 
@@ -189,9 +195,11 @@ function Test-EUCServer {
                     foreach ($Port in $ValidCertPort) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Valid Cert Port $Url"
                         if (Test-ValidCert -ComputerName $Computer -Port $Port) {
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                             $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 1 
                         }
                         else {
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 0 
