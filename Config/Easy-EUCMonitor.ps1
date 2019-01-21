@@ -8,7 +8,7 @@ $ErrorLog = "c:\Monitoring\ErrorLog.txt"
 # Citrix Apps and Desktops #
 ############################
 # These brokers can be either Delivery Controllers or Cloud Connectors, but not both.  
-$XdBrokers = $null   # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
+$XdBrokers = $null          # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
 
 # If On-Premises:
 $XdControllers = $null      # Put your Citrix delivery controllers here. e.g "ddc1.domain.com", "ddc2.domain.com"
@@ -79,6 +79,7 @@ $FASServers = $null         # Put your FAS servers here.
 #########################################
 # End of easy implementation config.    #
 # Edit below this line with discretion. #
+# Or not, whatever, I'm just a comment. #
 #########################################
 
 Import-Module C:\Monitoring\EUCMonitoring\PSGallery\EUCMonitoringRedux.psm1
@@ -91,19 +92,21 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     throw "You must be administrator in order to execute this script"
 }
 
-# Workload.  If you have multiple sites, just copy this section and invoke using
+# If you have multiple sites, just copy this section and invoke using
 # the brokers associated with each site.  
+
+# Workload session
 if ($null -ne $XdBrokers) {
     # Test for Desktop Sessions
     $XdDesktopParams = @{
         ComputerName       = $XdBrokers; # Put your brokers here. 
         XdDesktop          = $true;
         XdServer           = $false;
-        WorkerHealth       = $true;
-        BootThreshold      = 7; # 7 days
+        WorkerHealth       = $true; # 
+        BootThreshold      = 30; # 30 days for desktops
         LoadThreshold      = 8000; # 8000 load is roughly 80% utilized
-        DiskSpaceThreshold = 80; # 80% Usage
-        DiskQueueThreshold = 5  # Disk Queue of 7
+        DiskSpaceThreshold = 80; # 80% Disk Usage
+        DiskQueueThreshold = 5          # Disk Queue of 5 or greater
     }
     Test-EUCWorkload @XdDesktopParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 
@@ -113,7 +116,7 @@ if ($null -ne $XdBrokers) {
         XdDesktop          = $false;
         XdServer           = $true;
         WorkerHealth       = $true;
-        BootThreshold      = 7;
+        BootThreshold      = 7; # 7 days for servers
         LoadThreshold      = 8000;
         DiskSpaceThreshold = 80;
         DiskQueueThreshold = 5
@@ -129,10 +132,10 @@ if ($null -ne $XdBrokers) {
 if ($null -ne $CitrixADCs) {
     $ADCParams = @{
         CitrixADC     = $CitrixADCs; # Example value = "10.1.2.3","10.1.2.4"
-        SystemStats   = $true;
-        GatewayUsers  = $false;
-        LoadBalance   = $false;
-        ContentSwitch = $false;
+        SystemStats   = $true; # Stuff like CPU, MEM,.. 
+        GatewayUsers  = $false; # Total Users, ICA Users, VPN Users
+        LoadBalance   = $false; # LB vServers
+        ContentSwitch = $false; # CS vServers
         Cache         = $false; # Not yet implemented
         Compression   = $false; # Not yet implementeed
         SSLOffload    = $false; # Not yet implemented

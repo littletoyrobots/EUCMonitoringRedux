@@ -94,6 +94,7 @@ Function Get-XdWorkerHealth {
             $HighLoad = $false
             $HighDiskSpaceUsage = $false
             $HighDiskQueue = $false
+            $Unregistered = $false
             
             try { 
                 # Little setup for the tests that need it.  Provides $OS and $DISK
@@ -111,8 +112,6 @@ Function Get-XdWorkerHealth {
                         $OS = $Session | Get-Ciminstance -ClassName win32_operatingsystem
                         $Disk = $Session | Get-Ciminstance -ClassName win32_logicaldisk
                     }
-
-
                 }
 
                 # Test for Uptime of Machine
@@ -148,18 +147,20 @@ Function Get-XdWorkerHealth {
 
                 # Load PSSnapin if checking load or registration
                 # Test for Load of machine
-
+                Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
                 if (-1 -ne $LoadThreshold) {
                     Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
-                    $Load = Get-BrokerMachine  -AdminAddress $Broker -HostedMachineName $Machine -Property LoadIndex
-                    $CurrentLoad = $Load.LoadIndex
-                    If ($CurrentLoad -ge [int]$LoadThreshold) {
+                    $Load = Get-BrokerMachine  -AdminAddress $Broker -HostedMachineName $Machine | Select-Object -ExpandProperty LoadIndex
+                    If ($Load -ge [int]$LoadThreshold) {
                         $Status = "Unhealthy"
                         $HighLoad = $true
                         $errors += "$Machine has a high load of $CurrentLoad"
                     }
                 }
 
+                $Registered = get-brokermachine -AdminAddress $Broker -Property RegistrationState | Select-Object -ExpandProperty RegistrationState
+                if (-not $Registered) { $Unregistered = $true }
+            
                 # If status not changed, we're good.  
                 if ($Status -eq "Not Run") { 
                     $Status = "Healthy"
@@ -178,7 +179,7 @@ Function Get-XdWorkerHealth {
                 'HighLoad'           = $HighLoad
                 'HighDiskSpaceUsage' = $HighDiskSpaceUsage
                 'HighDiskQueue'      = $HighDiskQueue
-                #    'Errors'   = $Errors
+                'Unregistered'       = $Unregistered
             }
         }
 
@@ -216,6 +217,8 @@ Function Get-XdWorkerHealth {
         $HighUptime = 0 
         $HighDiskSpaceUsage = 0
         $HighDiskQueue = 0
+        $Unregistered = 0
+        $UnknownError = 0
 
         foreach ($Result in $RunspaceResults) {
             if ($Result.Status -eq "Healthy") { $Healthy++ }
@@ -225,6 +228,8 @@ Function Get-XdWorkerHealth {
                 if ($Result.HighUptime) { $HighUptime++ }
                 if ($Result.HighDiskSpaceUsage) { $HighDiskSpaceUsage++ }
                 if ($Result.HighDiskQueue) { $HighDiskQueue++ }
+                if ($Result.Unregistered) { $Unregistered++ }
+                if ("ERROR" -eq $Result.Status) { $UnknownError++ }
             }
         }
 
@@ -243,6 +248,8 @@ Function Get-XdWorkerHealth {
             HighUptime         = $HighUptime
             HighDiskSpaceUsage = $HighDiskSpaceUsage
             HighDiskQueue      = $HighDiskQueue
+            Unregistered       = $Unregistered
+            UnknownError       = $UnknownError
         }
         <#
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disposing of Runspace pool"
