@@ -46,10 +46,10 @@ Function ConvertTo-InfluxLineProtocol {
                 if ($null -eq $_.Value) { }
                 elseif ($_.Name -eq "Series") {  }
                 # If its a string, we'll treat it as a tag
-                elseif ($_.Value -is [string]) { $SeriesString += ",$($_.Name.ToLower())=$($_.Value)" }
+                elseif ($_.Value -is [string]) { $SeriesString += ",$($_.Name)=$($_.Value)" }
                 else {
-                    if ( $ParamString -eq "" ) { $ParamString = "$($_.Name.ToLower())=$($_.Value)" } 
-                    else { $ParamString += ",$($_.Name.ToLower())=$($_.Value)" }
+                    if ( $ParamString -eq "" ) { $ParamString = "$($_.Name)=$($_.Value)" } 
+                    else { $ParamString += ",$($_.Name)=$($_.Value)" }
                 }
             }
 

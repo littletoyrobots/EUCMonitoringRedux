@@ -92,7 +92,8 @@ Function Get-XdWorkerHealth {
 
             $HighUptime = $false
             $HighLoad = $false
-            $High
+            $HighDiskSpaceUsage = $false
+            $HighDiskQueue = $false
             
             try { 
                 # Little setup for the tests that need it.  Provides $OS and $DISK
@@ -102,7 +103,7 @@ Function Get-XdWorkerHealth {
                     $rx.match($data.ProductVersion)
                     if ($rx.match($data.ProductVersion).value -eq '3.0') {
                         $OS = Get-Ciminstance -ClassName win32_operatingsystem -ComputerName $Machine -ErrorAction Continue
-                        $Disk = Get-Ciminstance -ClassName win32_logicaldisk -ComputerName $Machine -ErrorAction Continue
+                        $Disk = Get-Ciminstance -ClassName win32_logicaldisk -ComputerName $Machine -ErrorAction Continue 
                     }
                     else {
                         $opt = New-CimSessionOption -Protocol Dcom
@@ -120,8 +121,28 @@ Function Get-XdWorkerHealth {
                     $UptimeDays = $Uptime.Days
 
                     If ($UptimeDays -ge [int]$BootThreshold) {
-                        $Status = "HighUptime"
-                        $errors += "$Machine has not been booted in $UptimeDays days"
+                        $Status = "Unhealthy"
+                        $HighUptime = $true
+                    }
+                }
+
+                if (-1 -ne $DiskSpaceThreshold) {
+                    foreach ($Device in $Disk) {
+                        # If drive is read/write and greater than threshold.  
+                        if ((3 -eq $Device.DriveType) -and (($Device.FreeSpace / $Device.Size) * 100 -ge [int]$DiskSpaceThreshold)) {
+                            $Status = "Unhealthy"
+                            $HighDiskSpaceUsage = $true
+                        }
+                    }
+                }
+
+                if (-1 -ne $DiskQueueThreshold) {
+                    $Queues = (Get-Counter "\\$Machine\PhysicalDisk(*)\Current Disk Queue Length" -ErrorAction SilentlyContinue).CounterSamples.CookedValue
+                    foreach ($Queue in $Queues) {
+                        if ($Queue -ge [int]$DiskQueueThreshold) {
+                            $Status = "Unhealthy"
+                            $HighDiskQueue = $true
+                        }
                     }
                 }
 
@@ -132,8 +153,9 @@ Function Get-XdWorkerHealth {
                     Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue
                     $Load = Get-BrokerMachine  -AdminAddress $Broker -HostedMachineName $Machine -Property LoadIndex
                     $CurrentLoad = $Load.LoadIndex
-                    If ($CurrentLoad -ge $LoadThreshold) {
+                    If ($CurrentLoad -ge [int]$LoadThreshold) {
                         $Status = "Unhealthy"
+                        $HighLoad = $true
                         $errors += "$Machine has a high load of $CurrentLoad"
                     }
                 }
@@ -150,8 +172,12 @@ Function Get-XdWorkerHealth {
             }
 
             return [PSCustomObject]@{
-                'Host'   = $Machine
-                'Status' = $Status
+                'Host'               = $Machine
+                'Status'             = $Status
+                'HighUptime'         = $HighUptime
+                'HighLoad'           = $HighLoad
+                'HighDiskSpaceUsage' = $HighDiskSpaceUsage
+                'HighDiskQueue'      = $HighDiskQueue
                 #    'Errors'   = $Errors
             }
         }
@@ -161,7 +187,6 @@ Function Get-XdWorkerHealth {
 
         $Runspaces = @()
         $RunspaceResults = @()
-       
 
         foreach ($Machine in $Machines) {
             $MachineName = $Machine.HostedMachineName
@@ -170,6 +195,8 @@ Function Get-XdWorkerHealth {
             $null = $Runspace.AddArgument($MachineName)
             $null = $Runspace.AddArgument($BootThreshold)
             $null = $Runspace.AddArgument($LoadThreshold)
+            $null = $Runspace.AddArgument($DiskSpaceThreshold)
+            $null = $Runspace.AddArgument($DiskQueueThreshold)
             $Runspace.RunspacePool = $pool
             $Runspaces += [PSCustomObject]@{ Pipe = $Runspace; Status = $Runspace.BeginInvoke() }
         }
@@ -187,7 +214,7 @@ Function Get-XdWorkerHealth {
         $Unhealthy = 0
         $HighLoad = 0
         $HighUptime = 0 
-        $HighDiskUsage = 0
+        $HighDiskSpaceUsage = 0
         $HighDiskQueue = 0
 
         foreach ($Result in $RunspaceResults.Status) {
@@ -196,24 +223,26 @@ Function Get-XdWorkerHealth {
                 $Unhealthy++ 
                 if ($Result.HighLoad) { $LoadThreshold++ }
                 if ($Result.HighUptime) { $HighUptime++ }
-
+                if ($Result.HighDiskSpaceUsage) { $HighDiskSpaceUsage++ }
+                if ($Result.HighDiskQueue) { $HighDiskQueue++ }
             }
         }
 
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Healthy: $Healthy, Unhealthy: $Unhealthy"
         $Results += [PSCustomObject]@{
-            Series            = "XdWorkerHealth"
-            Type              = $Workload
-            Host              = $Broker
-            SiteName          = $SiteName
-            ZoneName          = $ZoneName
-            CatalogName       = $CatalogName
-            DeliveryGroupName = $DeliveryGroupName
-            Healthy           = $Healthy
-            Unhealthy         = $Unhealthy                    
-            HighLoad          = $HighLoad
-            HighUptime        = $HighUptime
-            
+            Series             = "XdWorkerHealth"
+            Type               = $Workload
+            Host               = $Broker
+            SiteName           = $SiteName
+            ZoneName           = $ZoneName
+            CatalogName        = $CatalogName
+            DeliveryGroupName  = $DeliveryGroupName
+            Healthy            = $Healthy
+            Unhealthy          = $Unhealthy                    
+            HighLoad           = $HighLoad
+            HighUptime         = $HighUptime
+            HighDiskSpaceUsage = $HighDiskSpaceUsage
+            HighDiskQueue      = $HighDiskQueue
         }
         <#
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disposing of Runspace pool"

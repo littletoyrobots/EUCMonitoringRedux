@@ -17,8 +17,10 @@ function Test-EUCWorkload {
 
         # Default values for XdDesktop and XdServer Tests. 
         [switch]$WorkerHealth,
-        [int]$BootThreshold = 7,
-        [int]$LoadThreshold = 8000,
+        [int]$BootThreshold = -1,
+        [int]$LoadThreshold = -1,
+        [int]$DiskSpaceThreshold = -1,
+        [int]$DiskQueueThreshold = -1,
 
         # Will return extended session information based on site, catalog, delivery group, etc
         #    [switch]$SessionInfo,
@@ -45,8 +47,15 @@ function Test-EUCWorkload {
 
         foreach ($Computer in $ComputerName) {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer" 
-
-            if ($XdDesktop) {
+            $Connected = (Test-NetConnection -ComputerName $Computer -ErrorAction Stop)
+            if (-Not ($Connected.PingSucceeded)) {
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Could not connect to $Computer"
+                if ($null -eq $Connected.RemoteAddress) {
+                    throw "Name resolution of $($Connected.ComputerName) failed"
+                }
+                continue
+            }
+            elseif ($XdDesktop) {
                 
                 if ($XdDesktopComplete) { 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping XdDesktop"
@@ -55,21 +64,22 @@ function Test-EUCWorkload {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdDesktop"
                     #        try {       
                     $params = @{
-                        Broker        = $Computer;
-                        Workload      = 'Desktop';
+                        Broker             = $Computer;
+                        Workload           = 'Desktop';
                         #    SessionInfo     = $SessionInfo;
                         #    SessionDuration = $SessionDuration;
                         #    DurationLength  = $DurationLength;
-                        WorkerHealth  = $WorkerHealth;
-                        BootThreshold = $BootThreshold;
-                        LoadThreshold = $LoadThreshold;
-                        All           = $All
+                        WorkerHealth       = $WorkerHealth;
+                        BootThreshold      = $BootThreshold;
+                        LoadThreshold      = $LoadThreshold;
+                        DiskSpaceThreshold = $DiskSpaceThreshold;
+                        DiskQueueThreshold = $DiskQueueThreshold;
+                        All                = $All
                     }
                     $Results += Test-XdWorkload @params
-                    $XdDesktopComplete = $true
+                    if ($Results) { $XdDesktopComplete = $true }
 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
-                     
                 }
                 #catch {
                 #    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failed"
@@ -85,15 +95,17 @@ function Test-EUCWorkload {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdServer"
                     try {
                         $params = @{
-                            Broker        = $Computer;
-                            Workload      = 'Server';
+                            Broker             = $Computer;
+                            Workload           = 'Server';
                             #    SessionInfo     = $SessionInfo;
                             #    SessionDuration = $SessionDuration;
                             #    DurationLength  = $DurationLength;
-                            WorkerHealth  = $WorkerHealth;
-                            BootThreshold = $BootThreshold;
-                            LoadThreshold = $LoadThreshold;
-                            All           = $All
+                            WorkerHealth       = $WorkerHealth;
+                            BootThreshold      = $BootThreshold;
+                            LoadThreshold      = $LoadThreshold;
+                            DiskSpaceThreshold = $DiskSpaceThreshold;
+                            DiskQueueThreshold = $DiskQueueThreshold;
+                            All                = $All
                         }
                         $Results += Test-XdWorkload @params
                         $XdServerComplete = $true

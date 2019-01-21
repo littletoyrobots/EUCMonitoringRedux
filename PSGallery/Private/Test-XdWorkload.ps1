@@ -12,7 +12,8 @@ Function Test-XdWorkload {
         [switch]$WorkerHealth,
         [int]$BootThreshold = 7,
         [int]$LoadThreshold = 8000,
-
+        [int]$DiskSpaceThreshold = 80,
+        [int]$DiskQueueThreshold = 5,
         [switch]$All
     )
 
@@ -151,15 +152,17 @@ Function Test-XdWorkload {
                             if ($WorkerHealth -or $All) {
                                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching worker health count"
                                 $Params = @{
-                                    Broker            = $Broker;
-                                    Workload          = $Workload;
-                                    SiteName          = $SiteName;
-                                    ZoneName          = $ZoneName;
-                                    CatalogName       = $CatalogName;
-                                    DeliveryGroupName = $DeliveryGroupName;
-                                    Machines          = $Machines;
-                                    BootThreshold     = $BootThreshold;
-                                    LoadThreshold     = $LoadThreshold
+                                    Broker             = $Broker;
+                                    Workload           = $Workload;
+                                    SiteName           = $SiteName;
+                                    ZoneName           = $ZoneName;
+                                    CatalogName        = $CatalogName;
+                                    DeliveryGroupName  = $DeliveryGroupName;
+                                    Machines           = $Machines;
+                                    BootThreshold      = $BootThreshold;
+                                    LoadThreshold      = $LoadThreshold;
+                                    DiskSpaceThreshold = $DiskSpaceThreshold;
+                                    DiskQueueThreshold = $DiskQueueThreshold
                                 }
                                 $Results += Get-XdWorkerHealth @Params
                                 #Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Not fully implemented"
@@ -190,6 +193,7 @@ Function Test-XdWorkload {
             }
         }
         catch {
+            # Will only get here if errors on return values, not nulls.  
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Error Occured"
             Write-Warning "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
 

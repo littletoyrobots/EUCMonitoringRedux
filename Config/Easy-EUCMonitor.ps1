@@ -2,12 +2,13 @@
 # edit the copy per site.   Do not comment out any of these lines.  We suggest
 # using fqdn for servernames, so any valid certificate checks associated will pass.
 
+$ErrorLog = "c:\Monitoring\ErrorLog.txt"
+
 ############################
 # Citrix Apps and Desktops #
 ############################
 # These brokers can be either Delivery Controllers or Cloud Connectors, but not both.  
-$XdDesktopBrokers = $null   # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
-$XdServerBrokers = $null    # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
+$XdBrokers = $null   # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
 
 # If On-Premises:
 $XdControllers = $null      # Put your Citrix delivery controllers here. e.g "ddc1.domain.com", "ddc2.domain.com"
@@ -90,27 +91,32 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     throw "You must be administrator in order to execute this script"
 }
 
-# Workload
-if ($null -ne $XdDesktopBrokers) {
+# Workload.  If you have multiple sites, just copy this section and invoke using
+# the brokers associated with each site.  
+if ($null -ne $XdBrokers) {
+    # Test for Desktop Sessions
     $XdDesktopParams = @{
-        ComputerName  = $XdDesktopBrokers; # Put your brokers here. 
-        XdDesktop     = $true;
-        XdServer      = $false;
-        WorkerHealth  = $true;
-        BootThreshold = 7;
-        LoadThreshold = 8000;
+        ComputerName       = $XdBrokers; # Put your brokers here. 
+        XdDesktop          = $true;
+        XdServer           = $false;
+        WorkerHealth       = $true;
+        BootThreshold      = 7; # 7 days
+        LoadThreshold      = 8000; # 8000 load is roughly 80% utilized
+        DiskSpaceThreshold = 80; # 80% Usage
+        DiskQueueThreshold = 5  # Disk Queue of 7
     }
     Test-EUCWorkload @XdDesktopParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-}
 
-if ($null -ne $XdServerBrokers) {
+    # Test for Server Sessions
     $XdServerParams = @{
-        ComputerName  = $XdServerBrokers; # Put your brokers here. Example value = "ddc1", "ddc2"
-        XdDesktop     = $false;
-        XdServer      = $true;
-        WorkerHealth  = $true;
-        BootThreshold = 7;
-        LoadThreshold = 8000    
+        ComputerName       = $XdBrokers; # Put your brokers here. Example value = "ddc1", "ddc2"
+        XdDesktop          = $false;
+        XdServer           = $true;
+        WorkerHealth       = $true;
+        BootThreshold      = 7;
+        LoadThreshold      = 8000;
+        DiskSpaceThreshold = 80;
+        DiskQueueThreshold = 5
     }
     Test-EUCWorkload @XdServerParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
