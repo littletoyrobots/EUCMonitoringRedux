@@ -151,20 +151,25 @@ Function Test-XdWorkload {
                                 
                             if ($WorkerHealth -or $All) {
                                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching worker health count"
-                                $Params = @{
-                                    Broker             = $Broker;
-                                    Workload           = $Workload;
-                                    SiteName           = $SiteName;
-                                    ZoneName           = $ZoneName;
-                                    CatalogName        = $CatalogName;
-                                    DeliveryGroupName  = $DeliveryGroupName;
-                                    Machines           = $Machines;
-                                    BootThreshold      = $BootThreshold;
-                                    LoadThreshold      = $LoadThreshold;
-                                    DiskSpaceThreshold = $DiskSpaceThreshold;
-                                    DiskQueueThreshold = $DiskQueueThreshold
+                                # Only test machines that aren't off. 
+                                $Workers = $Machines | Where-Object { ($_.PowerState -ne "Off") }
+                                # $Workers.DNSname | Out-File -FilePath "C:\Monitoring\Errorlog.txt" -Append
+                                if ($null -ne $Workers) {
+                                    $Params = @{
+                                        Broker             = $Broker;
+                                        Workload           = $Workload;
+                                        SiteName           = $SiteName;
+                                        ZoneName           = $ZoneName;
+                                        CatalogName        = $CatalogName;
+                                        DeliveryGroupName  = $DeliveryGroupName;
+                                        Machines           = $Workers; 
+                                        BootThreshold      = $BootThreshold;
+                                        LoadThreshold      = $LoadThreshold;
+                                        DiskSpaceThreshold = $DiskSpaceThreshold;
+                                        DiskQueueThreshold = $DiskQueueThreshold
+                                    }
+                                    $Results += Get-XdWorkerHealth @Params
                                 }
-                                $Results += Get-XdWorkerHealth @Params
                                 #Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Not fully implemented"
                             }
 

@@ -105,8 +105,8 @@ if ($null -ne $XdBrokers) {
         WorkerHealth       = $true; # 
         BootThreshold      = 30; # 30 days for desktops
         LoadThreshold      = 8000; # 8000 load is roughly 80% utilized
-        DiskSpaceThreshold = 80; # 80% Disk Usage
-        DiskQueueThreshold = 5          # Disk Queue of 5 or greater
+        DiskSpaceThreshold = -1; # A value of 80 would mean 80% Disk Usage
+        DiskQueueThreshold = -1         # A value of 5 would mean Disk Queue of 5 or greater
     }
     Test-EUCWorkload @XdDesktopParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 
@@ -118,8 +118,8 @@ if ($null -ne $XdBrokers) {
         WorkerHealth       = $true;
         BootThreshold      = 7; # 7 days for servers
         LoadThreshold      = 8000;
-        DiskSpaceThreshold = 80;
-        DiskQueueThreshold = 5
+        DiskSpaceThreshold = -1;
+        DiskQueueThreshold = -1
     }
     Test-EUCWorkload @XdServerParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
