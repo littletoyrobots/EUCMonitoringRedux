@@ -83,7 +83,9 @@ Function Test-XdWorkload {
             foreach ($ZoneName in $ZoneNames) {
                 $CatalogNames = (Get-BrokerCatalog -AdminAddress $Broker -ZoneName $ZoneName).Name
                 foreach ($CatalogName in $CatalogNames) {
-                    foreach ($DeliveryGroupName in $DeliveryGroups.Name) {
+                    foreach ($DeliveryGroup in $DeliveryGroups) {
+                        $DeliveryGroupName = $DeliveryGroup.Name
+                        $DGMaintMode = $DeliveryGroup.InMaintenanceMode
                         $Params = @{
                             AdminAddress     = $Broker;
                             ZoneName         = $ZoneName;
@@ -168,10 +170,10 @@ Function Test-XdWorkload {
                                 
                             if ($WorkerHealth -or $All) {
                                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching worker health count"
-                                # Only test machines that aren't off. 
+                                # Only test machines that aren't off, in delivery groups not in maint mode 
                                 $Workers = $Machines | Where-Object { ($_.PowerState -ne "Off") }
-                                # $Workers.DNSname | Out-File -FilePath "C:\Monitoring\Errorlog.txt" -Append
-                                if ($null -ne $Workers) {
+                                
+                                if (($null -ne $Workers) -and (-Not $DGMaintMode)) {
                                     $Params = @{
                                         Broker             = $Broker;
                                         Workload           = $Workload;
@@ -187,6 +189,9 @@ Function Test-XdWorkload {
                                         ErrorLog           = $ErrorLog
                                     }
                                     $Results += Get-XdWorkerHealth @Params
+                                }
+                                else {
+                                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping XdWorkerHealth"
                                 }
                                 #Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Not fully implemented"
                             }

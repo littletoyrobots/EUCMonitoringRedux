@@ -219,7 +219,7 @@ function Test-EUCServer {
                 }        
                 
                 if (($Result.Status -eq "DEGRADED") -and ($ErrorLog)) {
-                    Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] $Computer tests failed - $ErrString" 
+                    Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] $Computer - $ErrString" 
                 }
 
                 $Results += $Result      

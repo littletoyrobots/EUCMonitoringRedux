@@ -69,10 +69,7 @@ Function Get-XdWorkerHealth {
     Begin { 
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
         
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Setting Up Runspace pool"
-        $Pool = [RunspaceFactory]::CreateRunspacePool(1, [int]$env:NUMBER_OF_PROCESSORS + 1)
-        $Pool.ApartmentState = "MTA"
-        $Pool.Open()
+    
         
     }
 
@@ -82,10 +79,11 @@ Function Get-XdWorkerHealth {
         $Scriptblock = {
             Param (
                 [string]$Machine,
-                [string]$BootThreshold = -1,
-                [string]$LoadThreshold = -1,     
-                [string]$DiskSpaceThreshold = -1,
-                [string]$DiskQueueThreshold = -1
+                [string]$Broker,
+                [int]$BootThreshold = -1,
+                [int]$LoadThreshold = -1,     
+                [int]$DiskSpaceThreshold = -1,
+                [int]$DiskQueueThreshold = -1
             )
             begin { Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue }
 
@@ -93,7 +91,8 @@ Function Get-XdWorkerHealth {
                 # $Errors = @()
                 $Status = "Not Run"
 
-                $DNSMisMatch = $false
+                $DNSMismatch = $false
+                $DNSNotRegistered = $false
                 $FailedPing = $false
                 $HighUptime = $false
                 $HighLoad = $false
@@ -103,19 +102,19 @@ Function Get-XdWorkerHealth {
 
                 try { 
                     # $FastPing = Test-Connection -ComputerName $Machine -Count 1 -Quiet -ErrorAction SilentlyContinue
+                    $BrokerMachine = Get-BrokerMachine -AdminAddress $Broker -DNSName $Machine -ErrorAction Stop
 
-                    # if (-Not $FastPing) {
                     $Connected = (Test-NetConnection -ComputerName $Machine -ErrorAction Stop)
                     if (-Not ($Connected.PingSucceeded)) {
                         $Status = "Unhealthy"
+                        $FailedPing = $true
                         if ($null -eq $Connected.RemoteAddress) {
-                            $DNSMisMatch = $true
+                            $DNSNotRegistered = $true
                         }
-                        else {
-                            $FailedPing = $true
+                        elseif ($Connected.RemoteAddress -ne $BrokerMachine.IPAddress) {
+                            $DNSMismatch = $true
                         }
                     }
-                    # }
                     else {
                         # These tests will error out if connection failure. 
                         # Little setup for the tests that need it.  Provides $OS and $DISK
@@ -160,7 +159,7 @@ Function Get-XdWorkerHealth {
                         if (-1 -ne $DiskQueueThreshold) {
                             $Queues = (Get-Counter "\\$Machine\PhysicalDisk(*)\Current Disk Queue Length" -ErrorAction SilentlyContinue).CounterSamples.CookedValue
                             foreach ($Queue in $Queues) {
-                                if ($Queue -ge [int]$DiskQueueThreshold) {
+                                if ($Queue -ge $DiskQueueThreshold) {
                                     $Status = "Unhealthy"
                                     $HighDiskQueue = $true
                                 }
@@ -171,9 +170,7 @@ Function Get-XdWorkerHealth {
                 
                     # Is the load of the machine within bounds?
                     if (-1 -ne $LoadThreshold) {
-                        $Load = Get-BrokerMachine -AdminAddress $Broker -DNSName $Machine -ErrorAction Stop | Select-Object -ExpandProperty LoadIndex
-                        # "Machine $Machine - Load Tested" | Out-File -FilePath "C:\Monitoring\Errorlog.txt" -Append
-                        If ($Load -ge [int]$LoadThreshold) {
+                        if ($BrokerMachine.LoadIndex -ge $LoadThreshold) {
                             $Status = "Unhealthy"
                             $HighLoad = $true
                         }
@@ -181,9 +178,7 @@ Function Get-XdWorkerHealth {
 
                     # Is the machine registered? 
                     # ! Turn this into a splat
-                    $Registered = Get-BrokerMachine -AdminAddress $Broker -DNSName $Machine -Property RegistrationState -ErrorAction Stop | Select-Object -ExpandProperty RegistrationState
-                    # "Machine $Machine - Registered Tested: $Registered" | Out-File -FilePath "C:\Monitoring\Errorlog.txt" -Append                
-                    if ("Registered" -ne $Registered) { 
+                    if ("Registered" -ne $BrokerMachine.RegistrationState) { 
                         $Status = "Unhealthy"
                         $Unregistered = $true 
                     }
@@ -205,7 +200,8 @@ Function Get-XdWorkerHealth {
                 return [PSCustomObject]@{
                     Host               = $Machine
                     Status             = $Status
-                    DNSMisMatch        = $DNSMisMatch
+                    DNSMismatch        = $DNSMismatch
+                    DNSNotRegistered   = $DNSNotRegistered
                     FailedPing         = $FailedPing
                     HighUptime         = $HighUptime
                     HighLoad           = $HighLoad
@@ -222,28 +218,50 @@ Function Get-XdWorkerHealth {
         $Results = @()
 
         try {
+            # Create and open runspace pool, setup runspaces array with min and max threads
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Setting Up Runspace pool"
+            $Pool = [RunspaceFactory]::CreateRunspacePool(1, [int]$env:NUMBER_OF_PROCESSORS + 1)
+            $Pool.ApartmentState = "MTA"
+            $Pool.Open()
+
             $Runspaces = @()
             $RunspaceResults = @()
 
             foreach ($Machine in $Machines) {
+                # Create runspace and add to runspace pool
                 $MachineName = $Machine.DNSName
-                # "Runspace tool: Adding $MachineName" | Out-File -FilePath "C:\Monitoring\Errorlog.txt" -Append
+                # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] MachineName: $MachineName"
                 $Runspace = [PowerShell]::Create()
                 $null = $Runspace.AddScript($Scriptblock)
                 $null = $Runspace.AddArgument($MachineName)
+                $null = $Runspace.AddArgument($Broker)
                 $null = $Runspace.AddArgument($BootThreshold)
                 $null = $Runspace.AddArgument($LoadThreshold)
                 $null = $Runspace.AddArgument($DiskSpaceThreshold)
                 $null = $Runspace.AddArgument($DiskQueueThreshold)
-                $Runspace.RunspacePool = $pool
-                $Runspaces += [PSCustomObject]@{ Pipe = $Runspace; Status = $Runspace.BeginInvoke() }
+                # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] MachineName: $MachineName - Added Arguments"
+                $Runspace.RunspacePool = $Pool
+                # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] MachineName: $MachineName - Assigned Pool"
+                $Runspaces += [PSCustomObject]@{ Pipe = $Runspace; State = $Runspace.BeginInvoke() }
+                # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] MachineName: $MachineName - Begin Invoke Run" 
             }
 
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Runspace executing"
-            while ($Runspaces.Status.IsCompleted -notcontains $true) { start-sleep -Seconds 1 }
+            while ($Runspaces.State.IsCompleted -notcontains $true) { start-sleep -Seconds 1 }
 
             foreach ($Runspace in $Runspaces) {
-                $RunspaceResults += $Runspace.Pipe.EndInvoke($Runspace.Status)
+                try {
+                    $RunspaceResults += $Runspace.Pipe.EndInvoke($Runspace.State)
+                } 
+                catch {
+                    $Ex = $_.Exception
+                    if ($null -ne $Ex.InnerException) {
+                        $Ex = $Ex.InnerException
+                    }
+                    if ($ErrorLog) {
+                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorkerHealth] $Ex" 
+                    }
+                }
                 $Runspace.Pipe.Dispose()
             }
 
@@ -256,7 +274,8 @@ Function Get-XdWorkerHealth {
             $HighDiskQueue = 0
             $Unregistered = 0
             $UnknownError = 0
-            $DNSMisMatch = 0
+            $DNSMismatch = 0
+            $DNSNotRegistered = 0
             $FailedPing = 0
 
             foreach ($Result in $RunspaceResults) {
@@ -265,7 +284,8 @@ Function Get-XdWorkerHealth {
                 if (($Result.Status -eq "Unhealthy") -or ($Result.Status -eq "ERROR")) {
                     $Unhealthy++ 
                     if ($Result.FailedPing) { $FailedPing++; $ErrString += "FailedPing " }
-                    if ($Result.DNSMisMatch) { $DNSMisMatch++; $ErrString += "DNSMisMatch "}
+                    if ($Result.DNSMismatch) { $DNSMismatch++; $ErrString += "DNSMismatch "}
+                    if ($Result.DNSNotRegistered) { $DNSNotRegistered++; $ErrString += "DNSNotRegistered "}
                     if ($Result.HighLoad) { $HighLoad++; $ErrString += "HighLoad " }
                     if ($Result.HighUptime) { $HighUptime++; $ErrString += "HighUptime " }
                     if ($Result.HighDiskSpaceUsage) { $HighDiskSpaceUsage++; $ErrString += "HighDiskSpaceUsage " }
@@ -291,7 +311,8 @@ Function Get-XdWorkerHealth {
                 DeliveryGroupName  = $DeliveryGroupName
                 Healthy            = $Healthy
                 Unhealthy          = $Unhealthy
-                DNSMisMatch        = $DNSMisMatch
+                DNSNotRegistered   = $DNSNotRegistered
+                DNSMismatch        = $DNSMismatch
                 FailedPing         = $FailedPing
                 HighLoad           = $HighLoad
                 HighUptime         = $HighUptime
@@ -318,7 +339,8 @@ Function Get-XdWorkerHealth {
                 DeliveryGroupName  = $DeliveryGroupName
                 Healthy            = -1
                 Unhealthy          = -1
-                DNSMisMatch        = -1
+                DNSNotRegistered   = -1
+                DNSMismatch        = -1
                 FailedPing         = -1
                 HighLoad           = -1
                 HighUptime         = -1
