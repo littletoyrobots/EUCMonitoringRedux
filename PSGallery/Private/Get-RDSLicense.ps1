@@ -95,6 +95,8 @@ Function Get-RDSLicense {
             catch {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Error getting RDS license information"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_" 
+
+                # Write-EUCError -Path $ErrorLog "[$(Get-Date)] [RdsLicense] Exception: $_"
                 $Results += [PSCustomObject]@{
                     Series            = "RdsLicense"
                     Host              = $Computer

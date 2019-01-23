@@ -14,7 +14,9 @@ Function Test-XdWorkload {
         [int]$LoadThreshold = 8000,
         [int]$DiskSpaceThreshold = 80,
         [int]$DiskQueueThreshold = 5,
-        [switch]$All
+        [switch]$All,
+
+        [string]$ErrorLog
     )
 
     Begin {
@@ -25,6 +27,9 @@ Function Test-XdWorkload {
 
         if ($null -eq $ctxsnap) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Load Failed"
+            if ($ErrorLog) {
+                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Load Failed" 
+            }
             throw "Cannot Load XenDesktop Powershell SDK"
         }
         else {
@@ -36,8 +41,10 @@ Function Test-XdWorkload {
 
         if ($null -eq $ctxsnap) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Load Failed"
-            Write-Error "Cannot Load XenDesktop Powershell SDK"
-            Return 
+            if ($ErrorLog) {
+                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Load Failed" 
+            }
+            throw "Cannot Load XenDesktop Powershell SDK"
         }
         else {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Loaded"
@@ -48,18 +55,28 @@ Function Test-XdWorkload {
         $Results = @()
 
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Querying Delivery Groups for type $Workload"
+        if (-Not (Test-Connection -ComputerName $Broker -Count 1 -Quiet -ErrorAction SilentlyContinue)) {
+            if ($ErrorLog) {
+                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connection Failure to Broker: $Broker" 
+            }
+            throw "Connection Failure to Broker: $Broker"
+        }
 
-        if ($Workload -match "Server") {
-            $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "MultiSession"} 
-        }
-        elseif ($Workload -match "Desktop") {
-            $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "SessionSession"}
-        }
-        else {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type" 
-            throw "Unable to determine the workload type."
-        }
-        try { 
+        try {
+            if ($Workload -match "Server") {
+                $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "MultiSession"} 
+            }
+            elseif ($Workload -match "Desktop") {
+                $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "SessionSession"}
+            }
+            else {
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type" 
+                if ($ErrorLog) {
+                    Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type" 
+                }
+                throw "Unable to determine the workload type."
+            }
+        
             $SiteName = (Get-BrokerSite -AdminAddress $Broker).Name
             $ZoneNames = (Get-ConfigZone -AdminAddress $Broker).Name
 
@@ -166,7 +183,8 @@ Function Test-XdWorkload {
                                         BootThreshold      = $BootThreshold;
                                         LoadThreshold      = $LoadThreshold;
                                         DiskSpaceThreshold = $DiskSpaceThreshold;
-                                        DiskQueueThreshold = $DiskQueueThreshold
+                                        DiskQueueThreshold = $DiskQueueThreshold;
+                                        ErrorLog           = $ErrorLog
                                     }
                                     $Results += Get-XdWorkerHealth @Params
                                 }
@@ -200,7 +218,11 @@ Function Test-XdWorkload {
         catch {
             # Will only get here if errors on return values, not nulls.  
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Error Occured"
-            Write-Warning "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+
+            if ($ErrorLog) {
+                Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorker] Exception: $_"
+            }
 
             if ($null -eq $SiteName) { $SiteName = "ERROR" }
             if ($null -eq $ZoneName) { $ZoneName = "ERROR"}

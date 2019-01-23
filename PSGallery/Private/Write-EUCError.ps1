@@ -3,7 +3,7 @@ function Write-EUCError {
     Param
     (   
         [Parameter(Mandatory = $true, 
-            ValueFromPipelineByPropertyName = $true)] 
+            ValueFromPipeline = $true)] 
         [ValidateNotNullOrEmpty()] 
         [Alias("LogContent")] 
         [string]$Message, 
@@ -14,16 +14,18 @@ function Write-EUCError {
     )
     
     begin {
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
+        # Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
     }
 
     process {
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] "
+        # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] "
 
-        if ($null -ne $Path) {
+        if (($null -ne $Path) -and ("" -ne $Path)) {
             if (-Not (Test-Path $Path)) {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Creating Log File: $Path"
+                New-Item $Path -Force -ItemType File | Out-Null
             }
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] > $Message"
             $Message | Out-File -FilePath $Path -Append
         }
         else {
@@ -32,6 +34,6 @@ function Write-EUCError {
     }
 
     end {
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+        # Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     }
 }

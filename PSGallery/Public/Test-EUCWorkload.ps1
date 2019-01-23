@@ -1,4 +1,3 @@
-
 function Test-EUCWorkload {
     [CmdletBinding()]
     param (
@@ -29,7 +28,9 @@ function Test-EUCWorkload {
         
         [switch]$All,
         [Parameter(ValueFromPipeline, Mandatory = $false)]
-        [pscredential]$Credential
+        [pscredential]$Credential,
+
+        [string]$ErrorLog
     )
     
     
@@ -55,42 +56,53 @@ function Test-EUCWorkload {
                 }
                 continue
             }
-            elseif ($XdDesktop) {
+            
+            if ($XdDesktop) {
                 
                 if ($XdDesktopComplete) { 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping XdDesktop"
                 } 
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdDesktop"
-                    #        try {       
-                    $params = @{
-                        Broker             = $Computer;
-                        Workload           = 'Desktop';
-                        #    SessionInfo     = $SessionInfo;
-                        #    SessionDuration = $SessionDuration;
-                        #    DurationLength  = $DurationLength;
-                        WorkerHealth       = $WorkerHealth;
-                        BootThreshold      = $BootThreshold;
-                        LoadThreshold      = $LoadThreshold;
-                        DiskSpaceThreshold = $DiskSpaceThreshold;
-                        DiskQueueThreshold = $DiskQueueThreshold;
-                        All                = $All
-                    }
-                    $Results += Test-XdWorkload @params
-                    if ($Results) { $XdDesktopComplete = $true }
+                    try {       
+                        $params = @{
+                            Broker             = $Computer;
+                            Workload           = 'Desktop';
+                            #    SessionInfo     = $SessionInfo;
+                            #    SessionDuration = $SessionDuration;
+                            #    DurationLength  = $DurationLength;
+                            WorkerHealth       = $WorkerHealth;
+                            BootThreshold      = $BootThreshold;
+                            LoadThreshold      = $LoadThreshold;
+                            DiskSpaceThreshold = $DiskSpaceThreshold;
+                            DiskQueueThreshold = $DiskQueueThreshold;
+                            All                = $All;
+                            ErrorLog           = $ErrorLog
+                        }
 
-                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
+                        $XdDeskResults = Test-XdWorkload @params
+                        if ($XdDeskResults) { 
+                            $Results += $XdDeskResults
+                            $XdDesktopComplete = $true 
+                        }
+
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
+                    }
+                
+                    catch {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XdDesktop Failure"
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+                        if ($ErrorLog) {
+                            Write-EUCError -Path $ErrorLog "[$(Get-Date)] [EUCWorkload] XdDesktop Exception: $_"
+                        }
+                    }
                 }
-                #catch {
-                #    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failed"
-                #}
-                #    }
             }
 
             if ($XdServer) {
                 if ($XdServerComplete) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping XdServer"
-                } 
+                }
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing XdServer"
                     try {
@@ -105,21 +117,34 @@ function Test-EUCWorkload {
                             LoadThreshold      = $LoadThreshold;
                             DiskSpaceThreshold = $DiskSpaceThreshold;
                             DiskQueueThreshold = $DiskQueueThreshold;
-                            All                = $All
+                            All                = $All;
+                            ErrorLog           = $ErrorLog
                         }
-                        $Results += Test-XdWorkload @params
-                        $XdServerComplete = $true
+                        $XdServerResults = Test-XdWorkload @params
+                        if ($XdServerResults) {
+                            $Results += $XdServerResults
+                            $XdServerComplete = $true 
+                        }
 
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
                     }
                     catch {
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XdServer General Failure"
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+                        if ($ErrorLog) {
+                            Write-EUCError -Path $ErrorLog "[$(Get-Date)] [EUCWorkload] XdServer Exception: $_"
+                        }
                     }
                 }
             }
+        }
 
-           
+        if ($XdDesktop -and (-Not $XdDesktopComplete)) {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XdDesktop returned no results" 
+        }
+
+        if ($XdServer -and (-Not $XdServerComplete)) {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XdServer returned no results" 
         }
 
         if ($Results.Count -gt 0) {

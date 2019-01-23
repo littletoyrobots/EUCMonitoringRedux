@@ -106,7 +106,8 @@ if ($null -ne $XdBrokers) {
         BootThreshold      = 30; # 30 days for desktops
         LoadThreshold      = 8000; # 8000 load is roughly 80% utilized
         DiskSpaceThreshold = -1; # A value of 80 would mean 80% Disk Usage
-        DiskQueueThreshold = -1         # A value of 5 would mean Disk Queue of 5 or greater
+        DiskQueueThreshold = -1; # A value of 5 would mean Disk Queue of 5 or greater
+        ErrorLog           = $ErrorLog
     }
     Test-EUCWorkload @XdDesktopParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 
@@ -119,7 +120,8 @@ if ($null -ne $XdBrokers) {
         BootThreshold      = 7; # 7 days for servers
         LoadThreshold      = 8000;
         DiskSpaceThreshold = -1;
-        DiskQueueThreshold = -1
+        DiskQueueThreshold = -1;
+        ErrorLog           = $ErrorLog
     }
     Test-EUCWorkload @XdServerParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -139,7 +141,8 @@ if ($null -ne $CitrixADCs) {
         Cache         = $false; # Not yet implemented
         Compression   = $false; # Not yet implementeed
         SSLOffload    = $false; # Not yet implemented
-        Credential    = $ADCCred
+        Credential    = $ADCCred;
+        #    ErrorLog          = $ErrorLog
     }
     Test-EUCADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -156,7 +159,8 @@ if ($null -ne $CitrixADCGateways) {
         Cache         = $false; # Not yet implemented
         Compression   = $false; # Not yet implementeed
         SSLOffload    = $false; # Not yet implemented
-        Credential    = $ADCCred
+        Credential    = $ADCCred;
+        #    ErrorLog          = $ErrorLog
     }
     Test-EUCADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -166,7 +170,8 @@ if ($null -ne $RdsLicenseServers) {
     $RDSLicenseParams = @{
         ComputerName = $RdsLicenseServers; # Example value = "rds-license1", "rds-license2"
         RdsLicense   = $true;
-        XdLicense    = $false
+        XdLicense    = $false;
+        #    ErrorLog          = $ErrorLog
     }
     Test-EUCLicense @RDSLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 
@@ -174,7 +179,8 @@ if ($null -ne $RdsLicenseServers) {
         Series       = "RdsLicensing";
         ComputerName = $RdsLicenseServers;
         Ports        = 7279, 27000, 8082, 8083;
-        Services     = "TermService", "TermServLicensing", "UmRdpService"
+        Services     = "TermService", "TermServLicensing", "UmRdpService";
+        #    ErrorLog          = $ErrorLog
     }
     Test-EUCServer @RdsLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -183,7 +189,8 @@ if ($null -ne $XdLicenseServers) {
     $XdLicenseParams = @{
         ComputerName = $XdLicenseServers; # Example value = "xd-license1", "xd-license2"
         RdsLicense   = $false;
-        XdLicense    = $true
+        XdLicense    = $true;
+        #    ErrorLog          = $ErrorLog
     }
     Test-EUCLicense @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
     
@@ -191,7 +198,8 @@ if ($null -ne $XdLicenseServers) {
         Series       = "XdLicense";
         ComputerName = $XdLicenseServers;
         Ports        = 7279, 27000, 8082, 8083;
-        Services     = "Citrix Licensing", "CitrixWebServicesforLicensing"
+        Services     = "Citrix Licensing", "CitrixWebServicesforLicensing";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -203,7 +211,8 @@ if ($null -ne $ADServers) {
         ComputerName  = $ADServers; # Example value = "dc1", "dc2"
         Ports         = 389, 636; 
         Services      = "Netlogon", "ADWS", "NTDS";
-        ValidCertPort = 636 
+        ValidCertPort = 636;
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @ADParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -213,7 +222,8 @@ if ($null -ne $SQLServers) {
         Series       = "SQL";
         ComputerName = $SQLServers; # Example value = "sql1", "sql2"
         Ports        = 1433;
-        Services     = "MSSQLServer"
+        Services     = "MSSQLServer";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @SQLParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -223,7 +233,8 @@ if ($null -ne $AppVServers) {
         Series       = "AppV";
         ComputerName = $AppVServers; # Example value = "appv1", "appv2"
         Ports        = 8080;
-        Services     = "W3SVC"
+        Services     = "W3SVC";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @AppVParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -239,6 +250,7 @@ if ($null -ne $StoreFrontServers) {
         HTTPSPath     = $StoreFrontPaths;
         HTTPSPort     = 443;
         ValidCertPort = 443;
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @StorefrontParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -251,7 +263,8 @@ if ($null -ne $DirectorServers) {
         HTTPPath     = "/Director/LogOn.aspx?cc=true";
         HTTPPort     = 80;
         HTTPSPath    = "/Director/LogOn.aspx?cc=true";
-        HTTPSPort    = 443
+        HTTPSPort    = 443;
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @DirectorParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 } 
@@ -261,7 +274,8 @@ if ($null -ne $XdControllers) {
         Series       = "XdController";
         ComputerName = $XdControllers; # Example value = "ddc1", "ddc2"
         Ports        = 80;
-        Services     = "CitrixBrokerService", "CitrixHighAvailabilityService", "CitrixConfigSyncService", "CitrixConfigurationService", "CitrixConfigurationLogging", "CitrixDelegatedAdmin", "CitrixADIdentityService", "CitrixMachineCreationService", "CitrixHostService", "CitrixEnvTest", "CitrixMonitor", "CitrixAnalytics", "CitrixAppLibrary", "CitrixOrchestration"
+        Services     = "CitrixBrokerService", "CitrixHighAvailabilityService", "CitrixConfigSyncService", "CitrixConfigurationService", "CitrixConfigurationLogging", "CitrixDelegatedAdmin", "CitrixADIdentityService", "CitrixMachineCreationService", "CitrixHostService", "CitrixEnvTest", "CitrixMonitor", "CitrixAnalytics", "CitrixAppLibrary", "CitrixOrchestration";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @XdControllerParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -271,7 +285,8 @@ if ($null -ne $PVSServers) {
         Series       = "Provisioning";
         ComputerName = $PVSServers; # Example value = "pvs1", "pvs2"
         Ports        = 54321;
-        Services     = "BNPXE", "BNTFTP", "PVSTSB", "soapserver", "StreamService"
+        Services     = "BNPXE", "BNTFTP", "PVSTSB", "soapserver", "StreamService";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @ProvisioningParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -281,7 +296,8 @@ if ($null -ne $WEMBrokers) {
         Series       = "WEM";
         ComputerName = $WEMBrokers; # Example value = "wembroker1", "wembroker2"
         Ports        = 8286;
-        Services     = "Norskale Infrastructure Service"
+        Services     = "Norskale Infrastructure Service";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @WEMParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -291,7 +307,8 @@ if ($null -ne $UPSServers) {
         Series       = "UPS";
         ComputerName = $UPSServers; # Example Value = "print1", "print2"
         Ports        = 7229;
-        Services     = "UpSvc", "CitrixXTEServer"
+        Services     = "UpSvc", "CitrixXTEServer";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @UPSParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -301,7 +318,8 @@ if ($null -ne $FASServers) {
         Series       = "FAS";
         ComputerName = $FASServers; # Example Value = "fas1", "fas2"
         Ports        = 135;
-        Services     = "CitrixFederatedAuthenticationService"
+        Services     = "CitrixFederatedAuthenticationService";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @FASParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -311,7 +329,8 @@ if ($null -ne $CCServers) {
         Series       = "CC";
         ComputerName = $CCServers; # Example Value = "cc1", "cc2"
         Ports        = 80;
-        Services     = "CitrixWorkspaceCloudADProvider", "CitrixWorkspaceCloudAgentDiscovery", "CitrixWorkspaceCloudAgentLogger", "CitrixWorkspaceCloudAgentSystem", "CitrixWorkspaceCloudAgentWatchDog", "CitrixWorkspaceCloudCredentialProvider", "CitrixWorkspaceCloudWebRelayProvider", "CitrixConfigSyncService", "CitrixHighAvailabilityService", "Citrix NetScaler Cloud Gateway", "XaXdCloudProxy", "RemoteHCLServer", "SessionManagerProxy"
+        Services     = "CitrixWorkspaceCloudADProvider", "CitrixWorkspaceCloudAgentDiscovery", "CitrixWorkspaceCloudAgentLogger", "CitrixWorkspaceCloudAgentSystem", "CitrixWorkspaceCloudAgentWatchDog", "CitrixWorkspaceCloudCredentialProvider", "CitrixWorkspaceCloudWebRelayProvider", "CitrixConfigSyncService", "CitrixHighAvailabilityService", "Citrix NetScaler Cloud Gateway", "XaXdCloudProxy", "RemoteHCLServer", "SessionManagerProxy";
+        ErrorLog     = $ErrorLog
     }
     Test-EUCServer @CCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 } 

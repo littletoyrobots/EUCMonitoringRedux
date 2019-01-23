@@ -72,7 +72,9 @@ function Test-EUCServer {
         [int[]]$ValidCertPort,
 
         [Parameter(ValueFromPipeline, Mandatory = $false)]
-        [pscredential]$Credential
+        [pscredential]$Credential,
+
+        [string]$ErrorLog
     )
     
     Begin {
@@ -94,6 +96,8 @@ function Test-EUCServer {
                 Host   = $Computer
             }
 
+            $ErrString = ""
+
             try { 
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing connection to $Computer"
                 $Connected = (Test-NetConnection -ComputerName $Computer -ErrorAction Stop)
@@ -102,6 +106,9 @@ function Test-EUCServer {
                         throw "Name resolution of $($Connected.ComputerName) failed"
                     }
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
+                    if ($ErrorLog) {
+                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] $Computer DOWN" 
+                    }
                     $Result.Status = "DOWN"
                     $Result.State = 0
                     foreach ($Port in $Ports) {
@@ -135,7 +142,7 @@ function Test-EUCServer {
                             $Result | Add-Member -MemberType NoteProperty -Name "Port$($Port)" -Value 0 
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
-                            $Errors += "Port $Port closed"
+                            $ErrString += "Port$Port "
                         }
                     }
 
@@ -154,7 +161,7 @@ function Test-EUCServer {
                             $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 0 
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
-                            $Errors += "$Service not running"
+                            $ErrString += "$Service "
                         }
                     }
 
@@ -172,6 +179,7 @@ function Test-EUCServer {
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Result | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 0 
+                            $ErrString += "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_') "
                         }
                     }
 
@@ -188,6 +196,7 @@ function Test-EUCServer {
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 
+                            $ErrString += "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_') "
                         }
                     }
 
@@ -203,10 +212,15 @@ function Test-EUCServer {
                             $Result.Status = "DEGRADED"
                             $Result.State = 1
                             $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 0 
+                            $ErrString += "ValidCert_Port$($Port) "
                         }
                     }  
                     
                 }        
+                
+                if (($Result.Status -eq "DEGRADED") -and ($ErrorLog)) {
+                    Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] $Computer tests failed - $ErrString" 
+                }
 
                 $Results += $Result      
             }
@@ -214,6 +228,10 @@ function Test-EUCServer {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem occured testing $Series - $Computer"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
                 
+                if ($ErrorLog) {
+                    Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] Exception $_" 
+                }
+
                 $ErrorState = -1
                 $ErrorResult = [PSCustomObject]@{
                     Series = $Series
