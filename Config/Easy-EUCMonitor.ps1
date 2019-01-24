@@ -2,7 +2,9 @@
 # edit the copy per site.   Do not comment out any of these lines.  We suggest
 # using fqdn for servernames, so any valid certificate checks associated will pass.
 
-$ErrorLog = "c:\Monitoring\ErrorLog.txt"
+$ErrorLog = "c:\Monitoring\CurrentErrorLog.txt"
+$ErrorsToTSDB = $true
+$ErrorHistory = "C:\Monitoring\ErrorLog.txt"
 
 ############################
 # Citrix Apps and Desktops #
@@ -92,6 +94,10 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     throw "You must be administrator in order to execute this script"
 }
 
+if (Test-Path $ErrorLog) {
+    Remove-Item $ErrorLog -Force
+}
+
 # If you have multiple sites, just copy this section and invoke using
 # the brokers associated with each site.  
 
@@ -178,7 +184,7 @@ if ($null -ne $RdsLicenseServers) {
     $RDSLicenseParams = @{
         Series       = "RdsLicensing";
         ComputerName = $RdsLicenseServers;
-        Ports        = 7279, 27000, 8082, 8083;
+        Ports        = 135, 443;
         Services     = "TermService", "TermServLicensing", "UmRdpService";
         #    ErrorLog          = $ErrorLog
     }
@@ -212,7 +218,7 @@ if ($null -ne $ADServers) {
         Ports         = 389, 636; 
         Services      = "Netlogon", "ADWS", "NTDS";
         ValidCertPort = 636;
-        ErrorLog     = $ErrorLog
+        ErrorLog      = $ErrorLog
     }
     Test-EUCServer @ADParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -250,7 +256,7 @@ if ($null -ne $StoreFrontServers) {
         HTTPSPath     = $StoreFrontPaths;
         HTTPSPort     = 443;
         ValidCertPort = 443;
-        ErrorLog     = $ErrorLog
+        ErrorLog      = $ErrorLog
     }
     Test-EUCServer @StorefrontParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
@@ -334,3 +340,11 @@ if ($null -ne $CCServers) {
     }
     Test-EUCServer @CCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 } 
+
+$content = Get-Content $ErrorLog
+$content | Out-File -FilePath $ErrorHistory -Append
+if ($ErrorsToTSDB) {
+    foreach ($ErrorLogItem in $content) {
+        "ErrorLog $($ErrorLogItem ) $TimeStamp"
+    }
+}
