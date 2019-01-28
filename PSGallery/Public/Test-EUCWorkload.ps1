@@ -43,6 +43,7 @@ function Test-EUCWorkload {
         
         $Results = @()
 
+        $RdsServerComplete = $false
         $XdDesktopComplete = $false
         $XdServerComplete = $false
 
@@ -57,6 +58,42 @@ function Test-EUCWorkload {
                 continue
             }
             
+            if ($RdsServer) {
+                if ($RdsServerComplete) {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping RdsServer"
+                }
+                else {
+                    try {
+                        $params = @{
+                            Broker             = $Computer;
+                            Workload           = 'Server';
+                            WorkerHealth       = $WorkerHealth;
+                            BootThreshold      = $BootThreshold;
+                            LoadThreshold      = $LoadThreshold;
+                            DiskSpaceThreshold = $DiskSpaceThreshold;
+                            DiskQueueThreshold = $DiskQueueThreshold;
+                            All                = $All;
+                            ErrorLog           = $ErrorLog
+                        }
+                        $RdsServerResults = Test-RdsWorkload @params
+                        if ($RdsServerResults) { 
+                            $Results += $RdsServerResults
+                            $RdsServerComplete = $true 
+                        }
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
+                    }
+                    
+                    catch {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] RdsServer Failure"
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+                        if ($ErrorLog) {
+                            Write-EUCError -Path $ErrorLog "[$(Get-Date)] [EUCWorkload] RdsServer Exception: $_"
+                        }
+                    }
+                    
+                }
+            }
+
             if ($XdDesktop) {
                 
                 if ($XdDesktopComplete) { 
@@ -68,9 +105,6 @@ function Test-EUCWorkload {
                         $params = @{
                             Broker             = $Computer;
                             Workload           = 'Desktop';
-                            #    SessionInfo     = $SessionInfo;
-                            #    SessionDuration = $SessionDuration;
-                            #    DurationLength  = $DurationLength;
                             WorkerHealth       = $WorkerHealth;
                             BootThreshold      = $BootThreshold;
                             LoadThreshold      = $LoadThreshold;

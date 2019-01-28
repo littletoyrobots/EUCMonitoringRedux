@@ -29,7 +29,113 @@ function New-EUCHtmlReport {
         $CSSData | Out-File $HTMLOutputFileFull -Append
         "</style>" | Out-File $HTMLOutputFileFull -Append
 
-        '<meta http-equiv="refresh" content="' + $RefreshDuration + '" >' | Out-File $HTMLOutputFileFull -Append
+        if ( $RefreshDuration -ne 0 ) {
+            '<meta http-equiv="refresh" content="' + $RefreshDuration + '" >' | Out-File $HTMLOutputFileFull -Append
+        }
+
+        #################
+        # Title Section #
+        #################
+        $Title = "EUCMonitoring"
+        $LogoFile = "EUCMonitoring.png"
+        "<table border='0' width='100%'' cellspacing='0' cellpadding='0'>" | Out-File $HTMLOutputFileFull -Append
+        "<tr>" | Out-File $HTMLOutputFileFull -Append
+        "<td class='title-info'>" | Out-File $HTMLOutputFileFull -Append
+        $title | Out-File $HTMLOutputFileFull -Append
+        "</td>" | Out-File $HTMLOutputFileFull -Append
+        "<td width='40%' align=right valign=top>" | Out-File $HTMLOutputFileFull -Append
+        "<img src='$LogoFile'>" | Out-File $HTMLOutputFileFull -Append
+        "</td>" | Out-File $HTMLOutputFileFull -Append
+        "</tr>" | Out-File $HTMLOutputFileFull -Append
+        "</table>" | Out-File $HTMLOutputFileFull -Append
+
+        ##########################
+        # Infrastructure Section #
+        ##########################
+
+        # Write Infrastructure Table Header
+        "<table border='0' width='100%'' cellspacing='0' cellpadding='0'>" | Out-File $HTMLOutputFileFull -Append
+        "<tr>" | Out-File $HTMLOutputFileFull -Append
+
+        $Height = 50
+        $Width = 50
+        $UpColor = "rgba(221, 70, 70, 0.9)"
+        $DownColor = "rgba(67, 137, 203, 0.95)"
+
+        $InfraData = ""
+
+        # List of Series you don't want in the infrastructure section
+        $NonInfraSeriesNames = @(
+            "XdWorker", "XdWorkerHealth", 
+            "RdsWorker", "RdsWorkerHealth", 
+            "XdLicense", "RdsLicense", # These are the license numbers, not services
+            "CitrixADClbvserver", "CitrixADCcsvserver", "CitrixADCgatewayusers" # ADC Stats, not up/down
+        )
+
+        $NonInfraSeriesResults = $Results | Where-Object { $_.Series -notcontains $NonInfraSeriesNames } 
+        $NonInfraResultNames = $NonInfraSeriesResults | Select-Object -ExpandProperty Series -Unique
+        
+        $TotalInf = $NonInfraResultNames.Count
+        if ($TotalInf -gt 0) { 
+            # Bug Fix #57 -> Alex Spicola
+            if ($TotalInf -gt 1) { $TotalInf-- } else { $TotalInf = 1 }
+            $ColumnPercent = 100 / [int]$totalinf
+        }
+
+        foreach ($Name in $NonInfraSeriesNames) {
+            
+
+            # Renames
+            switch ($Name) {
+                "Xenserver" { $SeriesName = "Citrix HV"; break }
+                "Storefront" { $SeriesName = "StoreFront"; break }
+                "XdLicensing" { $SeriesName = "Citrix Licensing"; break }
+                "RdsLicensing" { $SeriesName = "RDS Licensing"; break }
+                "NetScaler" { $SeriesName = "Citrix ADC"; break }
+                default { $SeriesName = $Name; break }
+            }
+
+            $Params = @{
+                Height          = $Height;
+                Width           = $Width;
+                DonutGoodColour = $UpColor;
+                DonutBadColour  = $DownColor;
+                DonutStroke     = $DonutStroke;
+                SeriesName      = $SeriesName;
+                SeriesUpCount   = $Up;
+                SeriesDownCount = $Down;
+                Worker          = $false;
+                SiteName        = $null
+            }
+            Get-DonutHTML @Params | Out-File $HTMLOutputFileFull -Append
+
+        }
+
+
+        "</tr>" | Out-File $HTMLOutputFileFull -Append
+        "</table>" | Out-File $HTMLOutputFileFull -Append
+
+        ##################
+        # Worker Objects #
+        ##################
+
+
+
+        # Last Run Details
+        "<table>" | Out-File $HTMLOutputFileFull -Append
+        "<tr>" | Out-File $HTMLOutputFileFull -Append
+        "<div class='info-text'>" | Out-File $HTMLOutputFileFull -Append
+        $LastRun = Get-Date
+        "Last Run Date: $LastRun" | Out-File $HTMLOutputFileFull -Append
+        "</div>" | Out-File $HTMLOutputFileFull -Append
+        "</tr>" | Out-File $HTMLOutputFileFull -Append
+
+        # Write the Worker Table Footer
+        "</table>" | Out-File $HTMLOutputFileFull -Append
+    
+        # Write HTML Footer Information
+        "</body>" | Out-File $HTMLOutputFileFull -Append
+        "</html>" | Out-File $HTMLOutputFileFull -Append
     }
 
     End { 

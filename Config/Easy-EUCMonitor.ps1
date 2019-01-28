@@ -342,9 +342,11 @@ if ($null -ne $CCServers) {
 } 
 
 $content = Get-Content $ErrorLog
-$content | Out-File -FilePath $ErrorHistory -Append
-if ($ErrorsToTSDB) {
-    foreach ($ErrorLogItem in $content) {
-        "ErrorLog $($ErrorLogItem ) $TimeStamp"
+if ($null -ne $content) { 
+    $content | Out-File -FilePath $ErrorHistory -Append
+    if ($ErrorsToTSDB) {
+        foreach ($ErrorLogItem in $content) {
+            "ErrorLog $($ErrorLogItem.Trim() ) $TimeStamp"
+        }
     }
 }
