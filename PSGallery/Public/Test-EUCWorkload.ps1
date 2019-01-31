@@ -33,6 +33,8 @@ function Test-EUCWorkload {
         [string]$ErrorLog
     )
     
+    # This is a wrapper function that makes it easy to feed a list of brokers and have the function
+    # worry about skipping those it can't connect to, and not running the test twice. 
     
     Begin {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"

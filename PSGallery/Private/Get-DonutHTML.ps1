@@ -67,14 +67,16 @@ function Get-DonutHTML {
     if ( $Worker ) {
         $HTML += "<g class='worker-chart-text'>" 
         $HTML += "<text x='50%' y='50%' class='worker-chart-label'>" 
+        $HTML += "$SiteName $SeriesName" 
+        $HTML += "</text>"
     }
     else {
         $HTML += "<g class='chart-text'>" 
-        $HTML += "<text x='50%' y='50%' class='chart-label'>"      
+        $HTML += "<text x='50%' y='50%' class='chart-label'>"  
+        $HTML += "$SeriesName" 
+        $HTML += "</text>"    
     }
         
-    $HTML += "$SeriesName" 
-    $HTML += "</text>"
     $HTML += "</g>"
     $HTML += "</svg>" 
 

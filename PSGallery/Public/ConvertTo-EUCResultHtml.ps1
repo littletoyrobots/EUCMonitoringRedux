@@ -72,18 +72,34 @@ function New-EUCHtmlReport {
             "CitrixADClbvserver", "CitrixADCcsvserver", "CitrixADCgatewayusers" # ADC Stats, not up/down
         )
 
-        $NonInfraSeriesResults = $Results | Where-Object { $_.Series -notcontains $NonInfraSeriesNames } 
-        $NonInfraResultNames = $NonInfraSeriesResults | Select-Object -ExpandProperty Series -Unique
+        $InfraSeriesResults = $Results | Where-Object { $_.Series -notcontains $NonInfraSeriesNames } 
+        $InfraResultNames = $InfraSeriesResults | Select-Object -ExpandProperty Series -Unique
         
-        $TotalInf = $NonInfraResultNames.Count
+        $TotalInf = $InfraResultNames.Count
         if ($TotalInf -gt 0) { 
             # Bug Fix #57 -> Alex Spicola
             if ($TotalInf -gt 1) { $TotalInf-- } else { $TotalInf = 1 }
             $ColumnPercent = 100 / [int]$totalinf
         }
 
-        foreach ($Name in $NonInfraSeriesNames) {
-            
+        foreach ($Name in $InfraSeriesNames) {
+
+            $Up = 0
+            $Down = 0
+
+            $SeriesResults = $InfraSeriesResults | Where-Object { $_.Series -eq $Name }
+
+            $SeriesResults.PSObject.Properties | ForEach-Object {
+                if ($null -eq $_.Value) { }
+                elseif ($_.Name -eq "Series") {  }
+                # If its a string, we'll treat it as a tag
+                elseif ($_.Value -is [string]) { }
+                else {
+                    if ( $_.Value -eq 1 ) { $Up++ } 
+                    elseif ( $_.Value -eq 0 ) { $Down++ }
+                    else { } # Discard other values. 
+                }
+            }
 
             # Renames
             switch ($Name) {
