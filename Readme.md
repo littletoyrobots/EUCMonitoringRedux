@@ -6,7 +6,7 @@
 
 This is a continuation of the [EUCMonitoring Platform](http://bretty.me.uk/free-citrix-xendesktop-7-monitoring-platform/) that is based on Powershell and FREE! It will check all the key components of your End User Computer estate and give you a visual dashboard as to its current health. It is currently focused on Citrix but will eventually be branched out to cover VMware and Microsoft Technologies.
 
-This continuation is organized in such a way that you could take advantage of the [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) agent for collecting and reporting metrics.
+This continuation is organized in such a way that you could take advantage of the [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) agent for collecting and reporting metrics. In its simplest form, the telegraf agent works like a scheduled task running every 5 minutes, invoking a powershell script that outputs to Influx Line Protocol. Telegraf takes that output and redirects it to any of its supported time series databases. I like InfluxDB. We then configure Grafana to point to InfluxDB and visualize the results. It will create a local log file of any errors it finds, and will eventually make the static HTML file as well.
 
 ## Motivation
 
