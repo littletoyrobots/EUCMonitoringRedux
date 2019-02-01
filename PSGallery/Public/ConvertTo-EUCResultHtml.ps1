@@ -1,4 +1,4 @@
-function ConvertTo-EUCReportHTML {
+function ConvertTo-EUCResultHTML {
     [cmdletbinding(ConfirmImpact = "High")]
     Param (
         [Object[]]$Results,
@@ -75,6 +75,7 @@ function ConvertTo-EUCReportHTML {
         $InfraSeriesResults = $Results | Where-Object { $_.Series -notcontains $NonInfraSeriesNames } 
         $InfraResultNames = $InfraSeriesResults | Select-Object -ExpandProperty Series -Unique
         
+
         $TotalInf = $InfraResultNames.Count
         if ($TotalInf -gt 0) { 
             # Bug Fix #57 -> Alex Spicola
@@ -82,6 +83,7 @@ function ConvertTo-EUCReportHTML {
             $ColumnPercent = 100 / [int]$totalinf
         }
 
+        Write-Verbose "$ColumnPercent"
         foreach ($Name in $InfraSeriesNames) {
 
             $Up = 0
@@ -100,7 +102,7 @@ function ConvertTo-EUCReportHTML {
                     else { } # Discard other values. 
                 }
             }
-            
+
 
             # Renames
             switch ($Name) {
