@@ -61,14 +61,16 @@ function Test-RdsWorkload {
             $CollectionName = $Collection.CollectionName
 
             $SessionHosts = Get-RDSessionHost -CollectionName -$CollectionName -CollectionBroker $Broker
-            $ActiveSessionHosts = Get-RDSessionHost -CollectionName -$CollectionName -CollectionBroker $Broker | Where-Object { $_.NewConnectionAllowed -eq "Yes"}
+            #$ActiveSessionHosts = Get-RDSessionHost -CollectionName -$CollectionName -CollectionBroker $Broker | Where-Object { $_.NewConnectionAllowed -eq "Yes"}
+            $MachineCount = $SessionHosts.Count
+   
             $Sessions = Get-RDUserSession -ConnectionBroker $Broker -CollectionName $CollectionName 
 
 
             # This work, even if $Sessions is null.
             $TotalSessions = $Sessions.Count
-            $ActiveSessions = $Sessions # | Where-Object SessionState -eq "XXX"
-            $IdleSessions = $Sessions #
+            $ActiveSessions = $Sessions.Count # | Where-Object SessionState -eq "XXX"
+            $IdleSessions = $Sessions.Count  # ! Does something get returned here that makes this easy? 
             $DisconnectedSessions = $Sessions | Where-Object { $_.SessionState -eq "STATE_DISCONNECTED" }
 
             $Results += [PSCustomObject]@{

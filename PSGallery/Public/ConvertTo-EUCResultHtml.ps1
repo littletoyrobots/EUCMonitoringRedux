@@ -1,4 +1,4 @@
-function New-EUCHtmlReport {
+function ConvertTo-EUCReportHTML {
     [cmdletbinding(ConfirmImpact = "High")]
     Param (
         [Object[]]$Results,
@@ -62,7 +62,7 @@ function New-EUCHtmlReport {
         $UpColor = "rgba(221, 70, 70, 0.9)"
         $DownColor = "rgba(67, 137, 203, 0.95)"
 
-        $InfraData = ""
+        # $InfraData = ""
 
         # List of Series you don't want in the infrastructure section
         $NonInfraSeriesNames = @(
@@ -100,6 +100,7 @@ function New-EUCHtmlReport {
                     else { } # Discard other values. 
                 }
             }
+            
 
             # Renames
             switch ($Name) {
