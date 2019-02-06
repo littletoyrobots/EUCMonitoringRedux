@@ -60,7 +60,7 @@ While Telegraf can export to [various destinations](https://github.com/influxdat
 1. Install as a service by running the following in Powershell as an administrator:
 
 ```powershell
-> "C:\Program Files\Telegraf\telegraf.exe" --service install --config "C:\Program  Files\Telegraf\EUCMonitoring.conf" --service-name EUCMonitoring
+> "C:\Program Files\Telegraf\telegraf.exe" --service install --config "C:\Program  Files\Telegraf\EUCMonitoring.conf"
 ```
 
 1. Edit the EUCMonitoring.conf file for your environment. The default values assume a local install.
@@ -74,7 +74,7 @@ While Telegraf can export to [various destinations](https://github.com/influxdat
 1. To start collecting data, run:
 
 ```powershell
-> start-service EUCMonitoring
+> start-service telegraf
 ```
 
 ## Active Contributors

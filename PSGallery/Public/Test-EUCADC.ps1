@@ -92,7 +92,7 @@ Function Test-EUCADC {
                 return
             }
             else {
-                if ($System -or $All) {
+                if ($SystemStats -or $All) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] System Stats Enabled"
                     $Results += Get-CitrixADCsystemstat -ADCSession $ADCSession
                 }

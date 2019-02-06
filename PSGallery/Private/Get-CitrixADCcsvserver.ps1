@@ -55,12 +55,16 @@ function Get-CitrixADCcsvserver {
                     $Health = [int]$csvserver.vslbhealth
                     $HitsRate = [int]$csvserver.hitsrate
                     $RequestsRate = [int]$csvserver.requestsrate
+                    $RequestBytesRate = [int]$csvserver.requestbytesrate
                     $ResponsesRate = [int]$csvserver.responsesrate
+                    $ResponseBytesRate = [int]$csvserver.responsebytesrate
                     $TotalHits = [int]$csvserver.tothits
                     $TotalRequests = [int]$csvserver.totalrequests
                     $TotalResponses = [int]$csvserver.totalresponses
-                    $CurrentClientConnections = [int]$lbserver.curclntconnections 
-                    $CurrentServerConnections = [int]$lbserver.cursrvrconnections 
+                    $EstablishedConnections = [int]$csvserver.establistconn
+                    $EstablishedConnections = [int]$csvserver.establishedconn
+                    $CurrentClientConnections = [int]$csserver.curclntconnections 
+                    $CurrentServerConnections = [int]$csserver.cursrvrconnections 
                         
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Health: $Health, HitsRate: $HitsRate, RequestsRate: $RequestsRate, ResponsesRate: $ResponsesRate"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - TotalHits: $TotalHits, TotalRequests: $TotalRequests, TotalResponses: $TotalResponses"
@@ -78,10 +82,13 @@ function Get-CitrixADCcsvserver {
                         Health                   = $Health
                         HitsRate                 = $HitsRate
                         RequestsRate             = $RequestsRate
+                        RequestByteRate          = $RequestBytesRate
                         ResponsesRate            = $ResponsesRate
+                        ResponseByteRate         = $ResponseBytesRate
                         TotalHits                = $TotalHits
                         TotalRequests            = $TotalRequests
                         TotalResponses           = $TotalResponses
+                        EstablishedConnections   = $EstablishedConnections
                         CurrentClientConnections = $CurrentClientConnections
                         CurrentServerConnections = $CurrentServerConnections
                     }
@@ -100,10 +107,13 @@ function Get-CitrixADCcsvserver {
                 Health                   = -1
                 HitsRate                 = -1
                 RequestsRate             = -1
+                RequestByteRate          = -1
                 ResponsesRate            = -1
+                ResponseByteRate         = -1
                 TotalHits                = -1
                 TotalRequests            = -1
                 TotalResponses           = -1
+                EstablishedConnections   = -1
                 CurrentClientConnections = -1
                 CurrentServerConnections = -1
             }

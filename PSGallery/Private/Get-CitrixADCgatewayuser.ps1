@@ -52,6 +52,8 @@ function Get-CitrixADCgatewayuser {
 
             $TotalUsers = $ICAUsers + $VPNUsers
             
+            # Add some stuff about AAA User Auth Fail / Success? 
+
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] ICAUsers: $ICAUsers, VPNUsers: $VPNUsers, TotalUsers: $TotalUsers"
             $Results += [PSCustomObject]@{
                 Series     = "CitrixADCgatewayuser"

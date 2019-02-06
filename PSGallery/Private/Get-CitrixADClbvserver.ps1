@@ -53,18 +53,28 @@ function Get-CitrixADClbvserver {
                     $Name = $lbvserver.name
                     $Status = $lbvserver.state
                     $Health = [int]$lbvserver.vslbhealth
+                    
+                    # Rates
                     $HitsRate = [int]$lbvserver.hitsrate
                     $RequestsRate = [int]$lbvserver.requestsrate
+                    $RequestBytesRate = [int]$lbvserver.requestbytesrate
                     $ResponsesRate = [int]$lbvserver.responsesrate
+                    $ResponseBytesRate = [int]$lbvserver.responsebytesrate
+
+                    #Totals
                     $TotalHits = [int]$lbvserver.tothits
                     $TotalRequests = [int]$lbvserver.totalrequests
                     $TotalResponses = [int]$lbvserver.totalresponses
-                    $CurrentClientConnections = [int]$lbserver.curclntconnections 
-                    $CurrentServerConnections = [int]$lbserver.cursrvrconnections 
+
+                    # Current Connections
+                    $EstablishedConnections = [int]$lbvserver.establishedconn
+                    $CurrentClientConnections = [int]$lbvserver.curclntconnections
+                    $CurrentServerConnections = [int]$lbvserver.cursrvrconnections 
+
                         
                     if ($Health -eq 100) { $State = 2 }
-                    elseif ($Health -gt 0) { $State = 1 }
-                    else { $State = 0 }
+                    elseif ($Health -gt 0) { $State = 1; Write-EUCError -Path $ErrorLog "[$(Get-Date)] [CitrixADClbvserver] $Name DEGRADED" }
+                    else { $State = 0; Write-EUCError -Path $ErrorLog "[$(Get-Date)] [CitrixADClbvserver] $Name DOWN" }
 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Health: $Health, HitsRate: $HitsRate, RequestsRate: $RequestsRate, ResponsesRate: $ResponsesRate"
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - TotalHits: $TotalHits, TotalRequests: $TotalRequests, TotalResponses: $TotalResponses"
@@ -78,10 +88,13 @@ function Get-CitrixADClbvserver {
                         Health                   = $Health
                         HitsRate                 = $HitsRate
                         RequestsRate             = $RequestsRate
+                        RequestByteRate          = $RequestBytesRate
                         ResponsesRate            = $ResponsesRate
+                        ResponseByteRate         = $ResponseBytesRate
                         TotalHits                = $TotalHits
                         TotalRequests            = $TotalRequests
                         TotalResponses           = $TotalResponses
+                        EstablishedConnections   = $EstablishedConnections
                         CurrentClientConnections = $CurrentClientConnections
                         CurrentServerConnections = $CurrentServerConnections
                     }
@@ -91,6 +104,7 @@ function Get-CitrixADClbvserver {
         catch {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Problem getting load balancing vservers"
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
+            Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$($myinvocation.mycommand)] $_"
             $Results += [PSCustomObject]@{
                 Series                   = "CitrixADClbvserver"
                 Host                     = $ADC
@@ -100,10 +114,13 @@ function Get-CitrixADClbvserver {
                 Health                   = -1
                 HitsRate                 = -1
                 RequestsRate             = -1
+                RequestByteRate          = -1
                 ResponsesRate            = -1
+                ResponseByteRate         = -1
                 TotalHits                = -1
                 TotalRequests            = -1
                 TotalResponses           = -1
+                EstablishedConnections   = -1
                 CurrentClientConnections = -1
                 CurrentServerConnections = -1
             }
