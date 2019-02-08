@@ -22,32 +22,7 @@ function Test-RdsWorkload {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading RDS Powershell Snapin"
 
-        import-module RemoteDesktop
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Load Failed"
-            if ($ErrorLog) {
-                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Load Failed" 
-            }
-            throw "Cannot Load XenDesktop Powershell SDK"
-        }
-        else {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Loaded"
-        }
-
-        $ctxsnap = Add-PSSnapin Citrix.Configuration.Admin.* -ErrorAction SilentlyContinue
-        $ctxsnap = Get-PSSnapin Citrix.Configuration.Admin.* -ErrorAction SilentlyContinue
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Load Failed"
-            if ($ErrorLog) {
-                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Load Failed" 
-            }
-            throw "Cannot Load XenDesktop Powershell SDK"
-        }
-        else {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Loaded"
-        }
+        Import-Module RemoteDesktop
     } #BEGIN
 
     # Broker, CollectionName, Workload, Host.  
@@ -55,53 +30,66 @@ function Test-RdsWorkload {
     Process {
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] "
 
+        # Get all the collections.  Iterate over them and get each collection's health, adding to returned 
+        # results.  
         $Collections = Get-RDSessionCollection -ConnectionBroker $Broker
 
         foreach ($Collection in $Collections) {
             $CollectionName = $Collection.CollectionName
 
             $SessionHosts = Get-RDSessionHost -CollectionName -$CollectionName -CollectionBroker $Broker
-            #$ActiveSessionHosts = Get-RDSessionHost -CollectionName -$CollectionName -CollectionBroker $Broker | Where-Object { $_.NewConnectionAllowed -eq "Yes"}
-            $MachineCount = $SessionHosts.Count
-   
-            $Sessions = Get-RDUserSession -ConnectionBroker $Broker -CollectionName $CollectionName 
+
+            if ($null -ne $SessionHosts) {
+                #$ActiveSessionHosts = Get-RDSessionHost -CollectionName -$CollectionName -CollectionBroker $Broker | Where-Object { $_.NewConnectionAllowed -eq "Yes"}
+                $MachineCount = $SessionHosts.Count
+                $Sessions = Get-RDUserSession -ConnectionBroker $Broker -CollectionName $CollectionName 
 
 
-            # This work, even if $Sessions is null.
-            $TotalSessions = $Sessions.Count
-            $ActiveSessions = $Sessions.Count # | Where-Object SessionState -eq "XXX"
-            $IdleSessions = $Sessions.Count  # ! Does something get returned here that makes this easy? 
-            $DisconnectedSessions = $Sessions | Where-Object { $_.SessionState -eq "STATE_DISCONNECTED" }
+                # This work, even if $Sessions is null.
+                $TotalSessions = $Sessions.Count
+                $ActiveSessions = $Sessions.Count # | Where-Object SessionState -eq "XXX"
+                $IdleSessions = $Sessions.Count  # ! Does something get returned here that makes this easy? 
+                $DisconnectedSessions = $Sessions | Where-Object { $_.SessionState -eq "STATE_DISCONNECTED" }
 
-            $Results += [PSCustomObject]@{
-                Series               = "XdWorker"
-                Type                 = $Workload
-                Host                 = $Broker
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] " 
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] " 
+                $Results += [PSCustomObject]@{
+                    Series               = "XdWorker"
+                    Type                 = $Workload
+                    Host                 = $Broker
 
-                SiteName             = $SiteName
-                ZoneName             = $ZoneName
+                    SiteName             = $SiteName
+                    ZoneName             = $ZoneName
 
-                CollectionName       = $CollectionName
+                    CollectionName       = $CollectionName
+          
+                    MachineCount         = $MachineCount
+                    # Registered           = $Registered
+                    # Unregistered         = $Unregistered
+                    # PowerOn              = $PowerOn
+                    # PowerOff             = $PowerOff
+                    # PowerOther           = $PowerOther
+                    # InMaintenence        = $InMaintenance
+                    # LoadIndexAvg         = $LoadIndexAvg
+                    # LoadIndexMax         = $LoadIndexMax
+                    TotalSessions        = $TotalSessions
+                    ActiveSessions       = $ActiveSessions
+                    IdleSessions         = $IdleSessions
+                    DisconnectedSessions = $DisconnectedSessions    
+                    OtherSessions        = $TotalSessions - ($ActiveSessions + $IdleSessions + $DisconnectedSessions)
+                }
 
-                # CatalogName          = $CatalogName
-                # DeliveryGroupName    = $DeliveryGroupName
-                                
+                if ($WorkerHealth) {
+                    # Filter out maintenance mode
 
-                                
-                MachineCount         = $MachineCount
-                # Registered           = $Registered
-                # Unregistered         = $Unregistered
-                # PowerOn              = $PowerOn
-                # PowerOff             = $PowerOff
-                # PowerOther           = $PowerOther
-                # InMaintenence        = $InMaintenance
-                # LoadIndexAvg         = $LoadIndexAvg
-                # LoadIndexMax         = $LoadIndexMax
-                TotalSessions        = $TotalSessions
-                ActiveSessions       = $ActiveSessions
-                IdleSessions         = $IdleSessions
-                DisconnectedSessions = $DisconnectedSessions    
-                OtherSessions        = $TotalSessions - ($ActiveSessions + $IdleSessions + $DisconnectedSessions)
+                    $Params = @{
+
+                    }
+                    $Results += Get-RdsWorkerHealth @Params 
+                }
+                else {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Skipping RdsWorkerHealth"
+                }
             }
         }
     }

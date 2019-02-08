@@ -2,10 +2,6 @@
 # edit the copy per site.   Do not comment out any of these lines.  We suggest
 # using fqdn for servernames, so any valid certificate checks associated will pass.
 
-$ErrorLog = "c:\Monitoring\CurrentErrorLog.txt"
-$ErrorsToTSDB = $true
-$ErrorHistory = "C:\Monitoring\ErrorLog.txt"
-
 ############################
 # Citrix Apps and Desktops #
 ############################
@@ -77,6 +73,24 @@ $PVSServers = $null         # Put your provisioning servers here.
 $WEMBrokers = $null         # Put your WEM brokers here.
 $UPSServers = $null         # Put your UPS servers here.
 $FASServers = $null         # Put your FAS servers here.
+
+##########
+# Output #
+##########
+
+$OutputInfluxDataProtocol = $true
+$GenerateReportHTML = $true
+$ReportHTMLPath = "C:\Monitoring\EUCMonitoring.html"
+
+
+$ErrorsToTSDB = $true
+
+$InfraErrorLog = "C:\Monitoring\Infra-Errors.txt"
+$WorkerErrorLog = "C:\Monitoring\Worker-Errors.txt"
+$ADCErrorLog = "C:\Monitoring\ADC-Errors.txt"
+$ErrorLog = "C:\Monitoring\CurrentErrorLog.txt"
+$ErrorHistory = "C:\Monitoring\ErrorLog.txt"
+
 
 #########################################
 # End of easy implementation config.    #
