@@ -1,94 +1,68 @@
-Function Get-XdWorkerHealth {
-    <#
-    .SYNOPSIS
-    Short description
-    
-    .DESCRIPTION
-    Long description
-    
-    .PARAMETER Broker
-    Parameter description
-    
-    .PARAMETER Workload
-    Parameter description
-    
-    .PARAMETER SiteName
-    Parameter description
-    
-    .PARAMETER ZoneName
-    Parameter description
-    
-    .PARAMETER CatalogName
-    Parameter description
-    
-    .PARAMETER DeliveryGroupName
-    Parameter description
-    
-    .PARAMETER Machines
-    Parameter description
-    
-    .PARAMETER BootThreshold
-    Parameter description
-    
-    .PARAMETER LoadThreshold
-    Parameter description
-    
-    .EXAMPLE
-    An example
-    
-    .NOTES
-    Current Version:    1.0
-    Creation Date:      2019/01/01
-
-    .CHANGE CONTROL
-    Name                 Version         Date            Change Detail
-    Adam Yarborough      1.0             2019/01/01      Function Creation
-    #>
-    
+Function Test-CVADworkerhealth {
     [cmdletbinding()]
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [ValidateNotNullOrEmpty()][string]$Broker, 
+        [ValidateNotNullOrEmpty()]
+        [string]$Broker,
         # This section is for returned objects
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$Workload, 
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$SiteName,
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$ZoneName,
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$CatalogName,
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)]$DeliveryGroupName,
 
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [ValidateNotNullOrEmpty()]$Machines, 
-        # These are the tests.  If set to -1, then tests skipped. 
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$BootThreshold,
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$LoadThreshold,
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$DiskSpaceThreshold,
-        [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$DiskQueueThreshold,
+        [Alias("Site")]
+        [string]$SiteName,
+
+        [Alias("Zone")]
+        [string]$ZoneName,
+
+        [Alias("Catalog")]
+        [string]$CatalogName,
+
+        [Alias("DeliveryGroup")]
+        [string]$DesktopGroupName,
+
+        [string]$SessionSupport,
+
+        [string[]]$MachineDNSNames,
+
+        # These are the tests.  If set to -1, then tests skipped.
+        [int]$BootThreshold,
+
+        [int]$LoadThreshold,
+
+        [int]$DiskSpaceThreshold,
+
+        [int]$DiskQueueThreshold,
+
+        [switch]$All, # AllSessionsTypes, AllTests
+
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)]
+        [Alias("LogPath")]
         [string]$ErrorLog
     )
 
-    Begin { 
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
-        
-    
-        
+    Begin {
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] $SiteName / $ZoneName / $CatalogName / $DesktopGroupName"
+        # Create and open runspace pool, setup runspaces array with min and max threads
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Setting Up Runspace pool"
+        $Pool = [RunspaceFactory]::CreateRunspacePool(1, ([int]$env:NUMBER_OF_PROCESSORS + 1))
+        $Pool.ApartmentState = "MTA"
+        $Pool.Open()
     }
 
     Process {
 
-        # Just remember, every test you run here will be run against every single worker target.  
+        # Just remember, every test you run here will be run against every single worker target.  Don't
+        # be a complete ass with someone else's machine.
         $Scriptblock = {
             Param (
                 [string]$Machine,
                 [string]$Broker,
-                [int]$BootThreshold = -1,
-                [int]$LoadThreshold = -1,     
-                [int]$DiskSpaceThreshold = -1,
-                [int]$DiskQueueThreshold = -1
+                [int]$BootThreshold,
+                [int]$LoadThreshold,
+                [int]$DiskSpaceThreshold,
+                [int]$DiskQueueThreshold
             )
             begin { Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue }
 
-            process { 
-                # $Errors = @()
+            process {
                 $Health = "Not Run"
 
                 $DNSMismatch = $false
@@ -100,10 +74,13 @@ Function Get-XdWorkerHealth {
                 $HighDiskQueue = $false
                 $Unregistered = $false
 
-                try { 
-                    # $FastPing = Test-Connection -ComputerName $Machine -Count 1 -Quiet -ErrorAction SilentlyContinue
-                    $BrokerMachine = Get-BrokerMachine -AdminAddress $Broker -DNSName $Machine -ErrorAction Stop
+                $BrokerMachine = Get-BrokerMachine -AdminAddress $Broker -DNSName $Machine -ErrorAction Stop
 
+                # First we'll test connection through WSMan
+                try {
+                    # $FastPing = Test-Connection -ComputerName $Machine -Count 1 -Quiet -ErrorAction SilentlyContinue
+
+                    # Test for ping first.
                     $Connected = (Test-NetConnection -ComputerName $Machine -ErrorAction Stop)
                     if (-Not ($Connected.PingSucceeded)) {
                         $Health = "Unhealthy"
@@ -115,16 +92,17 @@ Function Get-XdWorkerHealth {
                             $DNSMismatch = $true
                         }
                     }
+
                     else {
-                        # These tests will error out if connection failure. 
+                        # These tests will error out if connection failure.
                         # Little setup for the tests that need it.  Provides $OS and $DISK
-                        if ((-1 -ne $BootThreshold) -or (-1 -ne $DiskSpaceThreshold) -or (-1 -ne $DiskQueueThreshold)) {
+                        if (($BootThreshold) -or ($DiskSpaceThreshold) -or ($DiskQueueThreshold)) {
                             [regex]$rx = "\d\.\d$"
-                            $data = test-wsman $Machine
-                            $rx.match($data.ProductVersion)
+                            $data = test-wsman $Machine -ErrorAction Stop
+                            # $rx.match($data.ProductVersion)
                             if ($rx.match($data.ProductVersion).value -eq '3.0') {
                                 $OS = Get-Ciminstance -ClassName win32_operatingsystem -ComputerName $Machine -ErrorAction Continue
-                                $Disk = Get-Ciminstance -ClassName win32_logicaldisk -ComputerName $Machine -ErrorAction Continue 
+                                $Disk = Get-Ciminstance -ClassName win32_logicaldisk -ComputerName $Machine -ErrorAction Continue
                             }
                             else {
                                 $opt = New-CimSessionOption -Protocol Dcom
@@ -135,7 +113,7 @@ Function Get-XdWorkerHealth {
                         }
 
                         # Test for Uptime of Machine
-                        if (-1 -ne $BootThreshold) {
+                        if ($BootThreshold) {
                             $Uptime = $OS.LocalDateTime - $OS.LastBootUpTime
                             $UptimeDays = $Uptime.Days
 
@@ -145,18 +123,18 @@ Function Get-XdWorkerHealth {
                             }
                         }
 
-                        if (-1 -ne $DiskSpaceThreshold) {
+                        if ($DiskSpaceThreshold) {
                             foreach ($Device in $Disk) {
-                                # If drive is read/write and greater than threshold.  
+                                # If drive is read/write and greater than threshold.
                                 if ((3 -eq $Device.DriveType) -and (($Device.FreeSpace / $Device.Size) * 100 -ge [int]$DiskSpaceThreshold)) {
                                     $Health = "Unhealthy"
                                     $HighDiskSpaceUsage = $true
                                 }
                             }
                         }
-                
-                        # This is slow.  
-                        if (-1 -ne $DiskQueueThreshold) {
+
+                        # This is slow.
+                        if ($DiskQueueThreshold) {
                             $Queues = (Get-Counter "\\$Machine\PhysicalDisk(*)\Current Disk Queue Length" -ErrorAction SilentlyContinue).CounterSamples.CookedValue
                             foreach ($Queue in $Queues) {
                                 if ($Queue -ge $DiskQueueThreshold) {
@@ -166,34 +144,29 @@ Function Get-XdWorkerHealth {
                             }
                         }
                     }
-                
-                
+
+
                     # Is the load of the machine within bounds?
-                    if (-1 -ne $LoadThreshold) {
+                    if ($LoadThreshold) {
                         if ($BrokerMachine.LoadIndex -ge $LoadThreshold) {
                             $Health = "Unhealthy"
                             $HighLoad = $true
                         }
                     }
 
-                    # Is the machine registered? 
-                    # ! Turn this into a splat
-                    if ("Registered" -ne $BrokerMachine.RegistrationState) { 
+                    # Is the machine registered?
+                    if ("Registered" -ne $BrokerMachine.RegistrationState) {
                         $Health = "Unhealthy"
-                        $Unregistered = $true 
+                        $Unregistered = $true
                     }
-            
-                    # If status not changed, we're good.  
-                    if ($Health -eq "Not Run") { 
+
+                    # If status not changed, we're good.
+                    if ($Health -eq "Not Run") {
                         $Health = "Healthy"
                     }
-                
+
                 }
                 catch {
-                    # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Error checking worker health on $Machine"
-                    # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
-                    # "[$(Get-Date) ERROR  ] [$($myinvocation.mycommand)] Error checking worker health on $Machine" | Out-File -FilePath "C:\Monitoring\Errorlog.txt" -Append
-                    "[$(Get-Date) ERROR  ] $_"  | Out-File -FilePath "C:\Monitoring\$Machine.txt" -Append
                     $Health = "ERROR"
                 }
 
@@ -209,69 +182,88 @@ Function Get-XdWorkerHealth {
                     HighDiskQueue      = $HighDiskQueue
                     Unregistered       = $Unregistered
                 }
-            } 
-            
+            }
+
             end { }
         } # SCRIPTBLOCK
 
-        
-        $Results = @()
-
+        #
+        # ! Actual meat of the script
+        #
         try {
-            # Create and open runspace pool, setup runspaces array with min and max threads
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Setting Up Runspace pool"
-            $Pool = [RunspaceFactory]::CreateRunspacePool(1, [int]$env:NUMBER_OF_PROCESSORS + 1)
-            $Pool.ApartmentState = "MTA"
-            $Pool.Open()
-
             $Runspaces = @()
             $RunspaceResults = @()
 
-            foreach ($Machine in $Machines.DNSName) {
+            $MachineList = New-Object System.Collections.ArrayList(, $MachineDNSNames)
+
+            # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $($MachineList -join ', ')"
+
+            foreach ($Machine in $MachineList) {
                 $Runspace = [PowerShell]::Create()
-                $null = $Runspace.AddScript($Scriptblock)
-                $null = $Runspace.AddArgument($Machine)
-                $null = $Runspace.AddArgument($Broker)
-                $null = $Runspace.AddArgument($BootThreshold)
-                $null = $Runspace.AddArgument($LoadThreshold)
-                $null = $Runspace.AddArgument($DiskSpaceThreshold)
-                $null = $Runspace.AddArgument($DiskQueueThreshold)
+                $Runspace.AddScript($Scriptblock) | Out-Null
+                $Runspace.AddParameter('Machine', $Machine) | Out-Null
+                $Runspace.AddParameter('Broker', $Broker) | Out-Null
+                if ($BootThreshold) { $Runspace.AddParameter('BootThreshold', $BootThreshold) | Out-Null }
+                if ($LoadThreshold) { $Runspace.AddParameter('LoadThreshold', $LoadThreshold) | Out-Null }
+                if ($DiskSpaceThreshold) { $Runspace.AddParameter('DiskSpaceThreshold', $DiskSpaceThreshold) | Out-Null }
+                if ($DiskQueueThreshold) { $Runspace.AddParameter('DiskQueueThreshold', $DiskQueueThreshold) | Out-Null }
+
+
                 $Runspace.RunspacePool = $Pool
+
+                # try / catch for Runspace errors instead of other errors
                 try {
                     $Runspaces += [PSCustomObject]@{ Pipe = $Runspace; Status = $Runspace.BeginInvoke() }
                 }
                 catch {
-                    if ($ErrorLog) {
-                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorkerHealth] $_"
-                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorkerHealth] M: $Machine B: $Broker BT: $BootThreshold LT: $LoadThreshold DST: $DiskSpaceThreshold DQT: $DiskQueueThreshold" 
-                    }    
+                    if ($ErrorLogPath) {
+                        Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+                    }
+                    else {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+                    }
                 }
             }
 
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Runspace executing"
-            while ($Runspaces.Status.IsCompleted -notcontains $true) { start-sleep -Seconds 1 }
+            do {
+                Start-Sleep -Seconds 1
+                $Count = ($Runspaces | Where-Object { $_.Status.IsCompleted -ne $true }).Count
+                if ($Count -gt 0) {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Worker health checks remaining: $Count"
+                }
+            } while ($Count -gt 0)
+            # while ($Runspaces.Status.IsCompleted -notcontains $true) { start-sleep -Seconds 1 }
+
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Runspace complete"
 
             foreach ($Runspace in $Runspaces) {
+                # try / catch for EndInvoke oddities.
                 try {
                     $RunspaceResults += $Runspace.Pipe.EndInvoke($Runspace.Status)
-                } 
+                }
                 catch {
                     $Ex = $_.Exception
                     if ($null -ne $Ex.InnerException) {
                         $Ex = $Ex.InnerException
                     }
                     if ($ErrorLog) {
-                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorkerHealth] $Ex" 
+                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$($myinvocation.mycommand)] $Ex"
+                    }
+                    else {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Ex"
                     }
                 }
+
                 $Runspace.Pipe.Dispose()
             }
 
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Parsing Results"
             # Parsing Results
             $Healthy = 0
             $Unhealthy = 0
             $HighLoad = 0
-            $HighUptime = 0 
+            $HighUptime = 0
             $HighDiskSpaceUsage = 0
             $HighDiskQueue = 0
             $Unregistered = 0
@@ -283,8 +275,9 @@ Function Get-XdWorkerHealth {
             foreach ($Result in $RunspaceResults) {
                 $ErrString = ""
                 if ($Result.Health -eq "Healthy") { $Healthy++ }
-                if (($Result.Health -eq "Unhealthy") -or ($Result.Health -eq "ERROR")) {
-                    $Unhealthy++ 
+                #    if (($Result.Health -eq "Unhealthy") -or ($Result.Health -eq "ERROR")) {
+                else {
+                    $Unhealthy++
                     if ($Result.FailedPing) { $FailedPing++; $ErrString += "FailedPing " }
                     if ($Result.DNSMismatch) { $DNSMismatch++; $ErrString += "DNSMismatch "}
                     if ($Result.DNSNotRegistered) { $DNSNotRegistered++; $ErrString += "DNSNotRegistered "}
@@ -295,22 +288,26 @@ Function Get-XdWorkerHealth {
                     if ($Result.Unregistered) { $Unregistered++; $ErrString += "Unregistered " }
                     if ("ERROR" -eq $Result.Health) { $UnknownError++; $ErrString += "UnknownError" }
 
-                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Unhealthy machine: $($Result.host) - $ErrString"
+
                     if ($ErrorLog) {
-                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorkerHealth] $($Result.host) - $ErrString" 
+                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [CVADworkerhealth] $($Result.Host) - $ErrString"
+                    }
+                    else {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Unhealthy machine: $($Result.Host) - $ErrString"
                     }
                 }
             }
 
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Healthy: $Healthy, Unhealthy: $Unhealthy"
-            $Results += [PSCustomObject]@{
-                Series             = "XdWorkerHealth"
-                Type               = $Workload
-                Host               = $Broker
+            [PSCustomObject]@{
+                #Series             = "CVADworkerhealth"
+                PSTypeName         = 'EUCMonitoring.CVADworkerhealth'
+                Broker             = $Broker
                 SiteName           = $SiteName
                 ZoneName           = $ZoneName
                 CatalogName        = $CatalogName
-                DeliveryGroupName  = $DeliveryGroupName
+                DesktopGroupName   = $DesktopGroupName
+                SessionSupport     = $SessionSupport
                 Healthy            = $Healthy
                 Unhealthy          = $Unhealthy
                 DNSNotRegistered   = $DNSNotRegistered
@@ -325,55 +322,25 @@ Function Get-XdWorkerHealth {
             }
         }
 
-                
-        catch { 
-            if ($ErrorLog) {
-                Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorkerHealth] Exception: $_" 
-                Write-EUCError -Path $ErrorLog "[$(Get-Date)] [XdWorkerHealth] $Workload B: $Broker S: $SiteName Z: $ZoneName C: $CatalogName DG: $DeliveryGroupName"
-            }
-                
-            $Results += [PSCustomObject]@{
-                Series             = "XdWorkerHealth"
-                Type               = $Workload
-                Host               = $Broker
-                SiteName           = $SiteName
-                ZoneName           = $ZoneName
-                CatalogName        = $CatalogName
-                DeliveryGroupName  = $DeliveryGroupName
-                Healthy            = -1
-                Unhealthy          = -1
-                DNSNotRegistered   = -1
-                DNSMismatch        = -1
-                FailedPing         = -1
-                HighLoad           = -1
-                HighUptime         = -1
-                HighDiskSpaceUsage = -1
-                HighDiskQueue      = -1
-                Unregistered       = -1
-                UnknownError       = -1
-            }
-        }
-        
-        
-        <#
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disposing of Runspace pool"
-        $pool.Close()
-        $pool.Dispose()
 
-        Remove-Variable Runspaces -Force
-#>
-        if ($Results.Count -gt 0) {
-            return , $Results
+        catch {
+            if ($ErrorLogPath) {
+                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            }
+            else {
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+            }
+            throw $_
         }
     }
 
-    End { 
+    End {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Cleaning up Runspace pool"
         $pool.Close()
         $pool.Dispose()
 
         Remove-Variable Runspaces -Force
 
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Runspace disposed"
     }
 }

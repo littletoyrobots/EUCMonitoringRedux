@@ -2,8 +2,7 @@ function Write-EUCError {
     [CmdletBinding()]
     Param
     (   
-        [Parameter(Mandatory = $true, 
-            ValueFromPipeline = $true)] 
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)] 
         [ValidateNotNullOrEmpty()] 
         [Alias("LogContent")] 
         [string]$Message, 
@@ -13,17 +12,21 @@ function Write-EUCError {
         [string]$Path
     )
     
-    begin {
+    Begin {
         # Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
     }
 
-    process {
+    Process {
         # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] "
-
         if (($null -ne $Path) -and ("" -ne $Path)) {
             if (-Not (Test-Path $Path)) {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Creating Log File: $Path"
-                New-Item $Path -Force -ItemType File | Out-Null
+                try {
+                    New-Item $Path -Force -ItemType File | Out-Null
+                }
+                catch {
+                    Write-Error "Unable to create log file at $Path"
+                }
             }
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] > $Message"
             $Message | Out-File -FilePath $Path -Append
@@ -31,9 +34,18 @@ function Write-EUCError {
         else {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No log path."
         }
+
+        if ($EventLog) {
+            if (![System.Diagnostics.EventLog]::SourceExists("EUCMonitoring")) {
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Adding EUCMonitoring Event Source."
+                New-EventLog -LogName Application -Source "EUCMonitoring"
+            }
+
+            Write-EventLog -Logname "Application" -Source "EUCMonitoring" -EventID 17034 -EntryType Information -message "$Message" -category "17034"
+        }
     }
 
-    end {
+    End {
         # Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     }
 }

@@ -1,37 +1,35 @@
 function Disconnect-CitrixADC {
     <# 
     .SYNOPSIS 
-    Logs out of a Citrix NetScaler.
+        Logs out of a Citrix NetScaler.
 
     .DESCRIPTION 
-    Logs out of a Citrix NetScaler and clears the NSSession Global Variable.
+        Logs out of a Citrix NetScaler and clears the NSSession Global Variable.
 
     .PARAMETER ADCSession
-    CitrixADC Rest WebSession. 
+        CitrixADC Rest WebSession. 
 
-    .NOTES 
-    Name: Disconnect-NetScaler
-    Author: David Brett
-    Date Created: 15/03/2017 
-.CHANGE LOG
-    David Brett     1.0     15/03/2017          Initial Script Creation 
-    David Brett     1.1     14/06/2018          Edited the Function to remove positional parameters and cleaned out old code 
-
+    .PARAMETER ErrorLogPath
+        File path for error logs to be appended. 
 #> 
 
     [CmdletBinding()]
-    Param
-    (
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)]$ADCSession
+    Param (
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)]
+        [ValidateNotNullOrEmpty()]
+        $ADCSession,
+
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)]
+        [Alias("LogPath")] 
+        [string]$ErrorLogPath
     )
     
     Begin { 
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Disconnecting from $($ADCSession.ADC) using NITRO"
     } # Begin 
     
     Process { 
         $ADC = $ADCSession.ADC
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Disconnecting from $ADC using NITRO"
         # Validate That the IP Address is valid
         # Test-IP $NSIP
 
@@ -47,29 +45,41 @@ function Disconnect-CitrixADC {
 
         # Set up the JSON Payload to send to the netscaler
         $PayLoad = ConvertTo-JSON @{
-            "logout" = @{
-            }
+            "logout" = @{}
         }
 
         # Logout of the NetScaler
         try {
+            if ($null -eq $ADCSession.WebSession) {
+                throw 'Must be logged into Citrix ADC first'
+            }
+
             $Params = @{
-                Uri        = "$ADC/nitro/v1/config/logout"
+                Uri        = "https://$ADC/nitro/v1/config/logout"
                 Body       = $PayLoad
                 Websession = $ADCSession.WebSession
                 Headers    = @{"Content-Type" = "application/vnd.com.citrix.netscaler.logout+json"}
-                Method     = POST
+                Method     = "POST"
             }
-            Invoke-RestMethod @Params -ErrorAction Stop
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Logout Success"
+            
+            $Response = Invoke-RestMethod @Params # -ErrorAction Stop 
+            if ('ERROR' -eq $Response.severity) {
+                throw "Error. See response: `n$($response | Format-List -Property * | Out-String)"
+            }
         }
-        Catch {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Unable to successfully close session"
+        catch {
+            if ($ErrorLogPath) {
+                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            }
+            else {
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+            }
+            throw $_
         }
 
     } # Process
 
     End { 
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Logout Success"
     } # End
 }
