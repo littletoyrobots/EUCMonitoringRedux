@@ -26,7 +26,7 @@ function Get-CitrixADCinterface {
                 ContentType = $ContentType;
                 Method      = $Method
             }
-            $SSLStat = Invoke-RestMethod @Params -ErrorAction Stop
+            $InterfaceStat = Invoke-RestMethod @Params -ErrorAction Stop
 
 
 

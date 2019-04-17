@@ -1,4 +1,4 @@
-Function Test-EUCADC {
+Function Test-CitrixADC {
     <#
     .SYNOPSIS
     Return values on various l

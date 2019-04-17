@@ -3,12 +3,12 @@ Function Test-XdWorkload {
     Param(
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [string]$Broker, 
+        [string]$Broker,
         [string]$Workload,
-        #        [switch]$SessionInfo, 
+        #        [switch]$SessionInfo,
         #        [switch]$SessionDuration,
-        #        [int]$DurationLength = 600, 
-        
+        #        [int]$DurationLength = 600,
+
         [switch]$WorkerHealth,
         [int]$BootThreshold = 7,
         [int]$LoadThreshold = 8000,
@@ -28,7 +28,7 @@ Function Test-XdWorkload {
         if ($null -eq $ctxsnap) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Load Failed"
             if ($ErrorLog) {
-                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Load Failed" 
+                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Broker Snapin Load Failed"
             }
             throw "Cannot Load XenDesktop Powershell SDK"
         }
@@ -42,7 +42,7 @@ Function Test-XdWorkload {
         if ($null -eq $ctxsnap) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Load Failed"
             if ($ErrorLog) {
-                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Load Failed" 
+                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Load Failed"
             }
             throw "Cannot Load XenDesktop Powershell SDK"
         }
@@ -50,33 +50,33 @@ Function Test-XdWorkload {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] XenDesktop Configuration Snapin Loaded"
         }
     } #BEGIN
-		
-    Process { 
+
+    Process {
         $Results = @()
 
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Querying Delivery Groups for type $Workload"
         if (-Not (Test-Connection -ComputerName $Broker -Count 1 -Quiet -ErrorAction SilentlyContinue)) {
             if ($ErrorLog) {
-                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connection Failure to Broker: $Broker" 
+                Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connection Failure to Broker: $Broker"
             }
             throw "Connection Failure to Broker: $Broker"
         }
 
         try {
             if ($Workload -match "Server") {
-                $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "MultiSession"} 
+                $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "MultiSession"}
             }
             elseif ($Workload -match "Desktop") {
                 $DeliveryGroups = Get-BrokerDesktopGroup -AdminAddress $Broker | Where-Object {$_.SessionSupport -eq "SessionSession"}
             }
             else {
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type" 
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type"
                 if ($ErrorLog) {
-                    Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type" 
+                    Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure Unknown workload type"
                 }
                 throw "Unable to determine the workload type."
             }
-        
+
             $SiteName = (Get-BrokerSite -AdminAddress $Broker).Name
             $ZoneNames = (Get-ConfigZone -AdminAddress $Broker).Name
 
@@ -101,7 +101,7 @@ Function Test-XdWorkload {
                             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Worker Details: $ZoneName / $CatalogName / $DeliveryGroupName - Count: $MachineCount"
 
                             $Registered = ($Machines | Where-Object {($_.RegistrationState -eq "Registered" -and $_.PowerState -ne "Off")}).Count
-                            $Unregistered = ($Machines | Where-Object {($_.RegistrationState -eq "Unregistered" -and $_.PowerState -ne "Off")}).Count                       
+                            $Unregistered = ($Machines | Where-Object {($_.RegistrationState -eq "Unregistered" -and $_.PowerState -ne "Off")}).Count
                             $InMaintenance = ($Machines | Where-Object {(($_.InMaintenanceMode -eq $true) -and ($_.PowerState -ne "Off"))}).Count
                             $FaultState = ($Machines | Where-Object {($_.FaultState -ne "None")}).Count
                             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Registered: $Registered, Unregistered: $Unregistered"
@@ -164,15 +164,15 @@ Function Test-XdWorkload {
                                 TotalSessions        = $TotalSessions
                                 ActiveSessions       = $ActiveSessions
                                 IdleSessions         = $IdleSessions
-                                DisconnectedSessions = $DisconnectedSessions    
+                                DisconnectedSessions = $DisconnectedSessions
                                 OtherSessions        = $TotalSessions - ($ActiveSessions + $IdleSessions + $DisconnectedSessions)
                             }
-                                
+
                             if ($WorkerHealth -or $All) {
                                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching worker health count"
-                                # Only test machines that aren't off, in delivery groups not in maint mode 
+                                # Only test machines that aren't off, in delivery groups not in maint mode
                                 $Workers = $Machines | Where-Object { ($_.PowerState -ne "Off") }
-                                
+
                                 if (($null -ne $Workers) -and (-Not $DGMaintMode)) {
                                     $Params = @{
                                         Broker             = $Broker;
@@ -181,7 +181,7 @@ Function Test-XdWorkload {
                                         ZoneName           = $ZoneName;
                                         CatalogName        = $CatalogName;
                                         DeliveryGroupName  = $DeliveryGroupName;
-                                        Machines           = $Workers; 
+                                        Machines           = $Workers;
                                         BootThreshold      = $BootThreshold;
                                         LoadThreshold      = $LoadThreshold;
                                         DiskSpaceThreshold = $DiskSpaceThreshold;
@@ -211,17 +211,17 @@ Function Test-XdWorkload {
                                 $Results += Get-XdSessionInfo @Params
                                 #>
                                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] SessionInfo not fully implemented"
-                                
+
                             }
 
-                        
+
                         }
                     }
                 }
             }
         }
         catch {
-            # Will only get here if errors on return values, not nulls.  
+            # Will only get here if errors on return values, not nulls.
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Error Occured"
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
 
@@ -254,7 +254,7 @@ Function Test-XdWorkload {
                 TotalSessions        = -1
                 ActiveSessions       = -1
                 IdleSessions         = -1
-                DisconnectedSessions = -1    
+                DisconnectedSessions = -1
                 OtherSessions        = -1
             }
         }

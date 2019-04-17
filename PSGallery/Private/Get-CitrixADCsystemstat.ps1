@@ -9,7 +9,7 @@ function Get-CitrixADCsystemstat {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
     } # Begin
 
-    Process { 
+    Process {
         $Results = @()
 
         $ADC = $ADCSession.ADC
@@ -26,24 +26,24 @@ function Get-CitrixADCsystemstat {
                 Method      = $Method
             }
             $SystemStat = Invoke-RestMethod @Params -ErrorAction Stop
-            
+
             $NumCpus = $SystemStat.System.numcpus
             $MgmtCpuUsagePcnt = $SystemStat.System.Mgmtcpuusagepcnt
             $CpuUsagePcnt = $SystemStat.System.cpuusagepcnt
             $MemUsagePcnt = $SystemStat.System.memusagepcnt
-            $PktCpuUsagePcnt = $SystemStat.System.pktcpuusagepcnt 
+            $PktCpuUsagePcnt = $SystemStat.System.pktcpuusagepcnt
             $ResCpuUsagePcnt = $SystemStat.System.rescpuusagepcnt
-            
+
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] #: $NumCpus Cpu: $CpuUsagePcnt Mgmt: $MgmtCpuUsagePcnt "
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Pkt: $PktCpuUsagePcnt Mem: $MemUsagePcnt Res: $ResCpuUsagePcnt"
- 
+
             $Results += [PSCustomObject]@{
                 Series           = "CitrixADCsystem"
                 Host             = $ADC
                 Status           = "UP"
                 State            = 2
                 MgmtCpuUsagePcnt = $MgmtCpuUsagePcnt
-                CpuUsagePcnt     = $CpuUsagePcnt 
+                CpuUsagePcnt     = $CpuUsagePcnt
                 MemUsagePcnt     = $MemUsagePcnt
                 PktCpuUsagePcnt  = $PktCpuUsagePcnt
                 ResCpuUsagePcnt  = $ResCpuUsagePcnt
@@ -60,7 +60,7 @@ function Get-CitrixADCsystemstat {
                 Status           = "ERROR"
                 State            = -1
                 MgmtCpuUsagePcnt = -1
-                CpuUsagePcnt     = -1 
+                CpuUsagePcnt     = -1
                 MemUsagePcnt     = -1
                 PktCpuUsagePcnt  = -1
                 ResCpuUsagePcnt  = -1
@@ -73,7 +73,7 @@ function Get-CitrixADCsystemstat {
         }
     } # Process
 
-    End { 
+    End {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
-    } # End 
+    } # End
 }

@@ -1,24 +1,24 @@
-# This is for single-site configuration.  Its easiest to copy this file and 
+# This is for single-site configuration.  Its easiest to copy this file and
 # edit the copy per site.   Do not comment out any of these lines.  We suggest
 # using fqdn for servernames, so any valid certificate checks associated will pass.
 
 ############################
 # Citrix Apps and Desktops #
 ############################
-# These brokers can be either Delivery Controllers or Cloud Connectors, but not both.  
+# These brokers can be either Delivery Controllers or Cloud Connectors, but not both.
 $XdBrokers = $null          # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
 
 # If On-Premises:
 $XdControllers = $null      # Put your Citrix delivery controllers here. e.g "ddc1.domain.com", "ddc2.domain.com"
 
-# If Citrix Cloud: 
+# If Citrix Cloud:
 # 1 - Login to https://citrix.cloud.com
 # 2 - Navigate to "Identity and Access Management"
 # 3 - Click "API Access"
 # 4 - Enter a name for Secure Client and click Create Client.
 # 5 - Once Secure Client is created, download Secure Client Credentials file,
 #     and save to C:\Monitoring\secureclient.csv
-# 6 - Uncomment the following line. 
+# 6 - Uncomment the following line.
 # Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 $CCServers = $null          # Put your Citrix cloud connectors here. e.g. "cc1.domain.com", "cc2.domain.com"
 
@@ -35,16 +35,16 @@ $CCServers = $null          # Put your Citrix cloud connectors here. e.g. "cc1.d
 ###############
 
 # Here's a simple way to save a password without leaving it in plaintext.  There are surely better ways,
-# and you should use them. 
-# 
+# and you should use them.
+#
 # Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -FilePath "C:\Monitoring\ADCcred.txt"
-# 
+#
 # Then uncomment the following three lines
 # $ADCUser = "nsroot"         # Or whatever
 # $ADCPass = Get-Content -Path "C:\Monitoring\ADCcred.txt" | ConvertTo-SecureString
 # $ADCCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ADCUser, $ADCPass
 
-# $ADCCred = (Get-Credential) # Uncomment this for testing. 
+# $ADCCred = (Get-Credential) # Uncomment this for testing.
 
 $CitrixADCs = $null         # These would be your NSIPs, needs $ADCCred defined
 $CitrixADCGateways = $null  # These would be your ADC Gateway IPs, $needs ADCCred defined
@@ -53,20 +53,20 @@ $CitrixADCGateways = $null  # These would be your ADC Gateway IPs, $needs ADCCre
 # Licensing Servers #
 #####################
 $RdsLicenseServers = $null  # Put your RDS license servers here.
-$XdLicenseServers = $null   # Put your Citrix license servers here. 
+$XdLicenseServers = $null   # Put your Citrix license servers here.
 
 ##################################
 # Common Microsoft Server groups #
 ##################################
 $ADServers = $null          # Put your Domain Controllers here.
 $SQLServers = $null         # Put your SQL Servers here.
-$AppVServers = $null        # Put your AppV Servers here. 
+$AppVServers = $null        # Put your AppV Servers here.
 
 ###############################
 # Common Citrix Server groups #
 ###############################
 $StoreFrontServers = $null  # E.g - "store1.domain.org", "store2.domain.org"
-$StoreFrontPaths = "/Citrix/StoreWeb"   # Can be multiple paths.  
+$StoreFrontPaths = "/Citrix/StoreWeb"   # Can be multiple paths.
 $DirectorServers = $null    # Put your director servers here.
 
 $PVSServers = $null         # Put your provisioning servers here.
@@ -99,9 +99,9 @@ $ErrorHistory = "C:\Monitoring\ErrorLog.txt"
 #########################################
 
 Import-Module C:\Monitoring\EUCMonitoring\PSGallery\EUCMonitoringRedux.psm1
-# Import-Module EUCMonitoringRedux 
+# Import-Module EUCMonitoringRedux
 $TimeStamp = Get-InfluxTimestamp
-$Global:ProgressPreference = 'SilentlyContinue' # Stop that little popup.  
+$Global:ProgressPreference = 'SilentlyContinue' # Stop that little popup.
 $WarningPreference = 'SilentlyContinue' # Telegraf doesn't differientiate between different powershell streams
 
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -113,16 +113,16 @@ if (Test-Path $ErrorLog) {
 }
 
 # If you have multiple sites, just copy this section and invoke using
-# the brokers associated with each site.  
+# the brokers associated with each site.
 
 # Workload session
 if ($null -ne $XdBrokers) {
     # Test for Desktop Sessions
     $XdDesktopParams = @{
-        ComputerName       = $XdBrokers; # Put your brokers here. 
+        ComputerName       = $XdBrokers; # Put your brokers here.
         XdDesktop          = $true;
         XdServer           = $false;
-        WorkerHealth       = $true; # 
+        WorkerHealth       = $true; #
         BootThreshold      = 30; # 30 days for desktops
         LoadThreshold      = 8000; # 8000 load is roughly 80% utilized
         DiskSpaceThreshold = -1; # A value of 80 would mean 80% Disk Usage
@@ -146,7 +146,7 @@ if ($null -ne $XdBrokers) {
     Test-EUCWorkload @XdServerParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
 
-# ! Placeholder for RDS 
+# ! Placeholder for RDS
 
 # ! Placeholder for VMware
 
@@ -154,7 +154,7 @@ if ($null -ne $XdBrokers) {
 if ($null -ne $CitrixADCs) {
     $ADCParams = @{
         CitrixADC     = $CitrixADCs; # Example value = "10.1.2.3","10.1.2.4"
-        SystemStats   = $true; # Stuff like CPU, MEM,.. 
+        SystemStats   = $true; # Stuff like CPU, MEM,..
         GatewayUsers  = $false; # Total Users, ICA Users, VPN Users
         LoadBalance   = $false; # LB vServers
         ContentSwitch = $false; # CS vServers
@@ -164,7 +164,7 @@ if ($null -ne $CitrixADCs) {
         Credential    = $ADCCred;
         #    ErrorLog          = $ErrorLog
     }
-    Test-EUCADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    Test-CitrixADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
 
 # Netscaler Gateways, now called Citrix ADC Gateway
@@ -182,7 +182,7 @@ if ($null -ne $CitrixADCGateways) {
         Credential    = $ADCCred;
         #    ErrorLog          = $ErrorLog
     }
-    Test-EUCADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    Test-CitrixADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
 
 # Licensing
@@ -213,7 +213,7 @@ if ($null -ne $XdLicenseServers) {
         #    ErrorLog          = $ErrorLog
     }
     Test-EUCLicense @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-    
+
     $XdLicenseParams = @{
         Series       = "XdLicense";
         ComputerName = $XdLicenseServers;
@@ -224,12 +224,12 @@ if ($null -ne $XdLicenseServers) {
     Test-EUCServer @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
 
-# Server checks.  
+# Server checks.
 if ($null -ne $ADServers) {
     $ADParams = @{
-        Series        = "AD"; 
+        Series        = "AD";
         ComputerName  = $ADServers; # Example value = "dc1", "dc2"
-        Ports         = 389, 636; 
+        Ports         = 389, 636;
         Services      = "Netlogon", "ADWS", "NTDS";
         ValidCertPort = 636;
         ErrorLog      = $ErrorLog
@@ -287,7 +287,7 @@ if ($null -ne $DirectorServers) {
         ErrorLog     = $ErrorLog
     }
     Test-EUCServer @DirectorParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-} 
+}
 
 if ($null -ne $XdControllers) {
     $XdControllerParams = @{
@@ -353,10 +353,10 @@ if ($null -ne $CCServers) {
         ErrorLog     = $ErrorLog
     }
     Test-EUCServer @CCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-} 
+}
 
 $content = Get-Content $ErrorLog
-if ($null -ne $content) { 
+if ($null -ne $content) {
     $content | Out-File -FilePath $ErrorHistory -Append
     if ($ErrorsToTSDB) {
         foreach ($ErrorLogItem in $content) {

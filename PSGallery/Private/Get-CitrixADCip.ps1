@@ -9,7 +9,7 @@ function Get-CitrixADCip {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
     } # Begin
 
-    Process { 
+    Process {
         $Results = @()
 
         $ADC = $ADCSession.ADC
@@ -26,18 +26,16 @@ function Get-CitrixADCip {
                 ContentType = $ContentType;
                 Method      = $Method
             }
-            $SSLStat = Invoke-RestMethod @Params -ErrorAction Stop
+            $IPStat = Invoke-RestMethod @Params -ErrorAction Stop
 
-
-
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] ActiveSRV: $Variable" 
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] ActiveSRV: $Variable"
             $Results += [PSCustomObject]@{
                 Series = "CitrixADCip"
                 Host   = $ADC
                 Status = "UP"
                 State  = 2
 
-          
+
             }
 
         }
@@ -49,7 +47,7 @@ function Get-CitrixADCip {
                 Host   = $ADC
                 Status = "ERROR"
                 State  = -1
-        
+
             }
         }
 
@@ -58,7 +56,7 @@ function Get-CitrixADCip {
         }
     } # Process
 
-    End { 
+    End {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
-    } # End 
+    } # End
 }

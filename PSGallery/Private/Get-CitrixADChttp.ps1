@@ -26,7 +26,7 @@ function Get-CitrixADChttp {
                 ContentType = $ContentType;
                 Method      = $Method
             }
-            $SSLStat = Invoke-RestMethod @Params -ErrorAction Stop
+            $HTTPStat = Invoke-RestMethod @Params -ErrorAction Stop
 
 
 
