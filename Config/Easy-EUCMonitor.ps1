@@ -2,14 +2,21 @@
 # edit the copy per site.   Do not comment out any of these lines.  We suggest
 # using fqdn for servernames, so any valid certificate checks associated will pass.
 
+$BaseDir = "C:\Monitoring"
+$CVADDesktops = $true
+$CVADServers = $true
+$CVADWorkerHealth = $true    # If you want to fine tune which worker health checks are run, see below.
+
 ############################
 # Citrix Apps and Desktops #
 ############################
+
 # These brokers can be either Delivery Controllers or Cloud Connectors, but not both.
-$XdBrokers = $null          # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
+# If you require multi-site, it might be worth reviewing further down.
+$CVADBrokers = $null          # Put your brokers here.  Example value: "ddc1.domain.com", "ddc2.domain.com"
 
 # If On-Premises:
-$XdControllers = $null      # Put your Citrix delivery controllers here. e.g "ddc1.domain.com", "ddc2.domain.com"
+$CVADControllers = $null      # Put your Citrix delivery controllers here. e.g "ddc1.domain.com", "ddc2.domain.com"
 
 # If Citrix Cloud:
 # 1 - Login to https://citrix.cloud.com
@@ -20,7 +27,7 @@ $XdControllers = $null      # Put your Citrix delivery controllers here. e.g "dd
 #     and save to C:\Monitoring\secureclient.csv
 # 6 - Uncomment the following line.
 # Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
-$CCServers = $null          # Put your Citrix cloud connectors here. e.g. "cc1.domain.com", "cc2.domain.com"
+$CVADCloudConnectors = $null          # Put your Citrix cloud connectors here. e.g. "cc1.domain.com", "cc2.domain.com"
 
 #################################
 # RDS Site coming in the future #
@@ -47,13 +54,13 @@ $CCServers = $null          # Put your Citrix cloud connectors here. e.g. "cc1.d
 # $ADCCred = (Get-Credential) # Uncomment this for testing.
 
 $CitrixADCs = $null         # These would be your NSIPs, needs $ADCCred defined
-$CitrixADCGateways = $null  # These would be your ADC Gateway IPs, $needs ADCCred defined
+$CitrixADCGateways = $null  # These would be your ADC Gateway IP, $needs ADCCred defined
 
 #####################
 # Licensing Servers #
 #####################
 $RdsLicenseServers = $null  # Put your RDS license servers here.
-$XdLicenseServers = $null   # Put your Citrix license servers here.
+$CVADLicenseServers = $null   # Put your Citrix license servers here.
 
 ##################################
 # Common Microsoft Server groups #
@@ -78,18 +85,23 @@ $FASServers = $null         # Put your FAS servers here.
 # Output #
 ##########
 
-$OutputInfluxDataProtocol = $true
+$OutputInfluxDataProtocol = $true   # This is used for Telegraf
 $GenerateReportHTML = $true
-$ReportHTMLPath = "C:\Monitoring\EUCMonitoring.html"
+$ReportHTMLPath = "$BaseDir\EUCMonitoring.html"
 
 
-$ErrorsToTSDB = $true
+# $ErrorsToTSDB = $true
 
-$InfraErrorLog = "C:\Monitoring\Infra-Errors.txt"
-$WorkerErrorLog = "C:\Monitoring\Worker-Errors.txt"
-$ADCErrorLog = "C:\Monitoring\ADC-Errors.txt"
-$ErrorLog = "C:\Monitoring\CurrentErrorLog.txt"
-$ErrorHistory = "C:\Monitoring\ErrorLog.txt"
+# Test Specific, Temporary files. Overwritten with each run.
+$WorkloadErrorLog = "$BaseDir\Workload-Errors.txt"
+$WorkerHealthErrorLog = "$BaseDir\WorkerHealth-Errors.txt"
+$ADCErrorLog = "$BaseDir\ADC-Errors.txt"
+$InfraErrorLog = "$BaseDir\Infra-Errors.txt"
+
+# After everything is done, the above logs will be combined into $ErrorLog, and a running log
+# $ErrorHistory, so that previous errors can be reviewed.
+$ErrorLog = "$BaseDir\CurrentErrorLog.txt"
+$ErrorHistory = "$BaseDir\ErrorLog.txt"
 
 
 #########################################
@@ -108,42 +120,73 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     throw "You must be administrator in order to execute this script"
 }
 
-if (Test-Path $ErrorLog) {
-    Remove-Item $ErrorLog -Force
-}
+# Out with the old.
+if (Test-Path $WorkloadErrorLog) { Remove-Item $WorkloadErrorLog -Force }
+if (Test-Path $WorkerHealthErrorLog) { Remove-Item $WorkerHealthErrorLog -Force }
+if (Test-PAth $ADCErrorLog) { Remove-Item $ADCErrorLog -Force }
+if (Test-Path $InfraErrorLog) { Remove-Item $InfraErrorLog -Force }
+if (Test-Path $ErrorLog) { Remove-Item $ErrorLog -Force }
+
+# Results initialization
+$CVADWorkload = @()
+$CVADWorkerHealth = @()
+$ADCResults = @()
+$RDSLicenses = @()
+$CVADLicenses = @()
+$InfraResults = @()
+
 
 # If you have multiple sites, just copy this section and invoke using
 # the brokers associated with each site.
 
 # Workload session
-if ($null -ne $XdBrokers) {
-    # Test for Desktop Sessions
-    $XdDesktopParams = @{
-        ComputerName       = $XdBrokers; # Put your brokers here.
-        XdDesktop          = $true;
-        XdServer           = $false;
-        WorkerHealth       = $true; #
-        BootThreshold      = 30; # 30 days for desktops
-        LoadThreshold      = 8000; # 8000 load is roughly 80% utilized
-        DiskSpaceThreshold = -1; # A value of 80 would mean 80% Disk Usage
-        DiskQueueThreshold = -1; # A value of 5 would mean Disk Queue of 5 or greater
-        ErrorLog           = $ErrorLog
-    }
-    Test-EUCWorkload @XdDesktopParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+if ($null -ne $CitrixBrokers) {
+    $CVADWorkload = @()
+    $CVADWorkerHealth = @()
 
-    # Test for Server Sessions
-    $XdServerParams = @{
-        ComputerName       = $XdBrokers; # Put your brokers here. Example value = "ddc1", "ddc2"
-        XdDesktop          = $false;
-        XdServer           = $true;
-        WorkerHealth       = $true;
-        BootThreshold      = 7; # 7 days for servers
-        LoadThreshold      = 8000;
-        DiskSpaceThreshold = -1;
-        DiskQueueThreshold = -1;
-        ErrorLog           = $ErrorLog
+    # Test for Desktop Sessions
+    $CVADWorkloadParams = @{
+        Broker   = $CVADBrokers; # Put your brokers here.
+        ErrorLog = $WorkloadErrorLog
     }
-    Test-EUCWorkload @XdServerParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    if ($Desktops) { $CVADWorkloadParams.SingleSession = $true }
+    if ($Servers) { $CVADWorkloadParams.MultiSession = $true }
+
+    $CVADWorkload = Get-CVADworkload @CVADWorkloadParams
+    $CVADWorkload | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+
+    if ($WorkerHealth) {
+        if ($CVADDesktops) {
+            $CVADwhParams = @{
+                Broker             = $CVADBrokers;
+                SingleSession      = $true;
+                ActiveOnly         = $false; # If enabled, will ignore worker checks for machines in maintenance
+                BootThreshold      = 30; # If number of days since boot goes above this, treat as health issue
+                LoadThreshold      = 8000; # If load index goes above this, treat as health issue
+                DiskSpaceThreshold = 90; # If disk space usage above this percent, treat as health issue
+                DiskQueueThreshold = 2; # If current disk queue length goes above this, treat as health issue
+                ErrorLog           = $WorkerHealthErrorLog
+            }
+            $CVADWorkerHealth += Get-CVADworkerhealth @CVADwhParams
+        }
+        if ($CVADServers) {
+            $CVADwhParams = @{
+                Broker             = $CVADBrokers;
+                Multisession       = $true;
+                ActiveOnly         = $false;
+                BootThreshold      = 7;
+                LoadThreshold      = 8000;
+                DiskSpaceThreshold = 90;
+                DiskQueueThreshold = 2;
+                ErrorLog           = $WorkerHealthErrorLog
+            }
+            $CVADWorkerHealth += Get-CVADworkerhealth @CVADwhParams
+        }
+
+        if ($OutputInfluxDataProtocol) {
+            $CVADWorkerHealth | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        }
+    }
 }
 
 # ! Placeholder for RDS
@@ -151,77 +194,104 @@ if ($null -ne $XdBrokers) {
 # ! Placeholder for VMware
 
 # Netscalers
+$ADCResults = @()
 if ($null -ne $CitrixADCs) {
-    $ADCParams = @{
-        CitrixADC     = $CitrixADCs; # Example value = "10.1.2.3","10.1.2.4"
-        SystemStats   = $true; # Stuff like CPU, MEM,..
-        GatewayUsers  = $false; # Total Users, ICA Users, VPN Users
-        LoadBalance   = $false; # LB vServers
-        ContentSwitch = $false; # CS vServers
-        Cache         = $false; # Not yet implemented
-        Compression   = $false; # Not yet implementeed
-        SSLOffload    = $false; # Not yet implemented
-        Credential    = $ADCCred;
-        #    ErrorLog          = $ErrorLog
+    foreach ($ADC in $CitrixADCs) {
+        $ADCParams = @{
+            ADC        = $CitrixADC; # Example value = "10.1.2.3","10.1.2.4"
+            Credential = $ADCCred;
+            ErrorLog   = $ADCErrorLog
+        }
+
+        $ADCResults += Get-CADCsystem @ADCParams
     }
-    Test-CitrixADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    if ($OutputInfluxDataProtocol) {
+        $ADCResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
 
 # Netscaler Gateways, now called Citrix ADC Gateway
 
 if ($null -ne $CitrixADCGateways) {
-    $ADCParams = @{
-        CitrixADC     = $CitrixADCGateways; # Example value = "10.1.2.5"
-        SystemStats   = $false;
-        GatewayUsers  = $true;
-        LoadBalance   = $true;
-        ContentSwitch = $true;
-        Cache         = $false; # Not yet implemented
-        Compression   = $false; # Not yet implementeed
-        SSLOffload    = $false; # Not yet implemented
-        Credential    = $ADCCred;
-        #    ErrorLog          = $ErrorLog
+    foreach ($ADC in $CitrixADCGateways) {
+        $ADCParams = @{
+            ADC        = $ADC; # Example value = "10.1.2.3","10.1.2.4"
+            Credential = $ADCCred;
+            ErrorLog   = $ADCErrorLog
+        }
+
+        $ADCResults += Get-CADCcsvserver @ADCParams
+        $ADCResults += Get-CADCgatewayusers @ADCParams
+        $ADCResults += Get-CADCgslbvserver @ADCParams
+        $ADCResults += Get-CADChttp @ADCParams
+        $ADCResults += Get-CADCip @ADCParams
+        $ADCResults += Get-CADClbvserver @ADCParams
+        $ADCResults += Get-CADCssl @ADCParams
+        $ADCResults += Get-CADCsslcertkey @ADCParams
+        $ADCResults += Get-CADCsystem @ADCParams
+        $ADCResults += Get-CADCtcp @ADCParams
+
+        if ($OutputInfluxDataProtocol) {
+            $ADCResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        }
     }
-    Test-CitrixADC @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
+
+
 
 # Licensing
 if ($null -ne $RdsLicenseServers) {
     $RDSLicenseParams = @{
         ComputerName = $RdsLicenseServers; # Example value = "rds-license1", "rds-license2"
-        RdsLicense   = $true;
-        XdLicense    = $false;
-        #    ErrorLog          = $ErrorLog
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCLicense @RDSLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    $RDSLicenses += Get-RDSLicense @RDSLicenseParams
+
+    if ($OutputInfluxDataProtocol) {
+        $RDSLicenses | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 
     $RDSLicenseParams = @{
         Series       = "RdsLicensing";
         ComputerName = $RdsLicenseServers;
         Ports        = 135, 443;
         Services     = "TermService", "TermServLicensing", "UmRdpService";
-        #    ErrorLog          = $ErrorLog
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCServer @RdsLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+
+    $RdsResults = Test-EUCServer @RDSLicenseParams
+    $InfraResults += $RdsResults
+
+    if ($OutputInfluxDataProtocol) {
+        $RdsResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
 
 if ($null -ne $XdLicenseServers) {
-    $XdLicenseParams = @{
-        ComputerName = $XdLicenseServers; # Example value = "xd-license1", "xd-license2"
-        RdsLicense   = $false;
-        XdLicense    = $true;
-        #    ErrorLog          = $ErrorLog
+    $CVADLicenseParams = @{
+        ComputerName = $CVADLicenseServers; # Example value = "xd-license1", "xd-license2"
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCLicense @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    $CVADLicenses = Test-EUCLicense @XdLicenseParams
+
+    if ($OutputInfluxDataProtocol) {
+        $CVADLicenses | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 
     $XdLicenseParams = @{
-        Series       = "XdLicense";
+        Series       = "CVADlicense";
         ComputerName = $XdLicenseServers;
         Ports        = 7279, 27000, 8082, 8083;
         Services     = "Citrix Licensing", "CitrixWebServicesforLicensing";
         ErrorLog     = $ErrorLog
     }
-    Test-EUCServer @XdLicenseParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+
+    $CVADResults = Test-EUCServer @XdLicenseParams
+    $InfraResults += $CVADResults
+
+    if ($OutputInfluxDataProcol) {
+        $CVADResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
 
 # Server checks.
@@ -289,10 +359,10 @@ if ($null -ne $DirectorServers) {
     Test-EUCServer @DirectorParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 }
 
-if ($null -ne $XdControllers) {
+if ($null -ne $CVADControllers) {
     $XdControllerParams = @{
-        Series       = "XdController";
-        ComputerName = $XdControllers; # Example value = "ddc1", "ddc2"
+        Series       = "CVADController";
+        ComputerName = $CVADControllers; # Example value = "ddc1", "ddc2"
         Ports        = 80;
         Services     = "CitrixBrokerService", "CitrixHighAvailabilityService", "CitrixConfigSyncService", "CitrixConfigurationService", "CitrixConfigurationLogging", "CitrixDelegatedAdmin", "CitrixADIdentityService", "CitrixMachineCreationService", "CitrixHostService", "CitrixEnvTest", "CitrixMonitor", "CitrixAnalytics", "CitrixAppLibrary", "CitrixOrchestration";
         ErrorLog     = $ErrorLog
@@ -302,13 +372,18 @@ if ($null -ne $XdControllers) {
 
 if ($null -ne $PVSServers) {
     $ProvisioningParams = @{
-        Series       = "Provisioning";
+        Series       = "PVS";
         ComputerName = $PVSServers; # Example value = "pvs1", "pvs2"
         Ports        = 54321;
         Services     = "BNPXE", "BNTFTP", "PVSTSB", "soapserver", "StreamService";
-        ErrorLog     = $ErrorLog
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCServer @ProvisioningParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    $PVSResults = Test-EUCServer @ProvisioningParams
+    $InfraResults += $PVSResults
+
+    if ($OutputInfluxDataProtocol) {
+        $PVSResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
 
 if ($null -ne $WEMBrokers) {
@@ -317,9 +392,14 @@ if ($null -ne $WEMBrokers) {
         ComputerName = $WEMBrokers; # Example value = "wembroker1", "wembroker2"
         Ports        = 8286;
         Services     = "Norskale Infrastructure Service";
-        ErrorLog     = $ErrorLog
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCServer @WEMParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    $WEMResults = Test-EUCServer @WEMParams
+    $InfraResults += $WEMResults
+
+    if ($OutputInfluxDataProtocol) {
+        $WEMResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
 
 if ($null -ne $UPSServers) {
@@ -328,9 +408,14 @@ if ($null -ne $UPSServers) {
         ComputerName = $UPSServers; # Example Value = "print1", "print2"
         Ports        = 7229;
         Services     = "UpSvc", "CitrixXTEServer";
-        ErrorLog     = $ErrorLog
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCServer @UPSParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    $UPSResults = Test-EUCServer @UPSParams
+    $InfraResults += $UPSResults
+
+    if ($OutputInfluxDataProtocol) {
+        $UPSResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
 
 if ($null -ne $FASServers) {
@@ -339,21 +424,33 @@ if ($null -ne $FASServers) {
         ComputerName = $FASServers; # Example Value = "fas1", "fas2"
         Ports        = 135;
         Services     = "CitrixFederatedAuthenticationService";
-        ErrorLog     = $ErrorLog
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCServer @FASParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    $FASResults = Test-EUCServer @FASParams
+    $InfraResults += $FASResults
+
+    if ($OutputInfluxDataProtocol) {
+        $FASResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
 
-if ($null -ne $CCServers) {
+if ($null -ne $CVADCloudConnectors) {
     $CCParams = @{
-        Series       = "CC";
+        Series       = "CVADCC";
         ComputerName = $CCServers; # Example Value = "cc1", "cc2"
         Ports        = 80;
         Services     = "CitrixWorkspaceCloudADProvider", "CitrixWorkspaceCloudAgentDiscovery", "CitrixWorkspaceCloudAgentLogger", "CitrixWorkspaceCloudAgentSystem", "CitrixWorkspaceCloudAgentWatchDog", "CitrixWorkspaceCloudCredentialProvider", "CitrixWorkspaceCloudWebRelayProvider", "CitrixConfigSyncService", "CitrixHighAvailabilityService", "Citrix NetScaler Cloud Gateway", "XaXdCloudProxy", "RemoteHCLServer", "SessionManagerProxy";
-        ErrorLog     = $ErrorLog
+        ErrorLog     = $InfraErrorLog
     }
-    Test-EUCServer @CCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    $CCResults = Test-EUCServer @CCParams
+    $InfraResults += $CCResults
+
+    if ($OutputInfluxDataProtocol) {
+        $CCResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    }
 }
+
+
 
 $content = Get-Content $ErrorLog
 if ($null -ne $content) {
