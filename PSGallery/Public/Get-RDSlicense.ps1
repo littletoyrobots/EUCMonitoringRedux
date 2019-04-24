@@ -1,4 +1,4 @@
-function Get-RDSLicenseStat {
+function Get-RDSLicense {
     <#
     .SYNOPSIS
     Returns RDS Licensing info
