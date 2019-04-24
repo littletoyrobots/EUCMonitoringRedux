@@ -76,7 +76,7 @@
 
         # ADC Functions
         'Get-CADCcsvserver',
-        'Get-CADCgatewayusers',
+        'Get-CADCgatewayuser',
         'Get-CADCgslbvserver',
         'Get-CADChttp',
         'Get-CADCip',

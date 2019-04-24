@@ -1,4 +1,4 @@
-function Get-CADCgatewayusers {
+function Get-CADCgatewayuser {
     [CmdletBinding()]
     param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
@@ -39,8 +39,8 @@ function Get-CADCgatewayusers {
 
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - VPNUsers: $VPNUsers, ICAUsers: $ICAUsers, Total: $TotalUsers"
             [PSCustomObject]@{
-                #    Series                   = "CADCgatewayusers"
-                PSTypeName = 'EUCMonitoring.CADCgatewayusers'
+                #    Series                   = "CADCgatewayuser"
+                PSTypeName = 'EUCMonitoring.CADCgatewayuser'
                 ADC        = $ADC
                 VPNUsers   = $VPNUsers
                 ICAUsers   = $ICAUsers
