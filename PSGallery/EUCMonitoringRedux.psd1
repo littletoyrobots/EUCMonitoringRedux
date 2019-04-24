@@ -69,7 +69,40 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @('ConvertTo-InfluxLineProtocol', 'Test-EUCADC', 'Test-EUCLicense', 'Test-EUCServer', 'Test-EUCWorkload', 'Start-EUCMonitor')
+    FunctionsToExport = @(
+        # Influx / Telegraf related
+        'ConvertTo-InfluxLineProtocol',
+        'Get-InfluxTimestamp',
+
+        # ADC Functions
+        'Get-CADCcsvserver',
+        'Get-CADCgatewayusers',
+        'Get-CADCgslbvserver',
+        'Get-CADChttp',
+        'Get-CADCip',
+        'Get-CADClbvserver',
+        'Get-CADCssl',
+        'Get-CADCsslcertkey',
+        'Get-CADCsystem',
+        'Get-CADCtcp',
+
+        # License Functions
+        'Get-CVADlicense',
+        'Get-RDSlicense',
+
+        # CVAD workload Functions
+        'Get-CVADworkload',
+        'Get-CVADworkerhealth',
+
+        # RDS workload Functions
+        'Get-RDSworkload',
+        'Get-RDSworkerhealth',
+
+        # Generic test for ports / services / etc.
+        'Test-EUCServer',
+
+        'Start-EUCMonitor'
+    )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
