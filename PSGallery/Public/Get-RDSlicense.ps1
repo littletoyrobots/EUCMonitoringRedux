@@ -119,7 +119,7 @@ function Get-RDSLicense {
 
                     $Results += [PSCustomObject]@{
                         PSTypeName        = 'EUCMonitoring.RDSLicense'
-                        #    Series            = "RdsLicense"
+                        Series            = "RdsLicense"
                         Server            = $Computer
                         Type              = $Type
                         AvailableLicenses = $TotalAvailable

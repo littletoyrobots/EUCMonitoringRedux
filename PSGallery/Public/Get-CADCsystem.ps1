@@ -40,6 +40,10 @@ function Get-CADCsystem {
                 $PktCpuUsagePcnt = $System.pktcpuusagepcnt
                 $ResCpuUsagePcnt = $System.rescpuusagepcnt
 
+                #    $Config = Get-CADCNitroValue -ADCSession $ADCSession -Config "nsconfig"
+                #    $DaysChanged = $Config.lastconfigchangedtime
+                #    $DaysSaved = $Config.lastconfigsavedtime
+
                 $Errors = @()
                 if ($CpuUsagePcnt -gt 90) {
                     $Errors += "HighCPU"
@@ -47,7 +51,7 @@ function Get-CADCsystem {
                 if ($MemUsagePct -gt 90) {
                     $Errors += "HighMEM"
                 }
-                if ($Errors -ne "$ADC -") {
+                if ($Errors.Count -ge 1) {
                     if ($ErrorLogPath) {
                         Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - $($Errors -join ' ')" -Path $ErrorLogPath
                     }
@@ -59,8 +63,10 @@ function Get-CADCsystem {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - NumCpus: $NumCpus Cpu: $CpuUsagePcnt Mgmt: $MgmtCpuUsagePcnt "
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - Pkt: $PktCpuUsagePcnt Mem: $MemUsagePcnt Res: $ResCpuUsagePcnt"
 
+
+
                 [PSCustomObject]@{
-                    #    Series                   = "CADCsystem"
+                    Series           = "CADCsystem"
                     PSTypeName       = 'EUCMonitoring.CADCsystem'
                     ADC              = $ADC
                     MgmtCpuUsagePcnt = $MgmtCpuUsagePcnt
@@ -69,6 +75,8 @@ function Get-CADCsystem {
                     PktCpuUsagePcnt  = $PktCpuUsagePcnt
                     ResCpuUsagePcnt  = $ResCpuUsagePcnt
                     NumCpus          = $NumCpus
+                    #    DaysSinceConfigLastChanged = $DaysChanged
+                    #    DaysSinceConfigLastSaved   = $DaysSaved
                 }
             }
         }

@@ -59,7 +59,7 @@ function Get-CADCtcp {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] CurClientConnections: $CurrentClientConnections, CurServerConnections: $CurrentServerConnections"
 
                 [PSCustomObject]@{
-                    #    Series                   = "CADCtcp"
+                    Series                   = "CADCtcp"
                     PSTypeName               = 'EUCMonitoring.CADCtcp'
                     ADC                      = $ADC
                     TotalRxPackets           = $TotalRxPackets

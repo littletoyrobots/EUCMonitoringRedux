@@ -61,7 +61,7 @@ function Get-CADChttp {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalOthers: $TotalOthers, OthersRate: $OthersRate"
 
                 [PSCustomObject]@{
-                    #    Series                   = "CADChttp"
+                    Series              = "CADChttp"
                     PSTypeName          = 'EUCMonitoring.CADChttp'
                     ADC                 = $ADC
                     TotalRequests       = $TotalRequests

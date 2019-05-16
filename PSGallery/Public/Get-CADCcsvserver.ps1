@@ -77,7 +77,7 @@ function Get-CADCcsvserver {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - TotalHits: $TotalHits, TotalRequests: $TotalRequests, TotalResponses: $TotalResponses"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Current Client Connections: $CurrentClientConnections, Current Server Connections: $CurrentServerConnections"
                 [PSCustomObject]@{
-                    #    Series                   = "CADCcsvserver"
+                    Series                   = "CADCcsvserver"
                     PSTypeName               = 'EUCMonitoring.CADCcsvserver'
                     ADC                      = $ADC
                     Name                     = $Name

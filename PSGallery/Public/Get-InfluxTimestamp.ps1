@@ -2,28 +2,28 @@ function Get-InfluxTimestamp {
     <#
     .SYNOPSIS
     Short description
-    
+
     .DESCRIPTION
     Long description
-    
+
     .EXAMPLE
     $timestamp = Get-InfluxTimeStamp
-    
+
     .NOTES
     General notes
     #>
-    
+
     [CmdletBinding()]
     Param ()
-    
+
     Begin {
         Write-Verbose "[$(Get-Date) BEGIN  ] $($myinvocation.mycommand)"
-    } # Begin 
+    } # Begin
 
-    Process {   
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting to Universal Time" 
+    Process {
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting to Universal Time"
 
-        $DateTime = Get-Date 
+        $DateTime = Get-Date
         $utcDate = $DateTime.ToUniversalTime()
         # Convert to a Unix time as a double, noticed that it gets all the seconds down in the decimal if cast as a double.
         $unixTime = [double]((Get-Date -Date $utcDate -UFormat %s))
@@ -34,9 +34,9 @@ function Get-InfluxTimestamp {
         return [int64]$nano
     } # Process
 
-    End { 
+    End {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     } # End
 }
 
-Get-InfluxTimestamp 
+# Get-InfluxTimestamp

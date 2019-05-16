@@ -39,7 +39,7 @@ function Get-CADCgatewayuser {
 
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - VPNUsers: $VPNUsers, ICAUsers: $ICAUsers, Total: $TotalUsers"
             [PSCustomObject]@{
-                #    Series                   = "CADCgatewayuser"
+                Series     = "CADCgatewayuser"
                 PSTypeName = 'EUCMonitoring.CADCgatewayuser'
                 ADC        = $ADC
                 VPNUsers   = $VPNUsers

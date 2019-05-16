@@ -69,7 +69,7 @@ function Get-CADCssl {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] EngineStatus: $EngineStatus"
 
                 [PSCustomObject]@{
-                    #    Series                   = "CADCssl"
+                    Series               = "CADCssl"
                     PSTypeName           = 'EUCMonitoring.CADCssl'
                     ADC                  = $ADC
                     TotalSessions        = $TotalSessions

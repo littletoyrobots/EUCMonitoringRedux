@@ -151,16 +151,16 @@ Function Get-CVADworkload {
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $SiteName / $Zone / $CatName / $DesktopGroup"
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Count: $MachineCount"
 
-                                    $Registered = ($Machines | Where-Object {($_.RegistrationState -eq "Registered" -and $_.PowerState -ne "Off")}).Count
-                                    $Unregistered = ($Machines | Where-Object {($_.RegistrationState -eq "Unregistered" -and $_.PowerState -ne "Off")}).Count
-                                    $InMaintenance = ($Machines | Where-Object {(($_.InMaintenanceMode -eq $true) -and ($_.PowerState -ne "Off"))}).Count
-                                    $FaultState = ($Machines | Where-Object {($_.FaultState -ne "None")}).Count
+                                    $Registered = ($Machines | Where-Object { ($_.RegistrationState -eq "Registered" -and $_.PowerState -ne "Off") }).Count
+                                    $Unregistered = ($Machines | Where-Object { ($_.RegistrationState -eq "Unregistered" -and $_.PowerState -ne "Off") }).Count
+                                    $InMaintenance = ($Machines | Where-Object { (($_.InMaintenanceMode -eq $true) -and ($_.PowerState -ne "Off")) }).Count
+                                    $FaultState = ($Machines | Where-Object { ($_.FaultState -ne "None") }).Count
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Registered: $Registered, Unregistered: $Unregistered"
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] InMaintenance: $InMaintenance, FaultState: $FaultState"
 
-                                    $PowerOn = ($Machines | Where-Object {($_.PowerState -eq "On")}).Count
-                                    $PowerOff = ($Machines | Where-Object {($_.PowerState -eq "Off")}).Count
-                                    $PowerOther = ($Machines | Where-Object {($_.PowerState -ne "On") -and ($_.PowerState -ne "Off")}).Count
+                                    $PowerOn = ($Machines | Where-Object { ($_.PowerState -eq "On") }).Count
+                                    $PowerOff = ($Machines | Where-Object { ($_.PowerState -eq "Off") }).Count
+                                    $PowerOther = ($Machines | Where-Object { ($_.PowerState -ne "On") -and ($_.PowerState -ne "Off") }).Count
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] PowerOn: $PowerOn, PowerOff: $PowerOff, PowerOther: $PowerOther"
 
                                     $LoadIndexAvg = ($Machines.LoadIndex | Measure-Object -Average).Average
@@ -201,7 +201,7 @@ Function Get-CVADworkload {
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] IdleSessions: $IdleSessions, DisconnectedSessions: $DisconnectedSessions"
 
                                     [PSCustomObject]@{
-                                        #   Series               = "CVADWorkload"
+                                        Series               = "CVADWorkload"
                                         PSTypeName           = 'EUCMonitoring.CVADworkload'
                                         Broker               = $AdminAddress
                                         SiteName             = $Site

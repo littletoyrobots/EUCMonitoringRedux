@@ -279,8 +279,8 @@ Function Test-CVADworkerhealth {
                 else {
                     $Unhealthy++
                     if ($Result.FailedPing) { $FailedPing++; $ErrString += "FailedPing " }
-                    if ($Result.DNSMismatch) { $DNSMismatch++; $ErrString += "DNSMismatch "}
-                    if ($Result.DNSNotRegistered) { $DNSNotRegistered++; $ErrString += "DNSNotRegistered "}
+                    if ($Result.DNSMismatch) { $DNSMismatch++; $ErrString += "DNSMismatch " }
+                    if ($Result.DNSNotRegistered) { $DNSNotRegistered++; $ErrString += "DNSNotRegistered " }
                     if ($Result.HighLoad) { $HighLoad++; $ErrString += "HighLoad " }
                     if ($Result.HighUptime) { $HighUptime++; $ErrString += "HighUptime " }
                     if ($Result.HighDiskSpaceUsage) { $HighDiskSpaceUsage++; $ErrString += "HighDiskSpaceUsage " }
@@ -300,7 +300,7 @@ Function Test-CVADworkerhealth {
 
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Healthy: $Healthy, Unhealthy: $Unhealthy"
             [PSCustomObject]@{
-                #Series             = "CVADworkerhealth"
+                Series             = "CVADworkerhealth"
                 PSTypeName         = 'EUCMonitoring.CVADworkerhealth'
                 Broker             = $Broker
                 SiteName           = $SiteName

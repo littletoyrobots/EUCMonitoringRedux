@@ -56,7 +56,7 @@ function Get-CADCip {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalTxMits: $TotalTxMbits, TxMbitsRate: $TxMbitsRate"
 
                 [PSCustomObject]@{
-                    #    Series                   = "CADCip"
+                    Series         = "CADCip"
                     PSTypeName     = 'EUCMonitoring.CADCip'
                     ADC            = $ADC
                     TotalRxPackets = $TotalRxPackets

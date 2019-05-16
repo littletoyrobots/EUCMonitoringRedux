@@ -45,7 +45,7 @@ function Get-CADCsslcertkey {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Issuer: $Issuer"
 
                 [PSCustomObject]@{
-                    #    Series                   = "CADCsslcertkey"
+                    Series           = "CADCsslcertkey"
                     PSTypeName       = 'EUCMonitoring.CADCsslcertkey'
                     ADC              = $ADC
                     CertKey          = $CertKey
