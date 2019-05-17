@@ -102,7 +102,7 @@ Function Get-CVADlicense {
     }
 
     End {
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Returned $($Results.Count) value(s)"
     }
 }
 

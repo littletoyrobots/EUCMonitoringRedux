@@ -1,5 +1,5 @@
 Function ConvertTo-InfluxLineProtocol {
-    
+
     [CmdletBinding()]
     Param(
         [Parameter(ValueFromPipeline)]
@@ -11,31 +11,30 @@ Function ConvertTo-InfluxLineProtocol {
         [switch]$IncludeTimeStamp
     )
     Begin {
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
-
-    } #BEGIN
-		
-    Process { 
-        
-        # We grab here so that all output will have the same associated timestamp.
+        # Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
         if ($null -ne $Timestamp) {
+            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Using provided timestamp: $Timestamp"
             $IncludeTimeStamp = $true
         }
         elseif ($IncludeTimeStamp) {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Fetching timestamp"
+            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Fetching timestamp"
             $Timestamp = Get-InfluxTimestamp
         }
-        else { 
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No timestamp"
+        else {
+            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] No timestamp"
         }
-        
+    } #BEGIN
+
+    Process {
+
+        # We grab here so that all output will have the same associated timestamp.
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting results to Influx Line Protocol"
-        
+
         foreach ($Obj in $InputObject) {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting obj $($Result.Host)"
-            
+
             $ParamString = ""
-            if ("" -ne $Series) { $SeriesString = $Series}
+            if ("" -ne $Series) { $SeriesString = $Series }
             else { $SeriesString = "$($Obj.Series)" }
 
             if ("" -eq $SeriesString) {
@@ -44,11 +43,11 @@ Function ConvertTo-InfluxLineProtocol {
 
             $Obj.PSObject.Properties | ForEach-Object {
                 if ($null -eq $_.Value) { }
-                elseif ($_.Name -eq "Series") {  }
+                elseif ($_.Name -eq "Series") { } # We've already determined series above.
                 # If its a string, we'll treat it as a tag
                 elseif ($_.Value -is [string]) { $SeriesString += ",$($_.Name)=$($_.Value)" }
                 else {
-                    if ( $ParamString -eq "" ) { $ParamString = "$($_.Name)=$($_.Value)" } 
+                    if ( $ParamString -eq "" ) { $ParamString = "$($_.Name)=$($_.Value)" }
                     else { $ParamString += ",$($_.Name)=$($_.Value)" }
                 }
             }
@@ -61,12 +60,13 @@ Function ConvertTo-InfluxLineProtocol {
                 if ($IncludeTimeStamp) { $PostParams = "$SeriesString $ParamString $timeStamp" }
                 else { $PostParams = "$SeriesString $ParamString" }
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $PostParams"
+
                 Write-Output $PostParams
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No additional test data"
             }
-            
+
         }
 
     } #PROCESS

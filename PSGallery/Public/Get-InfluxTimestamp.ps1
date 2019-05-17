@@ -17,7 +17,7 @@ function Get-InfluxTimestamp {
     Param ()
 
     Begin {
-        Write-Verbose "[$(Get-Date) BEGIN  ] $($myinvocation.mycommand)"
+        # Write-Verbose "[$(Get-Date) BEGIN  ] $($myinvocation.mycommand)"
     } # Begin
 
     Process {
@@ -35,7 +35,7 @@ function Get-InfluxTimestamp {
     } # Process
 
     End {
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+        # Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     } # End
 }
 
