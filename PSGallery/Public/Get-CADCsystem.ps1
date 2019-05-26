@@ -16,7 +16,7 @@ function Get-CADCsystem {
     )
 
     Begin {
-        # Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Starting session to $ADC"
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Starting session to $ADC"
         try {
             $ADCSession = Connect-CitrixADC -ADC $ADC -Credential $Credential
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Connection to $ADC established"

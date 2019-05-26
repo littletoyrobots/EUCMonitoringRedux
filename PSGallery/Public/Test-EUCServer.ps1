@@ -80,7 +80,7 @@ function Test-EUCServer {
 
     Begin {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
-
+        $WarningPreference = 'SilentlyContinue'
     }
 
     Process {
@@ -125,7 +125,7 @@ function Test-EUCServer {
                         $Result | Add-Member -MemberType NoteProperty -Name "HTTPPath_$($HTTPPort)$($HTTPPath -replace '\W', '_')" -Value 0 #
                     }
                     foreach ($Path in $HTTPSPath) {
-                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPATH_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 #
+                        $Result | Add-Member -MemberType NoteProperty -Name "HTTPSPath_$($HTTPSPort)$($HTTPSPath -replace '\W', '_')" -Value 0 #
                     }
                     foreach ($Port in $ValidCertPort) {
                         $Result | Add-Member -MemberType NoteProperty -Name "ValidCert_Port$($Port)" -Value 0 #

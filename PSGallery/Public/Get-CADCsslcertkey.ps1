@@ -33,7 +33,7 @@ function Get-CADCsslcertkey {
 
             foreach ($sslcertkey in $Results) {
                 $CertKey = $sslcertkey.CertKey
-                $Subject = ($sslcertkey.Subject -split 'CN=')[1]
+                $Subject = ($sslcertkey.Subject -split 'CN=')[1].split('/')[0]
                 $Issuer = ($sslcertkey.Issuer -split 'CN=')[1]
                 $Status = $sslcertkey.Status
                 $DaysToExpiration = $sslcertkey.DaysToExpiration
@@ -49,8 +49,8 @@ function Get-CADCsslcertkey {
                     PSTypeName       = 'EUCMonitoring.CADCsslcertkey'
                     ADC              = $ADC
                     CertKey          = $CertKey
-                    Subject          = $Subject
-                    Issuer           = $Issuer
+                    Subject          = $Subject.trim()
+                    Issuer           = $Issuer.trim()
                     Status           = $Status
                     DaysToExpiration = $DaysToExpiration
                     IsClientCert     = $IsClientCert

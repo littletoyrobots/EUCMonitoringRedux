@@ -5,7 +5,7 @@
 $BaseDir = "C:\Monitoring"
 $CVADDesktops = $true
 $CVADServers = $true
-$CVADWorkerHealth = $true    # If you want to fine tune which worker health checks are run, see below.
+$CVADWorkerHealthCheck = $true    # If you want to fine tune which worker health checks are run, see below.
 
 ############################
 # Citrix Apps and Desktops #
@@ -140,7 +140,7 @@ $InfraResults = @()
 # the brokers associated with each site.
 
 # Workload session
-if ($null -ne $CitrixBrokers) {
+if ($null -ne $CVADBrokers) {
     $CVADWorkload = @()
     $CVADWorkerHealth = @()
 
@@ -155,7 +155,7 @@ if ($null -ne $CitrixBrokers) {
     $CVADWorkload = Get-CVADworkload @CVADWorkloadParams
     $CVADWorkload | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 
-    if ($WorkerHealth) {
+    if ($CVADWorkerHealthCheck) {
         if ($CVADDesktops) {
             $CVADwhParams = @{
                 Broker             = $CVADBrokers;
@@ -198,7 +198,7 @@ $ADCResults = @()
 if ($null -ne $CitrixADCs) {
     foreach ($ADC in $CitrixADCs) {
         $ADCParams = @{
-            ADC        = $CitrixADC; # Example value = "10.1.2.3","10.1.2.4"
+            ADC        = $ADC; # Example value = "10.1.2.3","10.1.2.4"
             Credential = $ADCCred;
             ErrorLog   = $ADCErrorLog
         }
@@ -221,14 +221,14 @@ if ($null -ne $CitrixADCGateways) {
         }
 
         $ADCResults += Get-CADCcsvserver @ADCParams
-        $ADCResults += Get-CADCgatewayusers @ADCParams
+        $ADCResults += Get-CADCgatewayuser @ADCParams
         $ADCResults += Get-CADCgslbvserver @ADCParams
         $ADCResults += Get-CADChttp @ADCParams
         $ADCResults += Get-CADCip @ADCParams
         $ADCResults += Get-CADClbvserver @ADCParams
         $ADCResults += Get-CADCssl @ADCParams
         $ADCResults += Get-CADCsslcertkey @ADCParams
-        $ADCResults += Get-CADCsystem @ADCParams
+        # $ADCResults += Get-CADCsystem @ADCParams
         $ADCResults += Get-CADCtcp @ADCParams
 
         if ($OutputInfluxDataProtocol) {
@@ -267,26 +267,26 @@ if ($null -ne $RdsLicenseServers) {
     }
 }
 
-if ($null -ne $XdLicenseServers) {
+if ($null -ne $CVADLicenseServers) {
     $CVADLicenseParams = @{
         ComputerName = $CVADLicenseServers; # Example value = "xd-license1", "xd-license2"
         ErrorLog     = $InfraErrorLog
     }
-    $CVADLicenses = Test-EUCLicense @XdLicenseParams
+    $CVADLicenses = Get-CVADLicense @CVADLicenseParams
 
     if ($OutputInfluxDataProtocol) {
         $CVADLicenses | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
     }
 
-    $XdLicenseParams = @{
+    $CVADLicenseParams = @{
         Series       = "CVADlicense";
-        ComputerName = $XdLicenseServers;
+        ComputerName = $CVADLicenseServers;
         Ports        = 7279, 27000, 8082, 8083;
         Services     = "Citrix Licensing", "CitrixWebServicesforLicensing";
         ErrorLog     = $ErrorLog
     }
 
-    $CVADResults = Test-EUCServer @XdLicenseParams
+    $CVADResults = Test-EUCServer @CVADLicenseParams
     $InfraResults += $CVADResults
 
     if ($OutputInfluxDataProcol) {
@@ -451,8 +451,14 @@ if ($null -ne $CVADCloudConnectors) {
 }
 
 
+if (Test-Path $WorkloadErrorLog) { Get-Content $WorkloadErrorLog | Out-File $ErrorLog -Append }
+if (Test-Path $WorkerHealthErrorLog) { Get-Content $WorkerHealthErrorLog | Out-File $ErrorLog -Append }
+if (Test-PAth $ADCErrorLog) { Get-Content $ADCErrorLog | Out-File $ErrorLog -Append }
+if (Test-Path $InfraErrorLog) { Get-Content $InfraErrorLog | Out-File $ErrorLog -Append }
 
-$content = Get-Content $ErrorLog
+if (test-path $ErrorLog) {
+    $content = Get-Content $ErrorLog
+}
 if ($null -ne $content) {
     $content | Out-File -FilePath $ErrorHistory -Append
     if ($ErrorsToTSDB) {

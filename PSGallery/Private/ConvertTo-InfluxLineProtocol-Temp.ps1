@@ -1,4 +1,4 @@
-function ConvertTo-InfluxLineProtocol {
+function ConvertTo-InfluxLineProtocolTemp {
     param (
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]

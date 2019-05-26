@@ -45,7 +45,11 @@ Function ConvertTo-InfluxLineProtocol {
                 if ($null -eq $_.Value) { }
                 elseif ($_.Name -eq "Series") { } # We've already determined series above.
                 # If its a string, we'll treat it as a tag
-                elseif ($_.Value -is [string]) { $SeriesString += ",$($_.Name)=$($_.Value)" }
+                elseif ($_.Value -is [string]) {
+                    # So, this is a little tricky, but get rid of all non-alphanumeric, non-space characters
+                    # and trim the remaining whitespace. Thank you GoDaddy certs
+                    $SeriesString += ",$($_.Name)=$(($_.Value -replace "[^W ]").trim())"
+                }
                 else {
                     if ( $ParamString -eq "" ) { $ParamString = "$($_.Name)=$($_.Value)" }
                     else { $ParamString += ",$($_.Name)=$($_.Value)" }

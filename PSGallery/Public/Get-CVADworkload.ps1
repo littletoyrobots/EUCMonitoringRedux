@@ -123,7 +123,13 @@ Function Get-CVADworkload {
                     if ($MultiSession -or $All) {
                         $SessionSupport += "MultiSession"
                     }
-                    $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
+                    if ($null -ne $SessionSupport) {
+                        $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
+                    }
+                    else {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No specified session support.  Assuming all."
+                        $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport SingleSession, Multisession ).Name
+                    }
                 }
 
                 # Realistically, this will generally just iterate once.
@@ -149,7 +155,7 @@ Function Get-CVADworkload {
                                     $MachineCount = $Machines.Count
 
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $SiteName / $Zone / $CatName / $DesktopGroup"
-                                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Count: $MachineCount"
+                                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] MachineCount: $MachineCount"
 
                                     $Registered = ($Machines | Where-Object { ($_.RegistrationState -eq "Registered" -and $_.PowerState -ne "Off") }).Count
                                     $Unregistered = ($Machines | Where-Object { ($_.RegistrationState -eq "Unregistered" -and $_.PowerState -ne "Off") }).Count
@@ -171,7 +177,7 @@ Function Get-CVADworkload {
                                         AdminAddress     = $AdminAddress;
                                         ZoneName         = $Zone;
                                         CatalogName      = $CatName;
-                                        DesktopGroupName = $DeliveryGroup;
+                                        DesktopGroupName = $DesktopGroup;
                                         #SessionState     = "Active"; # Get 'em all
                                         Maxrecordcount   = 99999
                                     }
@@ -180,7 +186,7 @@ Function Get-CVADworkload {
                                         AdminAddress     = $AdminAddress;
                                         ZoneName         = $Zone;
                                         CatalogName      = $CatName;
-                                        DesktopGroupName = $DeliveryGroup;
+                                        DesktopGroupName = $DesktopGroup;
                                         SessionState     = "Active";
                                         Maxrecordcount   = 99999
                                     }
@@ -191,7 +197,7 @@ Function Get-CVADworkload {
                                         AdminAddress     = $AdminAddress;
                                         ZoneName         = $Zone;
                                         CatalogName      = $CatName;
-                                        DesktopGroupName = $DeliveryGroupName;
+                                        DesktopGroupName = $DesktopGroup;
                                         SessionState     = "Disconnected";
                                         Maxrecordcount   = 99999
                                     }
@@ -208,7 +214,7 @@ Function Get-CVADworkload {
                                         ZoneName             = $Zone
                                         CatalogName          = $CatName
                                         DeliveryGroupName    = $DesktopGroup
-                                        SessionSupport       = $DG.SessionSupport
+                                        SessionSupport       = "$($DG.SessionSupport)"
                                         MachineCount         = $MachineCount
                                         Registered           = $Registered
                                         Unregistered         = $Unregistered

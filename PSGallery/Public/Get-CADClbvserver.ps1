@@ -77,7 +77,7 @@ function Get-CADClbvserver {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - TotalHits: $TotalHits, TotalRequests: $TotalRequests, TotalResponses: $TotalResponses"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Name - Current Client Connections: $CurrentClientConnections, Current Server Connections: $CurrentServerConnections"
                 [PSCustomObject]@{
-                    Series                   = "CitrixADClbvserver"
+                    Series                   = "CADClbvserver"
                     PSTypeName               = 'EUCMonitoring.CADClbvserver'
                     ADC                      = $ADC
                     Name                     = $Name
