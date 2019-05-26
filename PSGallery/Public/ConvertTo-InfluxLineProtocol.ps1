@@ -5,9 +5,12 @@ Function ConvertTo-InfluxLineProtocol {
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [object[]]$InputObject,
+
         [Parameter(Mandatory = $false)]
         [string]$Series,
+
         [int64]$Timestamp,
+
         [switch]$IncludeTimeStamp
     )
     Begin {
@@ -31,14 +34,18 @@ Function ConvertTo-InfluxLineProtocol {
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting results to Influx Line Protocol"
 
         foreach ($Obj in $InputObject) {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting obj $($Result.Host)"
+            # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting obj $($Result.Host)"
+
+            <# Format for Influx Line Protocol looks like
+            SeriesName,tag1=tagvalue
+            #>
 
             $ParamString = ""
             if ("" -ne $Series) { $SeriesString = $Series }
             else { $SeriesString = "$($Obj.Series)" }
 
             if ("" -eq $SeriesString) {
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series Blank!"
+                throw "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series Blank!"
             }
 
             $Obj.PSObject.Properties | ForEach-Object {
@@ -48,7 +55,7 @@ Function ConvertTo-InfluxLineProtocol {
                 elseif ($_.Value -is [string]) {
                     # So, this is a little tricky, but get rid of all non-alphanumeric, non-space characters
                     # and trim the remaining whitespace. Thank you GoDaddy certs
-                    $SeriesString += ",$($_.Name)=$(($_.Value -replace "[^W ]").trim())"
+                    $SeriesString += ",$($_.Name)=$($_.Value.trim())"
                 }
                 else {
                     if ( $ParamString -eq "" ) { $ParamString = "$($_.Name)=$($_.Value)" }
@@ -58,8 +65,14 @@ Function ConvertTo-InfluxLineProtocol {
 
 
             if (("" -ne $ParamString) -and ("" -ne $SeriesString)) {
-                $SeriesString = $SeriesString -replace " ", "\ "
-                $ParamString = $ParamString -replace " ", "\ "
+                # Using \W instead of Regex::Escape() for special character inclusion.
+                # $& refers to the match
+
+                #    $SeriesString = $SeriesString -replace " ", "\ "
+                $SeriesString = $SeriesString -replace "\W", "\$&"
+                #    $ParamString = $ParamString -replace " ", "\ "
+                $ParamString = $ParamString -replace "\W", "\$&"
+
 
                 if ($IncludeTimeStamp) { $PostParams = "$SeriesString $ParamString $timeStamp" }
                 else { $PostParams = "$SeriesString $ParamString" }

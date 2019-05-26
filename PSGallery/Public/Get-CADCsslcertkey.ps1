@@ -33,15 +33,29 @@ function Get-CADCsslcertkey {
 
             foreach ($sslcertkey in $Results) {
                 $CertKey = $sslcertkey.CertKey
-                $Subject = ($sslcertkey.Subject -split 'CN=')[1].split('/')[0]
+                # $Subject = (($sslcertkey.Subject -split 'CN=')[1]).split('/')[0] # ! There's something off here for Go-Daddy Root cert.
+
+                $Subject = ($sslcertkey.Subject -split 'CN=')[1]
+                if ($null -eq $Subject) {
+                    # -and ("ROOT_CERT" -in $sslcertkey.CertificateType)) {
+                    $Subject = ($sslcertkey.Subject -split 'OU=')[1]
+                }
+
                 $Issuer = ($sslcertkey.Issuer -split 'CN=')[1]
+                if ($null -eq $Issuer) {
+                    # -and ("ROOT_CERT" -in $sslcertkey.CertificateType)) {
+                    $Issuer = ($sslcertkey.Issuer -split 'OU=')[1]
+                }
+
                 $Status = $sslcertkey.Status
                 $DaysToExpiration = $sslcertkey.DaysToExpiration
+
                 $IsClientCert = "CLNT_CERT" -in $sslcertkey.CertificateType
                 $IsServerCert = "SRVR_CERT" -in $sslcertkey.CertificateType
 
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Certkey - Status: $Status, DaysToExpiration: $DaysToExpiration"
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Client: $IsClientCert, Server: $IsServerCert, Subject: $Subject"
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Client: $IsClientCert, Server: $IsServerCert"
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Subject: $Subject"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Issuer: $Issuer"
 
                 [PSCustomObject]@{
