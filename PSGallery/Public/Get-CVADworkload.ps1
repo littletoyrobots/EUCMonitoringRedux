@@ -184,16 +184,7 @@ Function Get-CVADworkload {
 
                                     $Sessions = Get-BrokerSession @Params
                                     $TotalSessions = $Sessions.Count
-                                    # $TotalSessions = (Get-BrokerSession @params).Count
-                                    $params = @{
-                                        AdminAddress     = $AdminAddress;
-                                        ZoneName         = $Zone;
-                                        CatalogName      = $CatName;
-                                        DesktopGroupName = $DesktopGroup;
-                                        SessionState     = "Active";
-                                        Maxrecordcount   = 99999
-                                    }
-                                    # $Sessions = Get-BrokerSession @params
+
                                     $ActiveSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $null -eq $_.IdleDuration } ).Count
                                     $IdleSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $_.IdleDuration -gt [timespan]"00:00:00"} ).Count
                                     $DisconnectedSessions = ($Sessions | Where-Object { $_.SessionState -eq "Disconnected" }).Count

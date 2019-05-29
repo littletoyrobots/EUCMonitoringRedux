@@ -70,7 +70,7 @@ Function ConvertTo-InfluxLineProtocol {
 
             if (("" -ne $ParamString) -and ("" -ne $SeriesString)) {
                 # Using \W instead of Regex::Escape() for special character inclusion.
-                # $& refers to the match
+                # $& refers to the match.  Changed mind on this.  Will mangle hostnames.
 
                 $SeriesString = $SeriesString -replace " ", "\ "
                 # $SeriesString = $SeriesString -replace "\W", "\$&"
