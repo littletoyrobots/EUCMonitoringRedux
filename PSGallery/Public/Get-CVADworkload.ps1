@@ -181,7 +181,10 @@ Function Get-CVADworkload {
                                         #SessionState     = "Active"; # Get 'em all
                                         Maxrecordcount   = 99999
                                     }
-                                    $TotalSessions = (Get-BrokerSession @params).Count
+
+                                    $Sessions = Get-BrokerSession @Params
+                                    $TotalSessions = $Sessions.Count
+                                    # $TotalSessions = (Get-BrokerSession @params).Count
                                     $params = @{
                                         AdminAddress     = $AdminAddress;
                                         ZoneName         = $Zone;
@@ -190,18 +193,10 @@ Function Get-CVADworkload {
                                         SessionState     = "Active";
                                         Maxrecordcount   = 99999
                                     }
-                                    $Sessions = Get-BrokerSession @params
-                                    $ActiveSessions = ($Sessions | Where-Object IdleDuration -lt 00:00:01).Count
-                                    $IdleSessions = ($Sessions | Where-Object IdleDuration -gt 00:00:00).Count
-                                    $params = @{
-                                        AdminAddress     = $AdminAddress;
-                                        ZoneName         = $Zone;
-                                        CatalogName      = $CatName;
-                                        DesktopGroupName = $DesktopGroup;
-                                        SessionState     = "Disconnected";
-                                        Maxrecordcount   = 99999
-                                    }
-                                    $DisconnectedSessions = (Get-BrokerSession @params).Count
+                                    # $Sessions = Get-BrokerSession @params
+                                    $ActiveSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $null -eq $_.IdleDuration } ).Count
+                                    $IdleSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $_.IdleDuration -gt [timespan]"00:00:00"} ).Count
+                                    $DisconnectedSessions = ($Sessions | Where-Object { $_.SessionState -eq "Disconnected" }).Count
 
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalSessions: $TotalSessions, ActiveSessions: $ActiveSessions"
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] IdleSessions: $IdleSessions, DisconnectedSessions: $DisconnectedSessions"

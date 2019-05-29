@@ -1,6 +1,7 @@
 Function ConvertTo-InfluxLineProtocol {
 
     [CmdletBinding()]
+    [OutputType([String])]
     Param(
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
@@ -36,13 +37,16 @@ Function ConvertTo-InfluxLineProtocol {
         foreach ($Obj in $InputObject) {
             # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting obj $($Result.Host)"
 
-            <# Format for Influx Line Protocol looks like
-            SeriesName,tag1=tagvalue
+            <#
+            The format for Influx Line Protocol looks like
+            SeriesName,tag1=tagvalue DataPoint1=datavalue timestamp
+
+            I've decided to treat all strings as tags, everything else as data parameters.
             #>
 
             $ParamString = ""
-            if ("" -ne $Series) { $SeriesString = $Series }
-            else { $SeriesString = "$($Obj.Series)" }
+            if ("" -ne $Series) { $SeriesString = $Series -replace "\W", "\$&" }
+            else { $SeriesString = "$($Obj.Series)" -replace "\W", "\$&" }
 
             if ("" -eq $SeriesString) {
                 throw "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series Blank!"
@@ -55,7 +59,7 @@ Function ConvertTo-InfluxLineProtocol {
                 elseif ($_.Value -is [string]) {
                     # So, this is a little tricky, but get rid of all non-alphanumeric, non-space characters
                     # and trim the remaining whitespace. Thank you GoDaddy certs
-                    $SeriesString += ",$($_.Name)=$($_.Value.trim())"
+                    $SeriesString += ",$($_.Name)=$($_.Value.trim() -replace '/', '\/' -replace '=', '\=')"
                 }
                 else {
                     if ( $ParamString -eq "" ) { $ParamString = "$($_.Name)=$($_.Value)" }
@@ -68,10 +72,10 @@ Function ConvertTo-InfluxLineProtocol {
                 # Using \W instead of Regex::Escape() for special character inclusion.
                 # $& refers to the match
 
-                #    $SeriesString = $SeriesString -replace " ", "\ "
-                $SeriesString = $SeriesString -replace "\W", "\$&"
-                #    $ParamString = $ParamString -replace " ", "\ "
-                $ParamString = $ParamString -replace "\W", "\$&"
+                $SeriesString = $SeriesString -replace " ", "\ "
+                # $SeriesString = $SeriesString -replace "\W", "\$&"
+                $ParamString = $ParamString -replace " ", "\ "
+                # $ParamString = $ParamString -replace "\W", "\$&"
 
 
                 if ($IncludeTimeStamp) { $PostParams = "$SeriesString $ParamString $timeStamp" }
