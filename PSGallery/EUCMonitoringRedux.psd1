@@ -75,6 +75,7 @@
         'Get-InfluxTimestamp',
 
         # ADC Functions
+        'Get-CADCcache',
         'Get-CADCcsvserver',
         'Get-CADCgatewayuser',
         'Get-CADCgslbvserver',

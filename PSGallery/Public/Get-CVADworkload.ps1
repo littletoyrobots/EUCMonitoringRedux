@@ -102,6 +102,7 @@ Function Get-CVADworkload {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Previous collection success, skipping $AdminAddress"
                     continue
                 }
+                # If we can't ping, skip and go to next broker.
                 if (-Not (Test-Connection -ComputerName $AdminAddress -Count 1 -Quiet -ErrorAction SilentlyContinue)) {
                     if ($ErrorLog) {
                         Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connection Failure to Broker: $AdminAddress"
@@ -141,6 +142,7 @@ Function Get-CVADworkload {
 
                         foreach ($CatName in $CatalogName) {
                             foreach ($DesktopGroup in $DesktopGroupName) {
+                                # Grab all the machines associated with the DesktopGroup.
                                 $DG = Get-BrokerDesktopGroup -AdminAddress $AdminAddress -Name $DesktopGroup
                                 $BMParams = @{
                                     AdminAddress     = $AdminAddress;
@@ -151,6 +153,7 @@ Function Get-CVADworkload {
                                 }
                                 $Machines = Get-BrokerMachine @BMParams
 
+                                # Only return values on delivery groups with machines in them.
                                 if ($null -ne $Machines) {
                                     $MachineCount = $Machines.Count
 
@@ -173,6 +176,7 @@ Function Get-CVADworkload {
                                     $LoadIndexMax = ($Machines.LoadIndex | Measure-Object -Maximum).Maximum
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] LoadIndexAvg: $LoadIndexAvg, LoadIndexMax: $LoadIndexMax"
 
+                                    # Here's the costly bit.
                                     $params = @{
                                         AdminAddress     = $AdminAddress;
                                         ZoneName         = $Zone;
@@ -181,8 +185,7 @@ Function Get-CVADworkload {
                                         #SessionState     = "Active"; # Get 'em all
                                         Maxrecordcount   = 99999
                                     }
-
-                                    $Sessions = Get-BrokerSession @Params
+                                    $Sessions = Get-BrokerSession @Params # Debating putting select statement so that
                                     $TotalSessions = $Sessions.Count
 
                                     $ActiveSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $null -eq $_.IdleDuration } ).Count
@@ -208,6 +211,7 @@ Function Get-CVADworkload {
                                         PowerOff             = $PowerOff
                                         PowerOther           = $PowerOther
                                         InMaintenence        = $InMaintenance
+                                        FaultState           = $FaultState
                                         LoadIndexAvg         = $LoadIndexAvg
                                         LoadIndexMax         = $LoadIndexMax
                                         TotalSessions        = $TotalSessions
