@@ -196,7 +196,7 @@ Function Get-CVADworkload {
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] IdleSessions: $IdleSessions, DisconnectedSessions: $DisconnectedSessions"
 
                                     [PSCustomObject]@{
-                                        Series               = "CVADWorkload"
+                                        Series               = "CVADworkload"
                                         PSTypeName           = 'EUCMonitoring.CVADworkload'
                                         Broker               = $AdminAddress
                                         SiteName             = $Site

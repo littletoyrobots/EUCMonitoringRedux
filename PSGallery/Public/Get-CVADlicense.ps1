@@ -84,6 +84,15 @@ Function Get-CVADlicense {
                 }
 
             }
+            catch [System.InvalidOperationException] {
+                if ($ErrorLogPath) {
+                    Write-EUCError -Message "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message) - Ensure Citrix Licensing WMI service started" -Path $ErrorLogPath
+                }
+                else {
+                    Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message) - Ensure Citrix Licensing WMI service started"
+                }
+                throw $_
+            }
             catch {
                 if ($ErrorLogPath) {
                     Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath

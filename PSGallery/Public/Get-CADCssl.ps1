@@ -52,10 +52,10 @@ function Get-CADCssl {
                 }
                 else {
                     if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC SSLEngineStatus DOWN" -Path $ErrorLogPath
+                        Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - SSLEngineStatus: DOWN" -Path $ErrorLogPath
                     }
                     else {
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC SSLEngineStatus DOWN"
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - SSLEngineStatus: DOWN"
                     }
                     $EngineStatus = "DOWN"
                 }

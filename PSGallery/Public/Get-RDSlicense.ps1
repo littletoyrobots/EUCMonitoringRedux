@@ -108,18 +108,18 @@ function Get-RDSLicense {
 
                     if ($TotalIssued -gt $TotalLicenses) {
                         if ($ErrorLogPath) {
-                            Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] License Overcommit of Type: $Type" -Path $ErrorLogPath
+                            Write-EUCError -Message "[$(Get-Date)] [$($myinvocation.mycommand)] $Computer - License Overcommit of Type: $Type" -Path $ErrorLogPath
                         }
                         else {
-                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] License Overcommit of Type: $Type"
+                            Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] $Computer - License Overcommit of Type: $Type"
                         }
                     }
 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Type, Available: $TotalAvailable, Issued: $TotalIssued, Total: $TotalLicenses"
 
                     $Results += [PSCustomObject]@{
-                        PSTypeName        = 'EUCMonitoring.RDSLicense'
-                        Series            = "RdsLicense"
+                        PSTypeName        = 'EUCMonitoring.RDSlicense'
+                        Series            = "RDSlicense"
                         Server            = $Computer
                         Type              = $Type
                         AvailableLicenses = $TotalAvailable

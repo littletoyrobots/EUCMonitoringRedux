@@ -49,6 +49,14 @@ function Get-CADCsslcertkey {
 
                 $Status = $sslcertkey.Status
                 $DaysToExpiration = $sslcertkey.DaysToExpiration
+                if ($DaysToExpiration -lt 7) {
+                    if ($ErrorLogPath) {
+                        Write-EUCError -Message "[$(Get-Date)] [$($myinvocation.mycommand)] $Subject - DaysToExpiration: $DaysToExpiration" -Path $ErrorLogPath
+                    }
+                    else {
+                        Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] $Subject - DaysToExpiration: $DaysToExpiration"
+                    }
+                }
 
                 $IsClientCert = "CLNT_CERT" -in $sslcertkey.CertificateType
                 $IsServerCert = "SRVR_CERT" -in $sslcertkey.CertificateType

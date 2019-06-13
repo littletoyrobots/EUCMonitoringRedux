@@ -56,19 +56,19 @@ function Get-CADCgslbvserver {
                 elseif ($Health -gt 0) {
                     $Status = 1
                     if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name DEGRADED" -Path $ErrorLogPath
+                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DEGRADED" -Path $ErrorLogPath
                     }
                     else {
-                        Write-Verbose "[$(Get-Date)] [CitrixADCgslbvserver] $Name DEGRADED"
+                        Write-Verbose "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DEGRADED"
                     }
                 }
                 else {
                     $Status = 0
                     if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name DOWN" -Path $ErrorLogPath
+                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DOWN" -Path $ErrorLogPath
                     }
                     else {
-                        Write-Verbose "[$(Get-Date)] [CitrixADCgslbvserver] $Name DOWN"
+                        Write-Verbose "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DOWN"
                     }
                 }
 
