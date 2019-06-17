@@ -30,8 +30,8 @@ function Install-VisualizationSetup {
     [CmdletBinding()]
     param (
         [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$MonitoringPath = (get-location).Path,
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$GrafanaVersion = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.2.windows-amd64.zip",
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$InfluxVersion = "https://dl.influxdata.com/influxdb/releases/influxdb-1.6.1_windows_amd64.zip",
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$GrafanaVersion = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.3.windows-amd64.zip",
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$InfluxVersion = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.6_windows_amd64.zip",
         [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$NSSMVersion = "https://nssm.cc/release/nssm-2.24.zip"
     )
 
@@ -131,13 +131,13 @@ function Install-VisualizationSetup {
 
         #Install Grafana
         GetAndInstall "Grafana" $GrafanaVersion $MonitoringPath
-        $Grafana = (get-childitem $MonitoringPath | Where-Object {$_.Name -match 'graf'}).FullName
+        $Grafana = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'graf' }).FullName
 
         #Install InfluxDB
         GetAndInstall "InfluxDB" $InfluxVersion $MonitoringPath
-        $Influx = (get-childitem $MonitoringPath | Where-Object {$_.Name -match 'infl'}).FullName
+        $Influx = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'infl' }).FullName
         # When taking in a user supplied path, need to change, this will make sure there's a appended '/'
-        # then strip away drive letter and change backslashs to forward( '\' to '/' ), and get rid of any 
+        # then strip away drive letter and change backslashs to forward( '\' to '/' ), and get rid of any
         # double slashes.  Then we'll updated the influxdb.conf.
         $IDataPath = "$MonitoringPath/".replace((resolve-path $MonitoringPath).Drive.Root, '').replace("\", "/").Replace("//", "/")
         $content = [System.IO.File]::ReadAllText("$Influx\influxdb.conf").Replace("/var/lib/influxdb", "/$($IDataPath)InfluxData/var/lib/influxdb")
@@ -147,7 +147,7 @@ function Install-VisualizationSetup {
         #Install NSSM
         GetAndInstall "NSSM" $NSSMVersion $MonitoringPath
         #Setup Services
-        $NSSM = (get-childitem $MonitoringPath | Where-Object {$_.Name -match 'nssm'}).FullName
+        $NSSM = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'nssm' }).FullName
         $NSSMEXE = "$nssm\win64\nssm.exe"
         & $nssmexe Install "Grafana Server" $Grafana\bin\grafana-server.exe
         # & $nssmexe Set "Grafana Server" DisplayName "Grafana Server"

@@ -3,9 +3,9 @@
 # using fqdn for servernames, so any valid certificate checks associated will pass.
 
 $BaseDir = "C:\Monitoring"
-$CVADDesktops = $true
-$CVADServers = $true
-$CVADWorkerHealthCheck = $true    # If you want to fine tune which worker health checks are run, see below.
+$CVADSingleSession = $true     # Think XenDesktop
+$CVADMultiSession = $true   #  Think XenApp, but with WVD, who knows.
+$CVADWorkerHealthCheck = $false    # If you want to fine tune which worker health checks are run, see below.
 
 ############################
 # Citrix Apps and Desktops #
@@ -53,8 +53,7 @@ $CVADCloudConnectors = $null          # Put your Citrix cloud connectors here. e
 
 # $ADCCred = (Get-Credential) # Uncomment this for testing.
 
-$CitrixADCs = $null         # These would be your NSIPs, needs $ADCCred defined
-$CitrixADCGateways = $null  # These would be your ADC Gateway IP, $needs ADCCred defined
+$CitrixADCGateways = $null  # These would be your ADC Gateway IP, $needs ADCCred defined above.
 
 #####################
 # Licensing Servers #
@@ -86,7 +85,7 @@ $FASServers = $null         # Put your FAS servers here.
 ##########
 
 $OutputInfluxDataProtocol = $true   # This is used for Telegraf
-$GenerateReportHTML = $true
+$GenerateReportHTML = $false # Not implemented yet.
 $ReportHTMLPath = "$BaseDir\EUCMonitoring.html"
 
 
@@ -135,7 +134,6 @@ $RDSLicenses = @()
 $CVADLicenses = @()
 $InfraResults = @()
 
-
 # If you have multiple sites, just copy this section and invoke using
 # the brokers associated with each site.
 
@@ -149,14 +147,14 @@ if ($null -ne $CVADBrokers) {
         Broker   = $CVADBrokers; # Put your brokers here.
         ErrorLog = $WorkloadErrorLog
     }
-    if ($Desktops) { $CVADWorkloadParams.SingleSession = $true }
-    if ($Servers) { $CVADWorkloadParams.MultiSession = $true }
+    if ($CVADSingleSession) { $CVADWorkloadParams.SingleSession = $true }
+    if ($CVADMultiSession) { $CVADWorkloadParams.MultiSession = $true }
 
     $CVADWorkload = Get-CVADworkload @CVADWorkloadParams
     $CVADWorkload | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 
     if ($CVADWorkerHealthCheck) {
-        if ($CVADDesktops) {
+        if ($CVADSingleSession) {
             $CVADwhParams = @{
                 Broker             = $CVADBrokers;
                 SingleSession      = $true;
@@ -169,7 +167,7 @@ if ($null -ne $CVADBrokers) {
             }
             $CVADWorkerHealth += Get-CVADworkerhealth @CVADwhParams
         }
-        if ($CVADServers) {
+        if ($CVADMultiSession) {
             $CVADwhParams = @{
                 Broker             = $CVADBrokers;
                 Multisession       = $true;
@@ -193,23 +191,6 @@ if ($null -ne $CVADBrokers) {
 
 # ! Placeholder for VMware
 
-# Netscalers
-$ADCResults = @()
-if ($null -ne $CitrixADCs) {
-    foreach ($ADC in $CitrixADCs) {
-        $ADCParams = @{
-            ADC        = $ADC; # Example value = "10.1.2.3","10.1.2.4"
-            Credential = $ADCCred;
-            ErrorLog   = $ADCErrorLog
-        }
-
-        $ADCResults += Get-CADCsystem @ADCParams
-    }
-    if ($OutputInfluxDataProtocol) {
-        $ADCResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-    }
-}
-
 # Netscaler Gateways, now called Citrix ADC Gateway
 
 if ($null -ne $CitrixADCGateways) {
@@ -228,7 +209,7 @@ if ($null -ne $CitrixADCGateways) {
         $ADCResults += Get-CADClbvserver @ADCParams
         $ADCResults += Get-CADCssl @ADCParams
         $ADCResults += Get-CADCsslcertkey @ADCParams
-        # $ADCResults += Get-CADCsystem @ADCParams
+        $ADCResults += Get-CADCsystem @ADCParams
         $ADCResults += Get-CADCtcp @ADCParams
 
         if ($OutputInfluxDataProtocol) {
@@ -282,7 +263,7 @@ if ($null -ne $CVADLicenseServers) {
         Series       = "CVADlicense";
         ComputerName = $CVADLicenseServers;
         Ports        = 7279, 27000, 8082, 8083;
-        Services     = "Citrix Licensing", "CitrixWebServicesforLicensing";
+        Services     = "Citrix Licensing", "CitrixWebServicesforLicensing", "Citrix_GTLicensingProv";
         ErrorLog     = $ErrorLog
     }
 

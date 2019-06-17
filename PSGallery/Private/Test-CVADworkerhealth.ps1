@@ -43,6 +43,7 @@ Function Test-CVADworkerhealth {
         # Create and open runspace pool, setup runspaces array with min and max threads
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Setting Up Runspace pool"
         $Pool = [RunspaceFactory]::CreateRunspacePool(1, ([int]$env:NUMBER_OF_PROCESSORS + 1))
+        # $Pool.ThreadOptions = 'ReuseThread'
         $Pool.ApartmentState = "MTA"
         $Pool.Open()
     }
@@ -195,7 +196,7 @@ Function Test-CVADworkerhealth {
             $RunspaceResults = @()
 
             $MachineList = New-Object System.Collections.ArrayList(, $MachineDNSNames)
-
+            Lock-Object
             # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $($MachineList -join ', ')"
 
             foreach ($Machine in $MachineList) {
