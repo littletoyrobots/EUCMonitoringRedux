@@ -196,7 +196,7 @@ Function Test-CVADworkerhealth {
             $RunspaceResults = @()
 
             $MachineList = New-Object System.Collections.ArrayList(, $MachineDNSNames)
-            Lock-Object
+            # TODO Lock-Object?  Compare different tests jobs / threads for speed
             # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $($MachineList -join ', ')"
 
             foreach ($Machine in $MachineList) {

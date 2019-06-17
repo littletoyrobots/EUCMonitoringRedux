@@ -6,6 +6,8 @@ $TimeStamp = Get-InfluxTimestamp
 $CVADWorkloadParams = @{
     Broker        = "ddc1.mydomain.com", "ddc2.mydomain.com"; # Put your brokers here.
 
+    # If you want to uncomment and fill these out, go for it.  If not, it will auto-discover
+    # and return a value for each permutation with machines associated.
     #    SiteName         = ""
     #    ZoneName         = ""
     #    DesktopGroupName = ""
