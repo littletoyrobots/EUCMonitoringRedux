@@ -42,17 +42,18 @@ Note the Customer ID located in this same page, this is case senstitive.
 Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 ```
 
-NOTE: **XdServerBrokers/XdDesktopBrokers** should be set as the Citrix Cloud Connector, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
+NOTE: **CVADBroker** should be set as the Citrix Cloud Connector, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
 
 #### InfluxDB
 
 While Telegraf can export to [various destinations](https://github.com/influxdata/telegraf#output-plugins), InfluxDB is probably the easiest to set up across different platforms.
 
-### Installation Steps
+### Easy Installation Steps (to see if you like it).
 
 1. Make sure any prerequisites are met.
-1. Download the EUCMonitoringRedux Module. Hopefully will have in PSGallery soon.
-1. Create `C:\Monitoring`
+1. Download EUCMonitoringRedux [here](https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip). Hopefully will have in PSGallery soon.
+1. Unblock the downloaded zip, after you've thoroughly reviewed the source and have confirmed I'm not doing anything nefarious or dumb.
+1. Extract the folder to `C:\Monitoring`
 1. Download Telegraf from [here](https://portal.influxdata.com/downloads)
 1. Create the directory `C:\Program Files\Telegraf` on your target machine.
 1. Download EUCMonitoring.conf and EUCMonitor.ps1 from [here](https://github.com/littletoyrobots/EUCMonitoringRedux/tree/master/Config)

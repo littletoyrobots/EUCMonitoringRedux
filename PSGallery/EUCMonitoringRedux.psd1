@@ -21,13 +21,13 @@
     GUID              = 'd3d30bcf-1d6d-4b08-b8ac-504d41bb7f18'
 
     # Author of this module
-    Author            = 'David Brett'
+    Author            = 'Adam Yarborough'
 
     # Company or vendor of this module
     CompanyName       = 'Unknown'
 
     # Copyright statement for this module
-    Copyright         = '(c) 2018 David Brett. All rights reserved.'
+    Copyright         = '(c) 2019 Adam Yarborough. All rights reserved.'
 
     # Description of the functionality provided by this module
     Description       = 'This module will install and configure the Community Driven EUC Monitoring Module that has the ability to Monitor your Citrix EUC Platform'
@@ -100,9 +100,7 @@
         'Get-RDSworkerhealth',
 
         # Generic test for ports / services / etc.
-        'Test-EUCServer',
-
-        'Start-EUCMonitor'
+        'Test-EUCServer'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
