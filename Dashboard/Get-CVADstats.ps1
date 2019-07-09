@@ -11,7 +11,7 @@ $CVADSites = @(
     , ("ddc3.mydomain.com", "ddc4.mydomain.com")  # DDCs in Site 2
 )
 
-$WorkloadErrorLog = Join-Path $BaseDire -ChildPath "Workload-Errors.txt"
+$WorkloadErrorLog = Join-Path $BaseDir -ChildPath "Workload-Errors.txt"
 $WorkloadErrorHistory = Join-Path -Path $BaseDir -ChildPath "Workload-ErrorHistory.txt"
 
 if (Test-Path $WorkloadErrorLog) {
