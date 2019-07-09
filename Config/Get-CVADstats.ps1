@@ -1,23 +1,60 @@
 $BaseDir = "C:\Monitoring"
 
-$TimeStamp = Get-InfluxTimestamp
 
-Import-Module EUCMonitoringRedux
+$VerbosePreference = 'SilentlyContinue'
 
-# Copy and paste this per site.
-$CVADWorkloadParams = @{
-    Broker        = "ddc1.mydomain.com", "ddc2.mydomain.com"; # Put your brokers here.
+Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
 
-    # If you want to uncomment and fill these out, go for it.  If not, it will auto-discover
-    # and return a value for each permutation with machines associated.
-    #    SiteName         = ""
-    #    ZoneName         = ""
-    #    DesktopGroupName = ""
-    #    CatalogName      = ""
 
-    SingleSession = $true;
-    MultiSession  = $true;
-    ErrorLog      = $WorkloadErrorLog
+$CVADSites = @(
+    ("ddc1.mydomain.com", "ddc2.mydomain.com") # DDCs in Site 1
+    , ("ddc3.mydomain.com", "ddc4.mydomain.com")  # DDCs in Site 2
+)
+
+$WorkloadErrorLog = Join-Path $BaseDire -ChildPath "Workload-Errors.txt"
+$WorkloadErrorHistory = Join-Path -Path $BaseDir -ChildPath "Workload-ErrorHistory.txt"
+
+if (Test-Path $WorkloadErrorLog) {
+    Remove-Item -Path $ADCErrorLog -Force
 }
 
-Get-CVADworkload @CVADWorkloadParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+$TimeStamp = Get-InfluxTimestamp
+
+foreach ($Site in $CVADSites) {
+    $CVADWorkloadParams = @{
+        Broker        = $Site
+
+        # If you want to uncomment and fill these out, go for it.  If not, it will auto-discover
+        # and return a value for each permutation with machines associated.  Each will allow for
+        # multiple values
+        #    SiteName         = ""
+        #    ZoneName         = ""
+        #    DesktopGroupName = ""
+        #    CatalogName      = ""
+
+        SingleSession = $true
+        MultiSession  = $true
+        ErrorLog      = $WorkloadErrorLog
+    }
+
+    Get-CVADworkload @CVADWorkloadParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+}
+
+
+# If this file exists, we have errors, currently.
+if (Test-Path $WorkloadErrorLog) {
+    Get-Content $WorkloadErrorLog | Out-File $WorkloadErrorHistory -Append
+
+    # Maybe if you care, add something to send one or both log files.
+    <#
+    $MailParams = @{
+        To         = "sysops@domain.com"
+        From       = "EUCMonitoring@domain.com"
+        Subject    = "Workload Errors"
+        Body       = (Get-Content $ADCErrorLog)
+        SmtpServer = "smtp.domain.com"
+        Attachments = $WorkloadErrorHistory
+    }
+    Send-MailMessage @MailParams
+    #>
+}
