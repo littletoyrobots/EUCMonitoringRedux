@@ -11,7 +11,7 @@
             "type": "grafana",
             "id": "grafana",
             "name": "Grafana",
-            "version": "6.2.2"
+            "version": "6.2.5"
         },
         {
             "type": "panel",
@@ -55,7 +55,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": null,
-    "iteration": 1560438761065,
+    "iteration": 1562960305138,
     "links": [],
     "panels": [{
             "aliasColors": {},
@@ -729,7 +729,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "DEV",
+            "title": "DEV Sessions",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -1150,6 +1150,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 10000,
@@ -1262,6 +1263,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 10000,
@@ -1469,6 +1471,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
+            "datasource": "${DS_EUCMONITORING}",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -1609,7 +1612,7 @@
             "timeFrom": null,
             "timeRegions": [],
             "timeShift": null,
-            "title": "TEST",
+            "title": "TEST Sessions",
             "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -1823,6 +1826,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -2110,6 +2114,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#299c46"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -2419,6 +2424,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -2531,6 +2537,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -2639,6 +2646,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
+            "datasource": "${DS_EUCMONITORING}",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -2991,6 +2999,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -3103,6 +3112,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -3218,9 +3228,9 @@
                 "datasource": "${DS_EUCMONITORING}",
                 "definition": "SHOW TAG VALUES WITH KEY = \"SiteName\"",
                 "hide": 0,
-                "includeAll": false,
+                "includeAll": true,
                 "label": null,
-                "multi": false,
+                "multi": true,
                 "name": "SiteName",
                 "options": [],
                 "query": "SHOW TAG VALUES WITH KEY = \"SiteName\"",
@@ -3356,5 +3366,5 @@
     "timezone": "",
     "title": "CVAD Overview",
     "uid": "fe9vbaQiz",
-    "version": 82
+    "version": 87
 }

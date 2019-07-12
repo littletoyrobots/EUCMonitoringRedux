@@ -6,8 +6,6 @@ function Install-VisualizationSetup {
         Sets up the EUC Monitoring Platform Influx / Grafana platform.  Requires internet connection to Github.
     .PARAMETER MonitoringPath
         Determines the
-    .PARAMETER QuickConfig
-        Interactive JSON file creation based on default values
     .INPUTS
         None
     .OUTPUTS
@@ -57,12 +55,12 @@ function Install-VisualizationSetup {
         }
 
         # EUCMonitoring Specific
-        $DashboardConfig = "$MonitoringPath\Dashboard"
-        $dashDatasource = "$DashboardConfig\DataSource.json"
-        $dashboards = @(
-            "CADC-Overview.json",
-            "CVAD-Overview.json"
-        )
+        #$DashboardConfig = "$MonitoringPath\Dashboard"
+        #$dashDatasource = "$DashboardConfig\DataSource.json"
+        #$dashboards = @(
+        #    "CADC-Overview.json",
+        #    "CVAD-Overview.json"
+        #)
 
         <#
         TODO - Get the dashboard config.
@@ -147,7 +145,7 @@ function Install-VisualizationSetup {
         #    & .\Grafana-cli.exe plugins install btplc-status-dot-panel
         #    & .\Grafana-cli.exe plugins install vonage-status-panel
         #    & .\Grafana-cli.exe plugins install briangann-datatable-panel
-        #    & .\Grafana-cli.exe plugins install grafana-piechart-panel
+        & .\Grafana-cli.exe plugins install grafana-piechart-panel
         Write-Output "[$(Get-Date)] Restarting Grafana Server"
         stop-service "EUCMonitoring-grafana-server"
         start-service "EUCMonitoring-grafana-server"
@@ -231,7 +229,7 @@ function Install-VisualizationSetup {
     data_format = "influx"
 "@ | Out-File (Join-Path $Telegraf -ChildPath "telegraf.conf" ) -Force
         Write-Output "[$(Get-Date)] Installing telegraf as a service"
-        Start-Process "$Telegraf\telegraf.exe" -ArgumentList "--service install --service-name=EUCMonitoring-telegraf --service-display-name=EUCMonitoring-telegraf --config=$Telegraf\telegraf.conf"
+        Start-Process "$Telegraf\telegraf.exe" -ArgumentList "--service install --service-name=EUCMonitoring-telegraf --service-display-name=EUCMonitoring-telegraf --config=$Telegraf\telegraf.conf" -Wait
 
         Write-Output "`nNOTE: Grafana, Influx, and Telegraf are now installed as services."
         Get-Service EUCMonitoring* | Select-Object Status, Name, StartType
@@ -253,5 +251,13 @@ function Install-VisualizationSetup {
     }
 }
 
-$Params = @{ }
-Install-VisualizationSetup
+# If you want to overwrite any of these with local paths to the .zip, you can and it will work for
+# offline installs.
+$Params = @{
+    MonitoringPath  = "C:\Monitoring"
+    GrafanaVersion  = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.5.windows-amd64.zip"
+    InfluxVersion   = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.6_windows_amd64.zip"
+    NSSMVersion     = "https://nssm.cc/release/nssm-2.24.zip"
+    TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.0_windows_amd64.zip"
+}
+Install-VisualizationSetup @Params
