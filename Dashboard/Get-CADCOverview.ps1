@@ -1,11 +1,11 @@
 $BaseDir = "C:\Monitoring"
 $CitrixADCGateways = "10.240.1.53"
-$ADCUser = "nsroot"         # Or whatever
+$ADCUser = "nsroot"         # Or whatever, I prefer read-only users.  You may
 
-# Generate a credential for storage by running this as the
+# Generate a credential for storage by running this as the account telegraf runs under.
 #> Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -FilePath "C:\Monitoring\ADCcred.txt"
 
-$VerbosePreference = 'SilentlyContinue' #
+#$VerbosePreference = 'SilentlyContinue' #
 # $VerbosePreference = 'Continue'
 
 
