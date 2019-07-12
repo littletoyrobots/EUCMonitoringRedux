@@ -1,6 +1,5 @@
 $BaseDir = "C:\Monitoring"
 
-
 $VerbosePreference = 'SilentlyContinue'
 
 Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")

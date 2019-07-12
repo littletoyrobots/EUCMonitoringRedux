@@ -29,10 +29,12 @@ function Install-VisualizationSetup {
 
     [CmdletBinding()]
     param (
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$MonitoringPath = (get-location).Path,
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$GrafanaVersion = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.3.windows-amd64.zip",
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$MonitoringPath = "C:\Monitoring",
+        #    [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$DashboardPath = (Join-Path -Path (get-location).Path -ChildPath "Dashboard"),
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$GrafanaVersion = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.4.windows-amd64.zip",
         [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$InfluxVersion = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.6_windows_amd64.zip",
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$NSSMVersion = "https://nssm.cc/release/nssm-2.24.zip"
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$NSSMVersion = "https://nssm.cc/release/nssm-2.24.zip",
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.0_windows_amd64.zip"
     )
 
     begin {
@@ -44,71 +46,47 @@ function Install-VisualizationSetup {
 
     process {
         #Base Directory for Install
-        Write-Output "Install location set to $MonitoringPath"
+        Write-Output "[$(Get-Date)] Install location set to $MonitoringPath"
         # Get the dashboard config.
         if ( test-path $MonitoringPath ) {
-            Write-Verbose "$MonitoringPath directory already Present"
+            Write-Output "[$(Get-Date)] $MonitoringPath directory already Present"
         }
         else {
             New-Item $MonitoringPath -ItemType Directory
-            Write-Verbose "EUC Monitoring Directory Created $Monitoring"
+            Write-Output "[$(Get-Date)] EUCMonitoring directory created: $MonitoringPath"
         }
 
         # EUCMonitoring Specific
-        $DashboardConfig = "$MonitoringPath\DashboardConfig"
+        $DashboardConfig = "$MonitoringPath\Dashboard"
         $dashDatasource = "$DashboardConfig\DataSource.json"
-        $dashboards = @("EUCMonitoring.json",
-            "Session-Details.json",
-            "AD-Details.json",
-            "App-V-Details.json",
-            "CC-Details.json",
-            "Director-Details.json",
-            "FAS-Details.json",
-            "Netscaler-Details.json",
-            "NetscalerGateway-Details.json",
-            "PVS-Details.json",
-            "SQL-Details.json",
-            "Storefront-Details.json",
-            "UPS-Details.json",
-            "WEM-Details.json",
-            "XDController-Details.json",
-            "XDLicensing-Details.json",
-            "Xenserver-Details.json"
+        $dashboards = @(
+            "CADC-Overview.json",
+            "CVAD-Overview.json"
         )
 
-        # Get the dashboard config.
+        <#
+        TODO - Get the dashboard config.
         if ( test-path $DashboardConfig ) {
-            Write-Verbose "DashboardConfig directory already Present"
+            Write-Output "[$(Get-Date)]  Dashboard directory already Present"
         }
         else {
             New-Item $DashboardConfig -ItemType Directory
-            Write-Verbose "EUC Monitoring Dashboard Directory Created $DashboardConfig"
+            Write-Output "[$(Get-Date)]  EUC Monitoring Dashboard Directory Created $DashboardConfig"
         }
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dbretty/EUCMonitoring/master/DashboardConfig/DataSource.json" -OutFile $dashDatasource
-
-        #Get the current dashboards
-        if ( test-path "$DashboardConfig\Dashboards" ) {
-            Write-Verbose "Dashboards directory already Present"
-        }
-        else {
-            New-Item "$DashboardConfig\Dashboards" -ItemType Directory
-            Write-Verbose "EUC Monitoring Dashboard Directory Created $DashboardConfig\Dashboards"
-        }
-        foreach ($board in $Dashboards) {
-            Write-Verbose "Getting Dashboard: $board"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dbretty/EUCMonitoring/master/DashboardConfig/Dashboards/$board" -OutFile "$DashboardConfig\Dashboards\$board"
-        }
+        #>
 
         #open FW for Grafana
-        Write-Output "Opening Firewall Rules for Grafana and InfluxDB"
+        Write-Output "[$(Get-Date)] Opening Firewall Rules for Grafana"
 
-        $Catch = New-NetFirewallRule -DisplayName "Grafana Server" -Direction Inbound -LocalPort 3000 -Protocol TCP -Action Allow -Description "Allow Grafana Server"
-        $Catch = New-NetFirewallRule -DisplayName "InfluxDB Server" -Direction Inbound -LocalPort 8086 -Protocol TCP -Action Allow -Description "Allow InfluxDB Server" -AsJob
+
+        $Catch = New-NetFirewallRule -DisplayName "EUCMonitoring-grafana-server" -Direction Inbound -LocalPort 3000 -Protocol TCP -Action Allow -Description "Allow Grafana Server"
+        Write-Output "[$(Get-Date)] Opening Firewall Rules for InfluxDB"
+        $Catch = New-NetFirewallRule -DisplayName "EUCMonitoring-influxdb" -Direction Inbound -LocalPort 8086 -Protocol TCP -Action Allow -Description "Allow InfluxDB Server" -AsJob
 
         function GetAndInstall ( $Product, $DownloadFile, $Dest ) {
             $DownloadLocation = (Get-Item Env:Temp).value  #Use the Temp folder as Temp Download location
             $zipFile = "$DownloadLocation\$Product.zip"
-            Write-Output "Downloading $Product to $zipfile"
+            Write-Output "[$(Get-Date)] Downloading $Product to $zipfile"
             if ( ($DownloadFile -match "http://") -or ($DownloadFile -match "https://") ) {
                 $Catch = Invoke-WebRequest $DownloadFile -outFile $zipFile
             }
@@ -116,7 +94,7 @@ function Install-VisualizationSetup {
                 Copy-Item $DownloadFile -Destination "$DownloadLocation\$Product.zip"
             }
 
-            Write-Output "Installing $Product to $Dest"
+            Write-Output "[$(Get-Date)] Installing $Product to $Dest"
             # Expand-Archive -LiteralPath "$DownloadLocation\$Product.zip"
             $shell = New-Object -ComObject shell.application
             $zip = $shell.NameSpace($ZipFile)
@@ -124,9 +102,8 @@ function Install-VisualizationSetup {
                 $shell.Namespace($Dest).CopyHere($item)
             }
             $Catch = ""
-            Write-Output $Catch
+            Write-Verbose $Catch
         }
-
 
 
         #Install Grafana
@@ -146,60 +123,86 @@ function Install-VisualizationSetup {
 
         #Install NSSM
         GetAndInstall "NSSM" $NSSMVersion $MonitoringPath
+
+        #Install Telegraf
+        GetAndInstall "Telegraf" $TelegrafVersion $MonitoringPath
+
         #Setup Services
         $NSSM = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'nssm' }).FullName
         $NSSMEXE = "$nssm\win64\nssm.exe"
-        & $nssmexe Install "Grafana Server" $Grafana\bin\grafana-server.exe
+        Write-Output "[$(Get-Date)] Installing EUCMonitoring-grafana-server as a service"
+        & $nssmexe Install "EUCMonitoring-grafana-server" $Grafana\bin\grafana-server.exe
         # & $nssmexe Set "Grafana Server" DisplayName "Grafana Server"
-        & $nssmexe Install "InfluxDB Server" $Influx\influxd.exe -config influxdb.conf
+        Write-Output "[$(Get-Date)] Installing EUCMonitoring-influxdb as a service"
+        & $nssmexe Install "EUCMonitoring-influxdb" $Influx\influxd.exe -config influxdb.conf
         # & $nssmexe Set "InfluxDB Server" DisplayName "InfluxDB Server"
-        Write-Output "Starting Services"
-        start-service "Grafana Server"
-        start-service "InfluxDB Server"
+        Write-Output "[$(Get-Date)] Starting Services"
+        start-service "EUCMonitoring-grafana-server"
+        start-service "EUCMonitoring-influxdb"
+        Write-Output "[$(Get-Date)] Creating EUCMonitoring database on InfluxDB"
         & $Influx\influx.exe -execute 'Create Database EUCMonitoring'
 
         # need to import eventually grafana pages.
         Push-Location $grafana\bin
-        & .\Grafana-cli.exe plugins install btplc-status-dot-panel
-        & .\Grafana-cli.exe plugins install vonage-status-panel
-        & .\Grafana-cli.exe plugins install briangann-datatable-panel
-        & .\Grafana-cli.exe plugins install grafana-piechart-panel
-        Write-Output "Restarting Grafana Server"
-        stop-service "Grafana Server"
-        start-service "Grafana Server"
+        #    & .\Grafana-cli.exe plugins install btplc-status-dot-panel
+        #    & .\Grafana-cli.exe plugins install vonage-status-panel
+        #    & .\Grafana-cli.exe plugins install briangann-datatable-panel
+        #    & .\Grafana-cli.exe plugins install grafana-piechart-panel
+        Write-Output "[$(Get-Date)] Restarting Grafana Server"
+        stop-service "EUCMonitoring-grafana-server"
+        start-service "EUCMonitoring-grafana-server"
 
-        Write-Output "Setting up Grafana..."
-        start-sleep 5
+        Write-Output "[$(Get-Date)] Setting up Grafana..."
+        start-sleep 10
 
         # Setup Grafana
-        $pair = "admin:admin"
+        Write-Output "[$(Get-Date)] You need to change your default admin password for Grafana. "
+        Write-Output "The initial login will be admin / admin"
+        Start-Process "http://localhost:3000"
+        $Credential = (Get-Credential -Username admin -Message "Input your new Grafana admin password")
+
+        $pair = "admin:$($Credential.GetNetworkCredential().Password)"
         $bytes = [System.Text.Encoding]::ASCII.GetBytes($pair)
         $base64 = [System.Convert]::ToBase64String($bytes)
         $basicAuthValue = "Basic $base64"
         $headers = @{ Authorization = $basicAuthValue }
 
-        Write-Output "Setting up Grafana Datasource"
+        Write-Output "[$(Get-Date)] Setting up Grafana Datasource"
         $datasourceURI = "http://localhost:3000/api/datasources"
-        $inFile = $dashDatasource
-        $Catch = Invoke-WebRequest -Uri $datasourceURI -Method Post -infile $infile -Headers $headers -ContentType "application/json"
+        # $inFile = $dashDatasource
 
-        Write-Output "Setting up Grafana Dashboards"
-        Write-Output "Using $DashboardConfig\Dashboards"
-        $dashs = get-childitem "$DashboardConfig\Dashboards"
-        $dashboardURI = "http://localhost:3000/api/dashboards/import"
-        foreach ( $dashboard in $dashs ) {
-            $inFile = $dashboard.fullname
-            $Catch = Invoke-WebRequest -Uri $dashboardURI -Method Post -infile $infile -Headers $headers -ContentType "application/json"
+        $Body = @{
+            name      = "EUCMonitoring"
+            type      = "influxdb"
+            url       = "http://localhost:8086"
+            database  = "EUCMonitoring"
+            access    = "proxy"
+            basicAuth = $false
         }
 
-        $Catch = Invoke-WebRequest -URI "http://localhost:3000/api/search?query=EUCMonitoring" -outfile .\home.json -header $headers
-        $GrafanaConfig = Get-Content -Raw -Path .\home.json | ConvertFrom-Json
-        $SiteID = $GrafanaConfig.id
-        $GrafanaConfig = "{""theme"": """",""homeDashboardId"":$SiteID,""timezone"":""browser""}"
-        Remove-Item .\home.json
+        $Catch = Invoke-WebRequest -Uri $datasourceURI -Method Post -Body (Convertto-Json $Body) -Headers $headers -ContentType "application/json" -UseBasicParsing
 
-        Write-Output "Setting up Grafana Homepage"
-        $Catch = Invoke-WebRequest -URI "http://localhost:3000/api/org/preferences" -method PUT -body $GrafanaConfig -header $headers -ContentType "application/json"
+        Write-Output "[$(Get-Date)] Skipping Dashboard Import, please do manually after configuring Telegraf"
+
+        #Write-Output "[$(Get-Date)] Setting up Grafana Dashboards"
+        #Write-Output "[$(Get-Date)] Using $DashboardConfig\Dashboards"
+        #$dashs = get-childitem $PSScriptRoot\*.json
+        #$dashboardURI = "http://localhost:3000/api/dashboards/import"
+        #foreach ( $dashboard in $dashs ) {
+        #    $inFile = $dashboard.fullname
+        #    $Catch = Invoke-WebRequest -Uri $dashboardURI -Method Post -infile $infile -Headers $headers -ContentType "application/json"
+        #}
+
+
+        #        Write-Output "[$(Get-Date)] Setting up Grafana Homepage"
+        #        $Catch = Invoke-WebRequest -URI "http://localhost:3000/api/search?query=EUCMonitoring" -outfile .\home.json -header $headers -UseBasicParsing
+        #        $GrafanaConfig = Get-Content -Raw -Path .\home.json | ConvertFrom-Json
+        #        $SiteID = $GrafanaConfig.id
+        #        $GrafanaConfig = "{""theme"": """",""homeDashboardId"":$SiteID,""timezone"":""browser""}"
+        #        Remove-Item .\home.json
+
+
+        # $Catch = Invoke-WebRequest -URI "http://localhost:3000/api/org/preferences" -method PUT -body $GrafanaConfig -header $headers -ContentType "application/json" -UseBasicParsing
 
         # This is to avoid the assigned and never used checks.
         Pop-Location
@@ -208,24 +211,47 @@ function Install-VisualizationSetup {
         $Catch = ""
         Write-Verbose $Catch
 
-        Write-Verbose "Downloading helper script."
-        # Download the helper script
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dbretty/EUCMonitoring/master/DashboardConfig/Begin-EUCMonitor.ps1" -OutFile "$MonitoringPath\Begin-EUCMonitor.ps1"
+        $Telegraf = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'Telegraf' }).FullName
+        Write-Output "[$(Get-Date)] Configuring Telegraf"
+        Write-Output "[$(Get-Date)] Overwriting Telegraf config"
+        @"
+[agent]
+    interval = "5m"
+[[outputs.influxdb]]
+    url = "http://127.0.0.1:8086" # Required
+    database = "EUCMonitoring" # Required
 
-        Write-Output "NOTE: Grafana and Influx are now installed as services.  You might need to set their startup type to"
-        Write-Output "automatic if you plan on using this long term.`n"
+[[inputs.exec]]
+    # Use forward slashes for the path. Change if needed.
+    commands = [
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $(Join-Path $MonitoringPath -ChildPath "Get-CADCOverview.ps1")",
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $(Join-Path $MonitoringPath -ChildPath "Get-CADVOverview.ps1")"
+    ]
+    timeout = "5m"
+    data_format = "influx"
+"@ | Out-File (Join-Path $Telegraf -ChildPath "telegraf.conf" ) -Force
+        Write-Output "[$(Get-Date)] Installing telegraf as a service"
+        Start-Process "$Telegraf\telegraf.exe" -ArgumentList "--service install --service-name=EUCMonitoring-telegraf --service-display-name=EUCMonitoring-telegraf --config=$Telegraf\telegraf.conf"
 
-        Write-Output "Please edit the json config template, setting the Influx enabled to true amongst your other changes"
-        Write-Output "and save as euc-monitoring.json.`n"
+        Write-Output "`nNOTE: Grafana, Influx, and Telegraf are now installed as services."
+        Get-Service EUCMonitoring* | Select-Object Status, Name, StartType
+        Write-Output "`nTo follow up, configure Telegraf instance in $MonitoringPath as described in Readme.md by testing"
+        Write-Output "the input.exec scripts, start the service as appopriate user and then inport the dashboards to grafana."
+        #Write-Output "Please edit the json config template, setting the Influx enabled to true amongst your other changes"
+        #Write-Output "and save as euc-monitoring.json.`n"
         #& "C:\Windows\System32\notepad.exe" $MonitoringPath\euc-monitoring.json
 
-        Write-Output "After configuring, run Begin-EUCMonitoring under appropriate privs.  Each refresh cycle"
-        Write-Output "it will upload to local influxdb as a single timestamp. You might want to invoke it like:"
-        Write-Output "> $MonitoringPath\Begin-EUCMonitor.ps1 -MonitoringPath $MonitoringPath"
-        Write-Output " - or - "
-        Write-Output "> Set-Location $MonitoringPath; .\Begin-EUCMonitor.ps1"
+        #Write-Output "After configuring, run Begin-EUCMonitoring under appropriate privs.  Each refresh cycle"
+        #Write-Output "it will upload to local influxdb as a single timestamp. You might want to invoke it like:"
+        #Write-Output "> $MonitoringPath\Begin-EUCMonitor.ps1 -MonitoringPath $MonitoringPath"
+        #Write-Output " - or - "
+        #Write-Output "> Set-Location $MonitoringPath; .\Begin-EUCMonitor.ps1"
     }
 
     end {
+
     }
 }
+
+$Params = @{ }
+Install-VisualizationSetup

@@ -30,7 +30,7 @@ function Uninstall-VisualizationSetup {
     #>
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param (
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)]$MonitoringPath = (get-location)
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)]$MonitoringPath = "C:\Monitoring"
     )
 
     begin {
@@ -43,23 +43,27 @@ function Uninstall-VisualizationSetup {
 
         if ($PSCmdlet.ShouldProcess("Remove Visualization Services")) {
             #Removing Services
-            $Grafana = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'graf' }).FullName
-            $Influx = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'infl' }).FullName
+            $Grafana = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'grafana' }).FullName
+            $Influx = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'influxdb' }).FullName
             $NSSM = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'nssm' }).FullName
+            $Telegraf = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'telegraf' }).FullName
 
+            Write-Output "Removing Telegraf service"
+            $TelegrafEXE = "$Telegraf\telegraf.exe"
+            & $TelegrafEXE --service uninstall --service-name=EUCMonitoring-telegraf
             $NSSMEXE = "$nssm\win64\nssm.exe"
             if (test-path $NSSMEXE) {
                 #Remove Grafana Service
                 Write-Output "Removing Grafana Server service"
                 try {
-                    & $nssmexe Stop "Grafana Server"
+                    & $nssmexe Stop "EUCMonitoring-grafana-server"
                 }
                 catch {
                     Write-Warning $($_.Exception.Message)
                 }
 
                 try {
-                    & $nssmexe Remove "Grafana Server" confirm
+                    & $nssmexe Remove "EUCMonitoring-grafana-server" confirm
                 }
                 catch {
                     Write-Warning $($_.Exception.Message)
@@ -68,14 +72,14 @@ function Uninstall-VisualizationSetup {
                 #Remove Influx Service
                 Write-Output "Removing InfluxDB Server service"
                 try {
-                    & $nssmexe Stop "InfluxDB Server"
+                    & $nssmexe Stop "EUCMonitoring-influxdb"
                 }
                 catch {
                     Write-Warning $($_.Exception.Message)
                 }
 
                 try {
-                    & $nssmexe Remove "InfluxDB Server" confirm
+                    & $nssmexe Remove "EUCMonitoring-influxdb" confirm
                 }
                 catch {
                     Write-Warning $($_.Exception.Message)
@@ -98,6 +102,9 @@ function Uninstall-VisualizationSetup {
             if (-not ([string]::IsNullOrWhiteSpace($NSSM))) {
                 Remove-Item -path $NSSM -Recurse
             }
+            if (-not ([string]::IsNullOrWhiteSpace($Telegraf))) {
+                Remove-Item -path $NSSM -Recurse
+            }
         }
 
         #Remove Variable
@@ -115,14 +122,14 @@ function Uninstall-VisualizationSetup {
         if ($PSCmdlet.ShouldProcess("Remove firewall rules")) {
             Write-Output "Removing Firewall Rules for Grafana and InfluxDB"
             try {
-                Remove-NetFirewallRule -DisplayName "Grafana Server" -ErrorAction stop
+                Remove-NetFirewallRule -DisplayName "EUCMonitoring-grafana-server" -ErrorAction stop
             }
             catch {
                 Write-Warning $($_.Exception.Message)
             }
 
             try {
-                Remove-NetFirewallRule -DisplayName "InfluxDB Server" -ErrorAction stop
+                Remove-NetFirewallRule -DisplayName "EUCMonitoring-influxdb" -ErrorAction stop
             }
             catch {
                 Write-Warning $($_.Exception.Message)
@@ -133,3 +140,5 @@ function Uninstall-VisualizationSetup {
     end {
     }
 }
+
+Uninstall-VisualizationSetup

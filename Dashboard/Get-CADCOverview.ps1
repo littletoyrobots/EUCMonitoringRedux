@@ -1,13 +1,14 @@
 $BaseDir = "C:\Monitoring"
-$CitrixADCGateways = "10.240.1.53"
-$ADCUser = "nsroot"         # Or whatever, I prefer read-only users.  You may
+Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
+#$VerbosePreference = 'SilentlyContinue' #
+$VerbosePreference = 'Continue'
+
+#  You can have multiple Gateways as long as the creds work on each, and they're accessible
+$CitrixADCGateways = "10.1.2.3", "10.1.2.3"
+$ADCUser = "nsroot"   # Or whatever, I prefer read-only users.  YMMV with nsroot.
 
 # Generate a credential for storage by running this as the account telegraf runs under.
 #> Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -FilePath "C:\Monitoring\ADCcred.txt"
-
-#$VerbosePreference = 'SilentlyContinue' #
-# $VerbosePreference = 'Continue'
-
 
 $ADCPass = Get-Content -Path (Join-Path -Path $BaseDir -ChildPath "ADCcred.txt") | ConvertTo-SecureString
 $ADCCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ADCUser, $ADCPass
@@ -15,13 +16,12 @@ $ADCCred = New-Object -TypeName System.Management.Automation.PSCredential -Argum
 $ADCErrorLog = Join-Path -Path $BaseDir -ChildPath "ADC-Errors.txt"
 $ADCErrorHistory = Join-Path -Path $BaseDir -ChildPath "ADC-ErrorHistory.txt"
 
-Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
-
 # Do the things.
 if ($null -ne $CitrixADCGateways) {
     $ADCResults = @()
     $TimeStamp = Get-InfluxTimestamp
 
+    # Poor man's log rotation
     if (Test-Path $ADCErrorLog) {
         Remove-Item -Path $ADCErrorLog -Force
     }
@@ -50,6 +50,9 @@ if ($null -ne $CitrixADCGateways) {
         }
         catch {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+            Write-Verbose "[$(Get-Date)] Exiting uncleanly."
+            "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
+            "[$(Get-Date)] Exiting uncleanly." | Out-File $ADCErrorLog -Append
         }
     }
 }
