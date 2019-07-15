@@ -17,7 +17,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "6.2.2"
+      "version": "6.2.5"
     },
     {
       "type": "panel",
@@ -65,7 +65,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1560438712706,
+  "iteration": 1563192281343,
   "links": [],
   "panels": [{
       "cacheTimeout": null,
@@ -76,6 +76,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
+      "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -183,6 +184,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
+      "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -290,6 +292,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
+      "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -389,6 +392,7 @@
       "valueName": "avg"
     },
     {
+      "datasource": "${DS_EUCMONITORING}",
       "gridPos": {
         "h": 5,
         "w": 3,
@@ -431,7 +435,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.2.2",
+      "pluginVersion": "6.2.5",
       "targets": [{
         "groupBy": [{
             "params": [
@@ -647,6 +651,7 @@
       }
     },
     {
+      "datasource": "${DS_EUCMONITORING}",
       "gridPos": {
         "h": 5,
         "w": 3,
@@ -689,7 +694,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.2.2",
+      "pluginVersion": "6.2.5",
       "targets": [{
         "groupBy": [{
             "params": [
@@ -893,6 +898,7 @@
       }
     },
     {
+      "datasource": "${DS_EUCMONITORING}",
       "gridPos": {
         "h": 5,
         "w": 3,
@@ -935,7 +941,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "6.2.2",
+      "pluginVersion": "6.2.5",
       "targets": [{
         "groupBy": [{
             "params": [
@@ -1143,6 +1149,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 6,
@@ -3893,5 +3900,5 @@
   "timezone": "",
   "title": "CADC Overview",
   "uid": "5PJoPBGZk",
-  "version": 25
+  "version": 26
 }
