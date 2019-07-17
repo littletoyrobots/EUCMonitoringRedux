@@ -61,7 +61,19 @@ Function Test-CVADworkerhealth {
                 [int]$DiskSpaceThreshold,
                 [int]$DiskQueueThreshold
             )
-            begin { Add-PSSnapin Citrix.Broker.* -ErrorAction SilentlyContinue }
+            begin {
+                Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading Citrix.Broker Powershell Snapins"
+                $Snapins = "Citrix.Broker.Admin.V2", "Citrix.Configuration.Admin.V2"
+                foreach ($Snapin in $Snapins) {
+                    if ($null -eq (Get-PSSnapin | Where-Object { $_.Name -eq $Snapin })) {
+                        Add-PSSnapin $Snapin -ErrorAction Stop
+                        #    Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] $Snapin loaded successfully"
+                    }
+                    else {
+                        #    Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] $Snapin already loaded"
+                    }
+                }
+            }
 
             process {
                 $Health = "Not Run"

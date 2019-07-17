@@ -1,5 +1,38 @@
-Function ConvertTo-InfluxLineProtocol {
+<#
+.SYNOPSIS
+Takes any psobject, and returns a string in Influx Line Protocol.  Not good with objects that have arrays as
+properties currently.
 
+.DESCRIPTION
+This will take almost any object and return a string in Influx Line Protocol.  It's opinionated about how it
+does this, and will make any properties that are strings and turn them into tags.  Others will be added
+however powershell evaluates them in a string.  This can lead to mixed results with properties that contain
+arrays.
+
+.PARAMETER InputObject
+Target object(s) of results you wish to convert into Influx LIne Protocol
+
+.PARAMETER Series
+Specifies the series name for the returned string.  Will override any Series properties of passed object.
+
+.PARAMETER Timestamp
+Specifies a influx line protocol supported timestamp, best tested with nanosecond format.
+
+.PARAMETER IncludeTimeStamp
+Will fetch current timestamp in nanosecond format and include it in returned string.
+
+.EXAMPLE
+ConvertTo-InfluxLineProtocol $MyObj -IncludeTimeStamp
+
+.EXAMPLE
+$Timestamp = Get-InfluxTimeStamp
+$MyObj | ConvertTo-InfluxLineProtocol -Timestamp $Timestamp
+
+.NOTES
+General notes
+#>
+
+Function ConvertTo-InfluxLineProtocol {
     [CmdletBinding()]
     [OutputType([String])]
     Param(
@@ -30,9 +63,8 @@ Function ConvertTo-InfluxLineProtocol {
     } #BEGIN
 
     Process {
-
         # We grab here so that all output will have the same associated timestamp.
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting results to Influx Line Protocol"
+        # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting results to Influx Line Protocol"
 
         foreach ($Obj in $InputObject) {
             # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Converting obj $($Result.Host)"
@@ -45,20 +77,24 @@ Function ConvertTo-InfluxLineProtocol {
             #>
 
             $ParamString = ""
+            # If you specified the Series, use it, else look for a Series property in the object.
+            # The \W matches any non-word character, \$& anchors all text matched
+            #  "What ever !@#" -replace "\W", "\$&"   yields     "What\ ever\ \!\@\#"
             if ("" -ne $Series) { $SeriesString = $Series -replace "\W", "\$&" }
             else { $SeriesString = "$($Obj.Series)" -replace "\W", "\$&" }
 
+            # If we can't find a specified Series name or a Series property, then we won't be able to convert
+            # propertly.  Abort!
             if ("" -eq $SeriesString) {
                 throw "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series Blank!"
             }
 
             $Obj.PSObject.Properties | ForEach-Object {
-                if ($null -eq $_.Value) { }
+                if ($null -eq $_.Value) { } # Skip the empty values
                 elseif ($_.Name -eq "Series") { } # We've already determined series above.
                 # If its a string, we'll treat it as a tag
                 elseif ($_.Value -is [string]) {
-                    # So, this is a little tricky, but get rid of all non-alphanumeric, non-space characters
-                    # and trim the remaining whitespace. Thank you GoDaddy certs
+                    # So, this is a little tricky, Thank you GoDaddy certs...
                     $SeriesString += ",$($_.Name)=$($_.Value.trim() -replace '/', '\/' -replace '=', '\=')"
                 }
                 else {
@@ -69,7 +105,7 @@ Function ConvertTo-InfluxLineProtocol {
 
 
             if (("" -ne $ParamString) -and ("" -ne $SeriesString)) {
-                # Using \W instead of Regex::Escape() for special character inclusion.
+                # Was using \W instead of Regex::Escape() for special character inclusion.
                 # $& refers to the match.  Changed mind on this.  Will mangle hostnames.
 
                 $SeriesString = $SeriesString -replace " ", "\ "
@@ -80,7 +116,7 @@ Function ConvertTo-InfluxLineProtocol {
 
                 if ($IncludeTimeStamp) { $PostParams = "$SeriesString $ParamString $timeStamp" }
                 else { $PostParams = "$SeriesString $ParamString" }
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $PostParams"
+                # Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $PostParams"
 
                 Write-Output $PostParams
             }

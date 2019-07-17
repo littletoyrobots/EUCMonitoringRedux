@@ -1,39 +1,44 @@
 function Connect-CitrixADC {
-    <# 
-    .SYNOPSIS 
+    <#
+    .SYNOPSIS
         Logs into a Citrix NetScaler.
-    .DESCRIPTION 
+    .DESCRIPTION
         Logs into a NetScaler ADC and returns variable called $NSSession to be used to invoke NITRO Commands.
-    .PARAMETER ADC 
+    .PARAMETER ADC
         Citrix ADC IP (NSIP)
-    .PARAMETER Credential 
+    .PARAMETER Credential
         Credential to be used for login.
     .PARAMETER Timeout
-        Timeout in seconds for the session, defaults to 180. 
+        Timeout in seconds for the session, defaults to 180.
     .PARAMETER ErrorLogPath
-        File path for error logs to be appended. 
-    .OUTPUTS 
+        File path for error logs to be appended.
+    .OUTPUTS
         Microsoft.PowerShell.Commands.WebRequestSession
     .EXAMPLE
         Connect-CitrixADC -ADC "10.11.12.13" -Credential (Get-Credential)
+    .NOTES
+        Version 1.0     Adam Yarborough     20190715
+
+    .LINK
+    https://github.com/littletoyrobots/EUCMonitoringRedux
     #>
 
     [CmdletBinding()]
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [ValidateNotNullOrEmpty()] 
-        [Alias("NSIP")] 
+        [ValidateNotNullOrEmpty()]
+        [Alias("NSIP")]
         [string]$ADC,
 
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [ValidateNotNullOrEmpty()] 
+        [ValidateNotNullOrEmpty()]
         [pscredential]$Credential,
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [int]$Timeout = 180,
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
-        [Alias("LogPath")] 
+        [Alias("LogPath")]
         [string]$ErrorLogPath
     )
 
@@ -41,7 +46,7 @@ function Connect-CitrixADC {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Changing TLS Settings to tls12, tls11, tls"
         [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Trusting self-signed certs"
-        # source: https://blogs.technet.microsoft.com/bshukla/2010/04/12/ignoring-ssl-trust-in-powershell-system-net-webclient/ 
+        # source: https://blogs.technet.microsoft.com/bshukla/2010/04/12/ignoring-ssl-trust-in-powershell-system-net-webclient/
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
     }
 
@@ -50,18 +55,18 @@ function Connect-CitrixADC {
         #    $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Credential.Password)
         #    $UnsecurePassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 
-        # Set up the JSON Payload to send to the netscaler    
+        # Set up the JSON Payload to send to the netscaler
         $PayLoad = ConvertTo-JSON @{
-            "login" = @{ 
+            "login" = @{
                 "username" = $Credential.UserName;
                 "password" = $Credential.GetNetworkCredential().Password
                 "timeout"  = $Timeout
             }
         }
 
-        $saveSession = @{} 
+        $saveSession = @{ }
 
-        # Connect to CitrixADC 
+        # Connect to CitrixADC
         $Session = $null
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connecting to ADC $ADC using NITRO"
         try {
@@ -70,15 +75,15 @@ function Connect-CitrixADC {
                 #   uri             = "$ADC/nitro/v1/config/login"
                 body            = $PayLoad
                 SessionVariable = "saveSession"
-                Headers         = @{"Content-Type" = "application/vnd.com.citrix.netscaler.login+json"}
+                Headers         = @{"Content-Type" = "application/vnd.com.citrix.netscaler.login+json" }
                 Method          = "POST"
             }
-            
-            $Response = Invoke-RestMethod @Params -ErrorAction Stop 
+
+            $Response = Invoke-RestMethod @Params -ErrorAction Stop
             if ('ERROR' -eq $Response.severity) {
                 throw "Error. See response: `n$($response | Format-List -Property * | Out-String)"
             }
-            
+
             # Build Script ADC Session Variable
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connection successful"
             $Session = New-Object -TypeName PSObject
@@ -86,7 +91,7 @@ function Connect-CitrixADC {
             $Session | Add-Member -NotePropertyName WebSession -NotePropertyValue $saveSession -TypeName Microsoft.PowerShell.Commands.WebRequestSession
 
             return $Session
-        } 
+        }
         catch {
             if ($ErrorLogPath) {
                 Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
@@ -97,7 +102,7 @@ function Connect-CitrixADC {
             throw $_
         }
     }
-    
+
     End {
         if ($null -eq $Session) {
             Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] No session returned"

@@ -1,12 +1,13 @@
 $BaseDir = "C:\Monitoring"
 
-$VerbosePreference = 'SilentlyContinue'
+# $VerbosePreference = 'SilentlyContinue'
+$VerbosePreference = 'Continue'
 
 Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
 
 
-$CVADSites = @(
-    ("ddc1.mydomain.com", "ddc2.mydomain.com") # DDCs in Site 1
+$CVADSites = @( # Keep the prepended comma so that the sites work as expected.
+    , ("ddc1.mydomain.com", "ddc2.mydomain.com") # DDCs in Site 1
     , ("ddc3.mydomain.com", "ddc4.mydomain.com")  # DDCs in Site 2
 )
 

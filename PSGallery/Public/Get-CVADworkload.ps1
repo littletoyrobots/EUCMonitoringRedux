@@ -40,6 +40,7 @@ Function Get-CVADworkload {
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
+        [Alias("CloudConnector", "DeliveryController")]
         [string[]]$Broker,
 
         [Alias("Site")]
@@ -69,25 +70,16 @@ Function Get-CVADworkload {
 
     Begin {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading Citrix.Broker Powershell Snapins"
-        $ctxsnap = Get-PSSnapin -Registered Citrix.Broker.* -ErrorAction SilentlyContinue | Add-PSSnapin -PassThru
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Broker Powershell Snapins Load Failed"
-            Throw "Unable to load Citrix.Broker Powershell Snapins"
-        }
-        else {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Broker Powershell Snapins Loaded"
-        }
-
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading Citrix.Configuration.Admin Powershell Snapins"
-        $ctxsnap = Get-PSSnapin -Registered Citrix.Configuration.Admin.* -ErrorAction SilentlyContinue | Add-PSSnapin -PassThru
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Configuration.Admin Powershell Snapins Load Failed"
-            Throw "Unable to load Citrix.Configuration.Admin Powershell Snapins"
-        }
-        else {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Configuration.Admin Powershell Snapins Loaded"
+        $Snapins = "Citrix.Broker.Admin.V2", "Citrix.Configuration.Admin.V2"
+        foreach ($Snapin in $Snapins) {
+            if ($null -eq (Get-PSSnapin | Where-Object { $_.Name -eq $Snapin })) {
+                Add-PSSnapin $Snapin -ErrorAction Stop
+                Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] $Snapin loaded successfully"
+            }
+            else {
+                Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] $Snapin already loaded"
+            }
+            # If we have failures loading, it will fail below.
         }
     }
 
@@ -189,7 +181,7 @@ Function Get-CVADworkload {
                                     $TotalSessions = $Sessions.Count
 
                                     $ActiveSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $null -eq $_.IdleDuration } ).Count
-                                    $IdleSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $_.IdleDuration -gt [timespan]"00:00:00"} ).Count
+                                    $IdleSessions = ($Sessions | Where-Object { $_.SessionState -eq "Active" -and $_.IdleDuration -gt [timespan]"00:00:00" } ).Count
                                     $DisconnectedSessions = ($Sessions | Where-Object { $_.SessionState -eq "Disconnected" }).Count
 
                                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalSessions: $TotalSessions, ActiveSessions: $ActiveSessions"

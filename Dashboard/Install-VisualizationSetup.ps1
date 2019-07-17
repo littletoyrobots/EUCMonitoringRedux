@@ -182,14 +182,14 @@ function Install-VisualizationSetup {
 
         Write-Output "[$(Get-Date)] Skipping Dashboard Import, please do manually after configuring Telegraf"
 
-        #Write-Output "[$(Get-Date)] Setting up Grafana Dashboards"
-        #Write-Output "[$(Get-Date)] Using $DashboardConfig\Dashboards"
-        #$dashs = get-childitem $PSScriptRoot\*.json
-        #$dashboardURI = "http://localhost:3000/api/dashboards/import"
-        #foreach ( $dashboard in $dashs ) {
-        #    $inFile = $dashboard.fullname
-        #    $Catch = Invoke-WebRequest -Uri $dashboardURI -Method Post -infile $infile -Headers $headers -ContentType "application/json"
-        #}
+        Write-Output "[$(Get-Date)] Setting up Grafana Dashboards"
+        # Write-Output "[$(Get-Date)] Using $DashboardConfig\Dashboards"
+        $dashs = get-childitem $PSScriptRoot\*.json
+        $dashboardURI = "http://localhost:3000/api/dashboards/importbytes"
+        foreach ( $dashboard in $dashs ) {
+            $inFile = $dashboard.fullname
+            $Catch = Invoke-WebRequest -Uri $dashboardURI -Method Post -infile $infile -Headers $headers -ContentType "application/json" -Credential $Credential
+        }
 
 
         #        Write-Output "[$(Get-Date)] Setting up Grafana Homepage"
@@ -233,8 +233,9 @@ function Install-VisualizationSetup {
 
         Write-Output "`nNOTE: Grafana, Influx, and Telegraf are now installed as services."
         Get-Service EUCMonitoring* | Select-Object Status, Name, StartType
-        Write-Output "`nTo follow up, configure Telegraf instance in $MonitoringPath as described in Readme.md by testing"
+        Write-Output "`nTo follow up, configure Telegraf instance in $MonitoringPath as described in Installation.md by testing"
         Write-Output "the input.exec scripts, start the service as appopriate user and then inport the dashboards to grafana."
+
         #Write-Output "Please edit the json config template, setting the Influx enabled to true amongst your other changes"
         #Write-Output "and save as euc-monitoring.json.`n"
         #& "C:\Windows\System32\notepad.exe" $MonitoringPath\euc-monitoring.json
@@ -256,8 +257,8 @@ function Install-VisualizationSetup {
 $Params = @{
     MonitoringPath  = "C:\Monitoring"
     GrafanaVersion  = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.5.windows-amd64.zip"
-    InfluxVersion   = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.6_windows_amd64.zip"
+    InfluxVersion   = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.7_windows_amd64.zip"
     NSSMVersion     = "https://nssm.cc/release/nssm-2.24.zip"
-    TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.0_windows_amd64.zip"
+    TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.2_windows_amd64.zip"
 }
 Install-VisualizationSetup @Params

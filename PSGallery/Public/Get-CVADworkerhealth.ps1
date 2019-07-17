@@ -44,26 +44,16 @@ Function Get-CVADworkerhealth {
     )
 
     Begin {
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading Citrix.Broker Powershell Snapins"
-        $ctxsnap = Get-PSSnapin -Registered Citrix.Broker.* -ErrorAction SilentlyContinue | Add-PSSnapin -PassThru
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Broker Powershell Snapins Load Failed"
-            Throw "Unable to load Citrix.Broker Powershell Snapins"
-        }
-        else {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Broker Powershell Snapins Loaded"
-        }
-
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading Citrix.Configuration.Admin Powershell Snapins"
-        $ctxsnap = Get-PSSnapin -Registered Citrix.Configuration.Admin.* -ErrorAction SilentlyContinue | Add-PSSnapin -PassThru
-
-        if ($null -eq $ctxsnap) {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Configuration.Admin Powershell Snapins Load Failed"
-            Throw "Unable to load Citrix.Configuration.Admin Powershell Snapins"
-        }
-        else {
-            Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Citrix.Configuration.Admin Powershell Snapins Loaded"
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Loading Citrix Powershell Snapins"
+        $Snapins = "Citrix.Broker.Admin.V2", "Citrix.Configuration.Admin.V2"
+        foreach ($Snapin in $Snapins) {
+            if ($null -eq (Get-PSSnapin | Where-Object { $_.Name -eq $Snapin })) {
+                Add-PSSnapin $Snapin -ErrorAction Stop
+                Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] $Snapin loaded successfully"
+            }
+            else {
+                Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] $Snapin already loaded"
+            }
         }
     }
 

@@ -2,6 +2,12 @@
 
 # EUCMonitoringRedux
 
+Citrix Virtual Apps and Desktops Overview Dashboard
+![CVAD-Overview](https://github.com/littletoyrobots/EUCMonitoringRedux/master/Dashboard/CVAD-Overview-Preview.png)
+
+Citrix ADC Overview Dashboard
+![CADC-Overview](https://github.com/littletoyrobots/EUCMonitoringRedux/master/Dashboard/CADC-Overview-Preview.png)
+
 ## Project Description
 
 This is a continuation of the [EUCMonitoring Platform](http://bretty.me.uk/free-citrix-xendesktop-7-monitoring-platform/) that is based on Powershell and FREE! It will check all the key components of your End User Computer estate and give you a visual dashboard as to its current health. It is currently focused on Citrix but will eventually be branched out to cover VMware and Microsoft Technologies.
@@ -10,7 +16,9 @@ This continuation is organized in such a way that you could take advantage of th
 
 ## Motivation
 
-[Dave Bretty](https://bretty.me.uk) initially created this in order to provide a birds eye view of what's happening in the environment. Along with others in the community, I wanted to extend the functionality he initially created, especially in a more dynamic dashboard. I also want to be able to use building a monitoring platform as a way of teaching new users about various EUC platforms, by way of knowing what to look for.
+[Dave Bretty](https://bretty.me.uk) initially created this in order to provide a birds eye view of what's happening in the environment. Along with others in the community, I wanted to extend the functionality he initially created, especially in a more dynamic dashboard. I also want to be able to use building a monitoring platform as a way of teaching new users about various EUC platforms, by way of knowing what to look for. This also allows me a way to provide a read-only view into my environment to various individuals, create a web interface that can be used to drive office kiosk dashboards, and create custom dashboards for different groups.
+
+This project is geared towards taking some useful scripts and visualizing their output.
 
 ## Installation
 
@@ -18,13 +26,13 @@ To install and run this software, follow these steps.
 
 ### Pre-requisites
 
-#### On-Premises
+#### Citrix On-Premises
 
-- For Citrix Apps and Desktops, the server that you want to run this script from must have the XenDesktop Powershell SDK Installed.
+- For Citrix Apps and Desktops, the location that you want to run this script from must have the XenDesktop Powershell SDK Installed. This usually comes installed with Citrix Studio, or if you look in your installer ISO, you'll be able to find it as Broker_PowerShellSnapIn_x64.msi
 - For Citrix Hypervisor, you must also install the XenServer SDK from the [XenServer](https://www.citrix.com/downloads/xenserver/product-software.html) download page.
 - VMWare support will be forthcoming.
 
-#### Cloud
+#### Citrix Cloud
 
 The Server that you want to run this script from must have the Remote [PowerShell SDK for Applications and Desktops Service](http://download.apps.cloud.com/CitrixPoshSdk.exe):
 
@@ -38,15 +46,17 @@ Obtain a Citrix Cloud automation credential as follows:
 
 Note the Customer ID located in this same page, this is case senstitive.
 
-```
+```Powershell
 Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 ```
 
-NOTE: **CVADBroker** should be set as the Citrix Cloud Connector, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
+NOTE: In the provided scripts **Broker** or **CloudConnector** should be set as the Citrix Cloud Connectors for the site, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
 
 #### InfluxDB
 
 While Telegraf can export to [various destinations](https://github.com/influxdata/telegraf#output-plugins), InfluxDB is probably the easiest to set up across different platforms.
+
+### Already have InfluxDB & Grafana?
 
 ### Easy Installation Steps (to see if you like it).
 
@@ -78,6 +88,6 @@ While Telegraf can export to [various destinations](https://github.com/influxdat
 > start-service telegraf
 ```
 
-## Active Contributors
+## Contributors
 
 Dave Brett [@dbretty](https://twitter.com/dbretty) | James Kindon [@james_kindon](https://twitter.com/james_kindon) | Ryan Butler [@ryan_c_butler](https://twitter.com/Ryan_C_Butler) | David Wilkinson [@WilkyIT](https://twitter.com/WilkyIT) | Adam Yarborough [@littletoyrobots](https://twitter.com/littletoyrobots) | Hal Lange [@hal_lange](https://twitter.com/hal_lange) | Ryan Revord [@rsrevord](https://twitter.com/rsrevord) | Alex Spicola [@alexspicola](https://twitter.com/AlexSpicola)

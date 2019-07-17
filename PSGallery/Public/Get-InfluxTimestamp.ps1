@@ -1,18 +1,18 @@
+<#
+.SYNOPSIS
+Returns current timestamp in nanosecond format
+
+.DESCRIPTION
+Long description
+
+.EXAMPLE
+An example
+
+.NOTES
+General notes
+#>
+
 function Get-InfluxTimestamp {
-    <#
-    .SYNOPSIS
-    Short description
-
-    .DESCRIPTION
-    Long description
-
-    .EXAMPLE
-    $timestamp = Get-InfluxTimeStamp
-
-    .NOTES
-    General notes
-    #>
-
     [CmdletBinding()]
     Param ()
 

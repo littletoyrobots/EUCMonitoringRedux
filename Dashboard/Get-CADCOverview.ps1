@@ -1,11 +1,14 @@
 $BaseDir = "C:\Monitoring"
 Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
+
+# This is going to default to verbose output, to make sure that you're testing and
 #$VerbosePreference = 'SilentlyContinue' #
 $VerbosePreference = 'Continue'
 
 #  You can have multiple Gateways as long as the creds work on each, and they're accessible
 $CitrixADCGateways = "10.1.2.3", "10.1.2.3"
-$ADCUser = "nsroot"   # Or whatever, I prefer read-only users.  YMMV with nsroot.
+# I prefer readon-only users.  You don't really want to test run someone else's script with nsroot, do you?
+$ADCUser = "notnsroot"
 
 # Generate a credential for storage by running this as the account telegraf runs under.
 #> Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -FilePath "C:\Monitoring\ADCcred.txt"
@@ -19,9 +22,11 @@ $ADCErrorHistory = Join-Path -Path $BaseDir -ChildPath "ADC-ErrorHistory.txt"
 # Do the things.
 if ($null -ne $CitrixADCGateways) {
     $ADCResults = @()
+
+    # Its nice to have all the timestamps be the same when you're graphing in Grafana later.
     $TimeStamp = Get-InfluxTimestamp
 
-    # Poor man's log rotation
+    # We want the current log to only have just what's wrong with the latest run.
     if (Test-Path $ADCErrorLog) {
         Remove-Item -Path $ADCErrorLog -Force
     }
@@ -50,9 +55,9 @@ if ($null -ne $CitrixADCGateways) {
         }
         catch {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
-            Write-Verbose "[$(Get-Date)] Exiting uncleanly."
+            Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly."
             "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
-            "[$(Get-Date)] Exiting uncleanly." | Out-File $ADCErrorLog -Append
+            "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly." | Out-File $ADCErrorLog -Append
         }
     }
 }
