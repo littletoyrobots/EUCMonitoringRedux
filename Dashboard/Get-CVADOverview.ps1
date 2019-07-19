@@ -1,5 +1,6 @@
 $BaseDir = "C:\Monitoring"
 
+# Keep this Verbose while testing, change to SilentlyContinue when complete.
 # $VerbosePreference = 'SilentlyContinue'
 $VerbosePreference = 'Continue'
 
@@ -36,23 +37,31 @@ if (Test-Path $WorkloadErrorLog) {
 $TimeStamp = Get-InfluxTimestamp
 
 foreach ($Site in $CVADSites) {
-    $CVADWorkloadParams = @{
-        Broker        = $Site
+    Try {
+        $CVADWorkloadParams = @{
+            Broker        = $Site
 
-        # If you want to uncomment and fill these out, go for it.  If not, it will auto-discover
-        # and return a value for each permutation with machines associated.  Each will allow for
-        # multiple values
-        #    SiteName         = ""
-        #    ZoneName         = ""
-        #    DesktopGroupName = ""
-        #    CatalogName      = ""
+            # If you want to uncomment and fill these out, go for it.  If not, it will auto-discover
+            # and return a value for each permutation with machines associated.  Each will allow for
+            # multiple values
+            #    SiteName         = ""
+            #    ZoneName         = ""
+            #    DesktopGroupName = ""
+            #    CatalogName      = ""
 
-        SingleSession = $true
-        MultiSession  = $true
-        ErrorLog      = $WorkloadErrorLog
+            SingleSession = $true
+            MultiSession  = $true
+            ErrorLog      = $WorkloadErrorLog
+        }
+
+        Get-CVADworkload @CVADWorkloadParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
     }
-
-    Get-CVADworkload @CVADWorkloadParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+    catch {
+        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+        Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly."
+        "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $WorkloadErrorLog -Append
+        "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly." | Out-File $WorkloadErrorLog -Append
+    }
 }
 
 
