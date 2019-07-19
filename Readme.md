@@ -12,7 +12,7 @@ This continuation is organized in such a way that you could take advantage of th
 
 [Dave Bretty](https://bretty.me.uk) initially created this in order to provide a birds eye view of what's happening in the environment. Along with others in the community, I wanted to extend the functionality he initially created, especially in a more dynamic dashboard. I also want to be able to use building a monitoring platform as a way of teaching new users about various EUC platforms, by way of knowing what to look for. This also allows me a way to provide a read-only view into my environment to various individuals, create a web interface that can be used to drive office kiosk dashboards, and create custom dashboards for different groups.
 
-This project is geared towards taking some useful scripts and visualizing their output.
+Hopefully, even outside of the dashboards, you'll find some useful scripts in here as well.
 
 ## Sample Dashboards
 
@@ -24,7 +24,7 @@ Citrix ADC Overview Dashboard
 
 ## Installation
 
-To install suggestions, check out [Installation.md](https://github.com/littletoyrobots/EUCMonitoringRedux/blob/master/Installation.md).
+For install suggestions, check out [Installation.md](https://github.com/littletoyrobots/EUCMonitoringRedux/blob/master/Installation.md).
 
 ## Share
 
@@ -32,4 +32,4 @@ Have a great script or dashboard suggestion you'd like to see implemented? Check
 
 ## Contributors
 
-Dave Brett [@dbretty](https://twitter.com/dbretty) | James Kindon [@james_kindon](https://twitter.com/james_kindon) | Ryan Butler [@ryan_c_butler](https://twitter.com/Ryan_C_Butler) | David Wilkinson [@WilkyIT](https://twitter.com/WilkyIT) | Adam Yarborough [@littletoyrobots](https://twitter.com/littletoyrobots) | Hal Lange [@hal_lange](https://twitter.com/hal_lange) | Ryan Revord [@rsrevord](https://twitter.com/rsrevord) | Alex Spicola [@alexspicola](https://twitter.com/AlexSpicola)
+Adam Yarborough [@littletoyrobots](https://twitter.com/littletoyrobots) | Dave Brett [@dbretty](https://twitter.com/dbretty) | James Kindon [@james_kindon](https://twitter.com/james_kindon) | Ryan Butler [@ryan_c_butler](https://twitter.com/Ryan_C_Butler) | David Wilkinson [@WilkyIT](https://twitter.com/WilkyIT) | Hal Lange [@hal_lange](https://twitter.com/hal_lange) | Ryan Revord [@rsrevord](https://twitter.com/rsrevord) | Alex Spicola [@alexspicola](https://twitter.com/AlexSpicola)

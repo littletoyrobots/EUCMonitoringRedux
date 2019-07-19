@@ -4,11 +4,16 @@ $BaseDir = "C:\Monitoring"
 # $VerbosePreference = 'SilentlyContinue'
 $VerbosePreference = 'Continue'
 
+$CVADSites = @( # Keep the prepended comma so that the sites work as expected.
+    , ("ddc1.mydomain.com", "ddc2.mydomain.com") # DDCs in Site 1
+    , ("ddc3.mydomain.com", "ddc4.mydomain.com")  # DDCs in Site 2
+)
+
 # Assume the easy-install.
 Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
 # Import-Module EUCMonitoringRedux
-Import-Module Citrix.Broker.Admin.V2
-Import-Module Citrix.Configuration.Admin.V2
+Import-Module Citrix.*
+
 
 <# Citrix Cloud?
 Obtain a Citrix Cloud automation credential as follows:
@@ -22,16 +27,11 @@ Note the Customer ID located i
 #>
 # Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 
-$CVADSites = @( # Keep the prepended comma so that the sites work as expected.
-    , ("ddc1.mydomain.com", "ddc2.mydomain.com") # DDCs in Site 1
-    , ("ddc3.mydomain.com", "ddc4.mydomain.com")  # DDCs in Site 2
-)
-
 $WorkloadErrorLog = Join-Path $BaseDir -ChildPath "Workload-Errors.txt"
 $WorkloadErrorHistory = Join-Path -Path $BaseDir -ChildPath "Workload-ErrorHistory.txt"
 
 if (Test-Path $WorkloadErrorLog) {
-    Remove-Item -Path $ADCErrorLog -Force
+    Remove-Item -Path $WorkloadErrorLog -Force
 }
 
 $TimeStamp = Get-InfluxTimestamp

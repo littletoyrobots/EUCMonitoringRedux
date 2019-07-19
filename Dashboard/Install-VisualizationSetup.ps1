@@ -54,14 +54,6 @@ function Install-VisualizationSetup {
             Write-Output "[$(Get-Date)] EUCMonitoring directory created: $MonitoringPath"
         }
 
-        # EUCMonitoring Specific
-        #$DashboardConfig = "$MonitoringPath\Dashboard"
-        #$dashDatasource = "$DashboardConfig\DataSource.json"
-        #$dashboards = @(
-        #    "CADC-Overview.json",
-        #    "CVAD-Overview.json"
-        #)
-
         <#
         TODO - Get the dashboard config.
         if ( test-path $DashboardConfig ) {
@@ -140,6 +132,10 @@ function Install-VisualizationSetup {
         Write-Output "[$(Get-Date)] Creating EUCMonitoring database on InfluxDB"
         & $Influx\influx.exe -execute 'Create Database EUCMonitoring'
 
+
+        # Import needed
+        Write-Output "[$(Get-Date)] Importing Grafana plugins (will error if no net access)"
+
         # need to import eventually grafana pages.
         Push-Location $grafana\bin
         #    & .\Grafana-cli.exe plugins install btplc-status-dot-panel
@@ -182,6 +178,8 @@ function Install-VisualizationSetup {
 
         Write-Output "[$(Get-Date)] Skipping Dashboard Import, please do manually after configuring Telegraf"
 
+        <#  For now, get the installer out, even if it requires some manual processes.
+
         Write-Output "[$(Get-Date)] Setting up Grafana Dashboards"
         # Write-Output "[$(Get-Date)] Using $DashboardConfig\Dashboards"
         $dashs = get-childitem $PSScriptRoot\*.json
@@ -190,7 +188,6 @@ function Install-VisualizationSetup {
             $inFile = $dashboard.fullname
             $Catch = Invoke-WebRequest -Uri $dashboardURI -Method Post -infile $infile -Headers $headers -ContentType "application/json" -Credential $Credential
         }
-
 
         #        Write-Output "[$(Get-Date)] Setting up Grafana Homepage"
         #        $Catch = Invoke-WebRequest -URI "http://localhost:3000/api/search?query=EUCMonitoring" -outfile .\home.json -header $headers -UseBasicParsing
@@ -201,6 +198,8 @@ function Install-VisualizationSetup {
 
 
         # $Catch = Invoke-WebRequest -URI "http://localhost:3000/api/org/preferences" -method PUT -body $GrafanaConfig -header $headers -ContentType "application/json" -UseBasicParsing
+        #>
+
 
         # This is to avoid the assigned and never used checks.
         Pop-Location
@@ -208,6 +207,18 @@ function Install-VisualizationSetup {
         # Purely to pass variable checks
         $Catch = ""
         Write-Verbose $Catch
+
+        # Copy the sample scripts to the base dir
+        $DashScripts = get-childitem . | Where-Object { $_.Name -match '.ps1' }
+        # If this is empty, try the Dashboard/ folder
+        if ($null -eq $DashScripts) {
+            $DashScriptPath = join-path $MonitoringPath -ChildPath "EUCMonitoringRedux-master/Dashboard"
+            Get-ChildItem $DashScriptPath | Where-Object { $_.Name -match '.ps1' }
+        }
+        foreach ($DashScript in $DashScripts) {
+            Copy-Item -Path $DashScript.fullname -Destination $MonitoringPath
+        }
+
 
         $Telegraf = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'Telegraf' }).FullName
         Write-Output "[$(Get-Date)] Configuring Telegraf"
@@ -222,12 +233,12 @@ function Install-VisualizationSetup {
 [[inputs.exec]]
     # Use forward slashes for the path. Change if needed.
     commands = [
-        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $(Join-Path $MonitoringPath -ChildPath "Get-CADCOverview.ps1")",
-        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $(Join-Path $MonitoringPath -ChildPath "Get-CADVOverview.ps1")"
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `'$(Join-Path $MonitoringPath -ChildPath "Get-CADCOverview.ps1")`'",
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `'$(Join-Path $MonitoringPath -ChildPath "Get-CADVOverview.ps1")`'"
     ]
     timeout = "5m"
     data_format = "influx"
-"@ | Out-File (Join-Path $Telegraf -ChildPath "telegraf.conf" ) -Force
+"@ -replace '\\', '/' | Out-File (Join-Path $Telegraf -ChildPath "telegraf.conf" ) -Force -Encoding utf8
         Write-Output "[$(Get-Date)] Installing telegraf as a service"
         Start-Process "$Telegraf\telegraf.exe" -ArgumentList "--service install --service-name=EUCMonitoring-telegraf --service-display-name=EUCMonitoring-telegraf --config=$Telegraf\telegraf.conf" -Wait
 

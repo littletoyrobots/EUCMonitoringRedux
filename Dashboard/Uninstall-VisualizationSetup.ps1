@@ -44,7 +44,7 @@ function Uninstall-VisualizationSetup {
         if ($PSCmdlet.ShouldProcess("Remove Influx, Grafana, Telegraf Services")) {
             #Removing Services
             $Grafana = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'grafana' }).FullName
-            $Influx = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'influx' }).FullName
+            $Influx = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'influxdb' }).FullName
             $NSSM = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'nssm' }).FullName
             $Telegraf = (get-childitem $MonitoringPath | Where-Object { $_.Name -match 'telegraf' }).FullName
 
@@ -95,17 +95,24 @@ function Uninstall-VisualizationSetup {
             #Remove service Directories, all of them.  Scorched earth.
             Write-Output "[$(Get-Date)] Removing program directories"
             if (-not ([string]::IsNullOrWhiteSpace($Grafana))) {
+                Write-Output "[$(Get-Date)] Removing $Grafana"
                 Remove-Item -path $Grafana -Recurse
             }
             if (-not ([string]::IsNullOrWhiteSpace($Influx))) {
+                Write-Output "[$(Get-Date)] Removing $Influx"
                 Remove-Item -path $Influx -Recurse
             }
             if (-not ([string]::IsNullOrWhiteSpace($NSSM))) {
+                Write-Output "[$(Get-Date)] Removing $NSSM"
                 Remove-Item -path $NSSM -Recurse
             }
             if (-not ([string]::IsNullOrWhiteSpace($Telegraf))) {
+                Write-Output "[$(Get-Date)] Removing $Telegraf"
                 Remove-Item -path $Telegraf -Recurse
             }
+
+            Write-Output "*** NOTE: Not all files removed from $MonitoringPath"
+            Write-Output "*** NOTE: Please review manually"
         }
 
         #Remove Variable
