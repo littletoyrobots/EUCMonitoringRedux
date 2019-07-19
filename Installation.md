@@ -1,8 +1,36 @@
 # Installation instructions for EUCMonitoringRedux
 
-## The easy try-it-out way. This is slightly interactive until I figure how to bypass the initial Grafana user config
+## Pre-requisites
 
-### This will install local instances of influxdb, grafana, and telegraf agent on your machine, then allow you to edit and import the dashboards
+#### Citrix On-Premises
+
+- For Citrix Apps and Desktops, the location that you want to run this script from must have the XenDesktop Powershell SDK Installed. This usually comes installed with Citrix Studio, or if you look in your installer ISO, you'll be able to find it as Broker_PowerShellSnapIn_x64.msi
+- For Citrix Hypervisor, you must also install the XenServer SDK from the [XenServer](https://www.citrix.com/downloads/xenserver/product-software.html) download page.
+- VMWare support will be forthcoming.
+
+#### Citrix Cloud
+
+The Server that you want to run this script from must have the Remote [PowerShell SDK for Applications and Desktops Service](http://download.apps.cloud.com/CitrixPoshSdk.exe):
+
+Obtain a Citrix Cloud automation credential as follows:
+
+- Login to <https://citrix.cloud.com/>
+- Navigate to "Identity and Access Management".
+- Click "API Access".
+- Enter a name for Secure Client and click Create Client.
+- Once Secure Client is created, download Secure Client Credentials file (ie. downloaded to C:\Monitoring)
+
+Note the Customer ID located in this same page, this is case senstitive.
+
+```Powershell
+Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
+```
+
+NOTE: In the provided scripts **Broker** or **CloudConnector** should be set as the Citrix Cloud Connectors for the site, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
+
+## Method 1 - The easy try-it-out way. This is somewhat interactive until I figure how to bypass the initial Grafana user config
+
+### This will install local instances of influxdb, grafana, and telegraf agent on your machine to `C:\Monitoring`, then allow you to edit and import the dashboards
 
 1. Download [EUCMonitoringRedux](https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip) zip file wherever you like.
 1. Create your target install directory, I choose `C:\Monitoring`
@@ -39,9 +67,9 @@
    $LastCmd.EndExecutionTime.Subtract($LastCmd.StartExecutionTime).TotalSeconds
    ```
 
-1. Set the telegraf service run as a user with appropriate permissions to run the scripts.
+1. Set the telegraf service Log On to a user with appropriate permissions to run the scripts. Read-Only administrator role should be fine.
 
-- As this grows, more scripts and dashboards will be created. There might be one big easy script eventually, or a json fed script that calls the smaller functions, but for now, we're starting small.
+- NOTE: As this grows, more scripts and dashboards will be created. There might be one big easy script eventually, or a json fed script that calls the smaller functions, but for now, we're starting small.
 
 ### Uninstall
 
@@ -52,11 +80,9 @@
    .\Uninstall-VisualizationSetup.ps1
    ```
 
-## 2 - The more permanent solution
+## Method 2 - Setup environment for long term
 
-### Setup environment for long term
-
-1. Install influxdb and grafana on dedicated host. There are many wonderful guides on this online.
+1. Install influxdb and grafana on dedicated host. There are many wonderful guides on this online, most involve a linux box somewhere. There are even [Raspberry Pi](https://www.influxdata.com/blog/running-the-tick-stack-on-a-raspberry-pi/) installs
 1. Create an EUCMonitoring database on influx
 
    ```influxql
@@ -64,8 +90,6 @@
    > CREATE DATABASE EUCMonitoring
    ```
 
-1. In Grafana, configure EUCMonitoring as an InfluxDB data source
-1. Load any dashboard to the grafana server
 1. Unzip telegraf on the endpoint you wish to run the scripts from. Edit telegraf.conf outputs.influxdb url to your long term instance with the database "EUCMonitoring", and to include any scripts you want in the input.exec section after testing them. See `Config\telegraf.conf` for extremely simplified example.
 1. From command prompt, run a single telegraf collection, outputting metrics to stdout
 
@@ -78,3 +102,24 @@
    ```cmd
    telegraf.exe --service install --service-name=EUCMonitoring-telegraf --service-display-name=EUCMonitoring-telegraf --config=C:\Full\Path\To\telegraf.conf
    ```
+
+1. Reevaluate the method of storing credentials in the sample scripts, or write your own. You might find you want to user something like Marc Kellerman's [Invoke-CommandAs](https://github.com/mkellerman/invoke-commandas) if you want to run the telegraf agent as its default system user.
+1. In Grafana, configure EUCMonitoring as an InfluxDB data source
+1. Start importing dashboards to the grafana server, making sure to select the EUCMonitoring data source
+
+## Post Install
+
+### Authentication
+
+Look into authentication of Influx and Grafana. You can create custom dashboards only visible particular users and departments. Update your telegraf.conf
+
+### Make your own custom dashboards, or edit some of those provided.
+
+You know your environment better than anyone else.
+
+Telegraf has an impressive list of [input plugins](https://github.com/influxdata/telegraf/tree/master/plugins/inputs) to collect data. You can easily collect whatever data your application exposes and then create a Grafana dashboard for it. For example, you could use [win_perf_counters](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/win_perf_counters) and Win10-1809+ / Server 2019's new [User Input Delay Counters](https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/rds-rdsh-performance-counters) to monitor specific applciations that you care about, if you wanted to install the telegraf agent on your workers.
+
+Browse the Grafana Dashboards. Here are some suggestions:
+
+- [Unifi Dashboards](https://grafana.com/grafana/dashboards?search=unifi)
+- [vSphere Dashboards](https://grafana.com/grafana/dashboards?search=vsphere)

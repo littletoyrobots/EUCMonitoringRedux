@@ -22,71 +22,7 @@ This project is geared towards taking some useful scripts and visualizing their 
 
 ## Installation
 
-To install and run this software, follow these steps.
-
-### Pre-requisites
-
-#### Citrix On-Premises
-
-- For Citrix Apps and Desktops, the location that you want to run this script from must have the XenDesktop Powershell SDK Installed. This usually comes installed with Citrix Studio, or if you look in your installer ISO, you'll be able to find it as Broker_PowerShellSnapIn_x64.msi
-- For Citrix Hypervisor, you must also install the XenServer SDK from the [XenServer](https://www.citrix.com/downloads/xenserver/product-software.html) download page.
-- VMWare support will be forthcoming.
-
-#### Citrix Cloud
-
-The Server that you want to run this script from must have the Remote [PowerShell SDK for Applications and Desktops Service](http://download.apps.cloud.com/CitrixPoshSdk.exe):
-
-Obtain a Citrix Cloud automation credential as follows:
-
-- Login to <https://citrix.cloud.com/>
-- Navigate to "Identity and Access Management".
-- Click "API Access".
-- Enter a name for Secure Client and click Create Client.
-- Once Secure Client is created, download Secure Client Credentials file (ie. downloaded to C:\Monitoring)
-
-Note the Customer ID located in this same page, this is case senstitive.
-
-```Powershell
-Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
-```
-
-NOTE: In the provided scripts **Broker** or **CloudConnector** should be set as the Citrix Cloud Connectors for the site, the cloud connectors will proxy the connection directly to the Delivery Controller as they are not directly accessible.
-
-#### InfluxDB
-
-While Telegraf can export to [various destinations](https://github.com/influxdata/telegraf#output-plugins), InfluxDB is probably the easiest to set up across different platforms.
-
-### Already have InfluxDB & Grafana?
-
-### Easy Installation Steps (to see if you like it).
-
-1. Make sure any prerequisites are met.
-1. Download EUCMonitoringRedux [here](https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip). Hopefully will have in PSGallery soon.
-1. Unblock the downloaded zip, after you've thoroughly reviewed the source and have confirmed I'm not doing anything nefarious or dumb.
-1. Extract the folder to `C:\Monitoring`
-1. Download Telegraf from [here](https://portal.influxdata.com/downloads)
-1. Create the directory `C:\Program Files\Telegraf` on your target machine.
-1. Download EUCMonitoring.conf and EUCMonitor.ps1 from [here](https://github.com/littletoyrobots/EUCMonitoringRedux/tree/master/Config)
-1. Place telegraf.exem, telegraf.conf, EUCMonitoring.conf, and EUCMonitor.ps1 files in `C:\Program Files\Telegraf`. Unblock those files.
-1. Install as a service by running the following in Powershell as an administrator:
-
-```powershell
-> "C:\Program Files\Telegraf\telegraf.exe" --service install --config "C:\Program  Files\Telegraf\EUCMonitoring.conf"
-```
-
-1. Edit the EUCMonitoring.conf file for your environment. The default values assume a local install.
-1. Edit the EUCMonitor.ps1 file for your environment.
-1. To check that it works, run:
-
-```powershell
-> "C:\Program Files\Telegraf\telegraf.exe" --config "C:\Program Files\Telegraf\EUCMonitoring.conf" --test
-```
-
-1. To start collecting data, run:
-
-```powershell
-> start-service telegraf
-```
+To install suggestions, check out [Installation.md](https://github.com/littletoyrobots/EUCMonitoringRedux/blob/master/Installation.md).
 
 ## Contributors
 
