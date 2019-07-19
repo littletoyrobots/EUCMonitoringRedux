@@ -3,8 +3,23 @@ $BaseDir = "C:\Monitoring"
 # $VerbosePreference = 'SilentlyContinue'
 $VerbosePreference = 'Continue'
 
+# Assume the easy-install.
 Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
+# Import-Module EUCMonitoringRedux
+Import-Module Citrix.Broker.Admin.V2
+Import-Module Citrix.Configuration.Admin.V2
 
+<# Citrix Cloud?
+Obtain a Citrix Cloud automation credential as follows:
+
+Login to https://citrix.cloud.com/
+Navigate to "Identity and Access Management".
+Click "API Access".
+Enter a name for Secure Client and click Create Client.
+Once Secure Client is created, download Secure Client Credentials file (ie. downloaded to C:\Monitoring)
+Note the Customer ID located i
+#>
+# Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 
 $CVADSites = @( # Keep the prepended comma so that the sites work as expected.
     , ("ddc1.mydomain.com", "ddc2.mydomain.com") # DDCs in Site 1
