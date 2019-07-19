@@ -6,7 +6,7 @@ Citrix Virtual Apps and Desktops Overview Dashboard
 ![CVAD-Overview](../assets/CVAD-Overview-Preview.jpg)
 
 Citrix ADC Overview Dashboard
-![CADC-Overview](../assets/CADc-Overview-Preview.png)
+![CADC-Overview](../assets/CADC-Overview-Preview.png)
 
 ## Project Description
 
