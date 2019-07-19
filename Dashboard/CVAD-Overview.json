@@ -55,7 +55,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": null,
-    "iteration": 1562960305138,
+    "iteration": 1563559805645,
     "links": [],
     "panels": [{
             "aliasColors": {},
@@ -243,6 +243,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#299c46"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -940,6 +941,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -1045,6 +1047,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
+            "datasource": "${DS_EUCMONITORING}",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -3366,5 +3369,5 @@
     "timezone": "",
     "title": "CVAD Overview",
     "uid": "fe9vbaQiz",
-    "version": 87
+    "version": 89
 }

@@ -67,7 +67,15 @@ Telegraf will run powershell scripts for you and push the data straight into you
    $LastCmd.EndExecutionTime.Subtract($LastCmd.StartExecutionTime).TotalSeconds
    ```
 
+1. Test the telegraf instance and verify no errors in output
+
+   ```powershell
+   set-location C:\Monitoring\telegraf
+   .\telegraf.exe --config telegraf.conf --test
+   ```
+
 1. Set the telegraf service Log On to a user with appropriate permissions to run the scripts. Read-Only administrator role should be fine.
+1. Start the EUCMonitoring-telegraf service.
 
 ### Load the dashboards into Grafana
 

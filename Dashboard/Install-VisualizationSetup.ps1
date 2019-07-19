@@ -234,7 +234,7 @@ function Install-VisualizationSetup {
     # Use forward slashes for the path. Change if needed.
     commands = [
         "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `'$(Join-Path $MonitoringPath -ChildPath "Get-CADCOverview.ps1")`'",
-        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `'$(Join-Path $MonitoringPath -ChildPath "Get-CADVOverview.ps1")`'"
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `'$(Join-Path $MonitoringPath -ChildPath "Get-CVADOverview.ps1")`'"
     ]
     timeout = "5m"
     data_format = "influx"
