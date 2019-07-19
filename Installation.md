@@ -123,3 +123,11 @@ Browse the Grafana Dashboards. Here are some suggestions:
 
 - [Unifi Dashboards](https://grafana.com/grafana/dashboards?search=unifi)
 - [vSphere Dashboards](https://grafana.com/grafana/dashboards?search=vsphere)
+
+### Set up alerting
+
+While the sample scripts have a section for emailing error logs, that might not be exactly what you're looking for. [Grafana alerts](https://grafana.com/docs/alerting/notifications/) can be set to Email, Slack, PagerDuty, and more.
+
+### Share
+
+Have a great script or dashboard suggestion you'd like to see implemented? EUCMonitoring is proud to be part of [World of EUC on Slack](https://communityinviter.com/apps/worldofeuc/world-of-euc-project) in the #-eucmonitoring channel
