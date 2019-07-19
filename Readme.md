@@ -2,12 +2,6 @@
 
 # EUCMonitoringRedux
 
-Citrix Virtual Apps and Desktops Overview Dashboard
-![CVAD-Overview](../assets/CVAD-Overview-Preview.jpg)
-
-Citrix ADC Overview Dashboard
-![CADC-Overview](../assets/CADC-Overview-Preview.png)
-
 ## Project Description
 
 This is a continuation of the [EUCMonitoring Platform](http://bretty.me.uk/free-citrix-xendesktop-7-monitoring-platform/) that is based on Powershell and FREE! It will check all the key components of your End User Computer estate and give you a visual dashboard as to its current health. It is currently focused on Citrix but will eventually be branched out to cover VMware and Microsoft Technologies.
@@ -19,6 +13,14 @@ This continuation is organized in such a way that you could take advantage of th
 [Dave Bretty](https://bretty.me.uk) initially created this in order to provide a birds eye view of what's happening in the environment. Along with others in the community, I wanted to extend the functionality he initially created, especially in a more dynamic dashboard. I also want to be able to use building a monitoring platform as a way of teaching new users about various EUC platforms, by way of knowing what to look for. This also allows me a way to provide a read-only view into my environment to various individuals, create a web interface that can be used to drive office kiosk dashboards, and create custom dashboards for different groups.
 
 This project is geared towards taking some useful scripts and visualizing their output.
+
+## Sample Dashboards
+
+Citrix Virtual Apps and Desktops Overview Dashboard
+![CVAD-Overview](../assets/CVAD-Overview-Preview.jpg)
+
+Citrix ADC Overview Dashboard
+![CADC-Overview](../assets/CADC-Overview-Preview.png)
 
 ## Installation
 
