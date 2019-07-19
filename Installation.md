@@ -130,4 +130,4 @@ While the sample scripts have a section for emailing error logs, that might not 
 
 ### Share
 
-Have a great script or dashboard suggestion you'd like to see implemented? EUCMonitoring is proud to be part of [World of EUC on Slack](https://communityinviter.com/apps/worldofeuc/world-of-euc-project) in the #-eucmonitoring channel
+Have a great script or dashboard suggestion you'd like to see implemented? Check out [Contributing](https://github.com/littletoyrobots/EUCMonitoringRedux/blob/master/.github/CONTRIBUTING.md) or stop by the #-eucmonitoring channel on [World of EUC on Slack](https://communityinviter.com/apps/worldofeuc/world-of-euc-project) and share it with us!

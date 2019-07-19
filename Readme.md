@@ -3,10 +3,10 @@
 # EUCMonitoringRedux
 
 Citrix Virtual Apps and Desktops Overview Dashboard
-![CVAD-Overview](https://github.com/littletoyrobots/EUCMonitoringRedux/master/Dashboard/CVAD-Overview-Preview.png)
+![CVAD-Overview](Dashboard/CADC-Overview-Preview.png)
 
 Citrix ADC Overview Dashboard
-![CADC-Overview](https://github.com/littletoyrobots/EUCMonitoringRedux/master/Dashboard/CADC-Overview-Preview.png)
+![CADC-Overview](Dashboard/CVAD-Overview-Preview.jpg)
 
 ## Project Description
 
@@ -23,6 +23,10 @@ This project is geared towards taking some useful scripts and visualizing their 
 ## Installation
 
 To install suggestions, check out [Installation.md](https://github.com/littletoyrobots/EUCMonitoringRedux/blob/master/Installation.md).
+
+## Share
+
+Have a great script or dashboard suggestion you'd like to see implemented? Check out [Contributing](https://github.com/littletoyrobots/EUCMonitoringRedux/blob/master/.github/CONTRIBUTING.md) or stop by the #-eucmonitoring channel on [World of EUC on Slack](https://communityinviter.com/apps/worldofeuc/world-of-euc-project) and share it with us!
 
 ## Contributors
 
