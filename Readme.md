@@ -3,10 +3,10 @@
 # EUCMonitoringRedux
 
 Citrix Virtual Apps and Desktops Overview Dashboard
-![CVAD-Overview](Dashboard/CADC-Overview-Preview.png)
+![CVAD-Overview](../assets/CADC-Overview-Preview.png)
 
 Citrix ADC Overview Dashboard
-![CADC-Overview](Dashboard/CVAD-Overview-Preview.jpg)
+![CADC-Overview](../assets/CVAD-Overview-Preview.png)
 
 ## Project Description
 
