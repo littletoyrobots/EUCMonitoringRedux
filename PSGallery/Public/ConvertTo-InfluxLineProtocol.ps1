@@ -90,13 +90,25 @@ Function ConvertTo-InfluxLineProtocol {
             }
 
             $Obj.PSObject.Properties | ForEach-Object {
-                if ($null -eq $_.Value) { } # Skip the empty values
-                elseif ($_.Name -eq "Series") { } # We've already determined series above.
+                # Skip the empty values, they'll cause errors
+                if ($null -eq $_.Value) {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $($_.Name)'s value is null... skipping"
+                }
+                elseif ("" -eq $_.Value) {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $($_.Name)'s value is empty string... skipping"
+                }
+
+                # We've already determined series above,
+                elseif ($_.Name -eq "Series") { }
+
                 # If its a string, we'll treat it as a tag
                 elseif ($_.Value -is [string]) {
                     # So, this is a little tricky, Thank you GoDaddy certs...
                     $SeriesString += ",$($_.Name)=$($_.Value.trim() -replace '/', '\/' -replace '=', '\=')"
                 }
+
+                # Handles Integers, Floatin Points and Booleans just fine. Hopefully the ToString() of
+                # whatever value you plays well.
                 else {
                     if ( $ParamString -eq "" ) { $ParamString = "$($_.Name)=$($_.Value)" }
                     else { $ParamString += ",$($_.Name)=$($_.Value)" }
