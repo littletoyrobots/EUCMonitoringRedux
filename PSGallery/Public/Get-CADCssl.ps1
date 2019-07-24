@@ -1,4 +1,27 @@
 function Get-CADCssl {
+    <#
+    .SYNOPSIS
+    Gets basic stats on Citrix ADC gateway ssl from NITRO
+
+    .DESCRIPTION
+    Gets basic stats on Citrix ADC gateway ssl from NITRO by polling
+    $ADC/nitro/v1/stats/ssl and returning useful values.
+
+    .PARAMETER ADC
+    IP or DNS name of Citrix ADC Gateway
+
+    .PARAMETER Credential
+    ADC Credentials
+
+    .PARAMETER ErrorLogPath
+    Path to a file where any errors can be appended to
+
+    .EXAMPLE
+    Get-CADCssl -ADC 10.1.2.3 -Credential (Get-Credential) -ErrorLogPath "C:\Monitoring\ADC-Errors.txt"
+
+    .NOTES
+
+    #>
     [CmdletBinding()]
     param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
