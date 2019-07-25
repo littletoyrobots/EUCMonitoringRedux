@@ -62,26 +62,24 @@ function Get-RDSLicense {
             try {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting all available RDS licenses from $Computer"
 
+                # Check to see if we need to revert to Dcom for communication
                 [regex]$rx = "\d\.\d$"
                 $data = test-wsman $Computer -ErrorAction STOP
                 if ($rx.match($data.ProductVersion).value -eq '3.0') {
-                    $NeedCimOpts = $true
+                    $Session = New-CimSession -ComputerName $ComputerName
+                }
+                else {
+                    # We're older and need to revert to dcom
                     $opt = New-CimSessionOption -Protocol Dcom
                     $Session = New-CimSession -ComputerName $Computer -SessionOption $opt
                 }
 
                 if (($null -eq $LicenseType) -or ("" -eq $LicenseType)) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Querying available licenses"
-                    if ($NeedCimOpts) {
-                        $LicenseType = $Session | Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ErrorAction STOP | `
-                            Where-Object TypeAndModel -NotLike "Built-in TS Per Device Cal" | `
-                            Select-Object -ExpandProperty TypeAndModel -Unique -ErrorAction Stop
-                    }
-                    else {
-                        $LicenseType = Get-CimInstance -ClassName  Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
-                            Where-Object TypeAndModel -NotLike "Built-in TS Per Device Cal" | `
-                            Select-Object -ExpandProperty TypeAndModel -Unique -ErrorAction Stop
-                    }
+
+                    $LicenseType = $Session | Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ErrorAction STOP | `
+                        Where-Object TypeAndModel -NotLike "Built-in TS Per Device Cal" | `
+                        Select-Object -ExpandProperty TypeAndModel -Unique -ErrorAction Stop
                 }
 
                 foreach ($Type in $LicenseType) {
@@ -90,16 +88,11 @@ function Get-RDSLicense {
                     $TotalLicenses = 0
 
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting license type $Type"
-                    if ($NeedCimOpts) {
-                        $LicResults = $Session | Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ErrorAction Stop | `
-                            Where-Object TypeAndModel -eq $Type | `
-                            Select-Object TypeAndModel, IssuedLicenses, AvailableLicenses, TotalLicenses -ErrorAction Stop
-                    }
-                    else {
-                        $LicResults = Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ComputerName $Computer -ErrorAction Stop | `
-                            Where-Object TypeAndModel -eq $Type | `
-                            Select-Object TypeAndModel, IssuedLicenses, AvailableLicenses, TotalLicenses -ErrorAction Stop
-                    }
+
+                    $LicResults = $Session | Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ErrorAction Stop | `
+                        Where-Object TypeAndModel -eq $Type | `
+                        Select-Object TypeAndModel, IssuedLicenses, AvailableLicenses, TotalLicenses -ErrorAction Stop
+
                     foreach ($License in $LicResults) {
                         $TotalIssued += $License.IssuedLicenses
                         $TotalAvailable += $License.AvailableLicenses
