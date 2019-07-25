@@ -1,39 +1,49 @@
 Function Get-CVADworkload {
     <#
     .SYNOPSIS
-    Short description
+    Get basic stats on Citrix Virtual Apps and Desktops
 
     .DESCRIPTION
-    Long description
+    Get basic stats on Citrix Virtual Apps and Desktops, including machine count, registration state totals,
+    session totals, power state totals, etc.  The specified
 
     .PARAMETER Broker
-    Parameter description
-
-    .PARAMETER Workload
-    Parameter description
+    These are the Citrix VAD Brokers you want to test against. These are the delivery controllers, or cloud
+    connectors, typically invoked in the Citrix PSSnapin as AdminAddress.
 
     .PARAMETER SiteName
-    Parameter description
+    Allows you to specify the name of the Sites you want queried.  If not specified, will query
+    against all Sites for the broker
 
     .PARAMETER ZoneName
-    Parameter description
+    Allows you to specify the name of the Zones you want queried.  If not specified, will query
+    against all Zones for the broker
 
     .PARAMETER CatalogName
-    Parameter description
+    Allows you to specify the name of the Machine Catalogs you want queried.  If not specified, will query
+    against all catalogs for the broker
 
-    .PARAMETER DeliveryGroupName
-    Parameter description
+    .PARAMETER DesktopGroupName
+    Also known as DeliveryGroup, this specifies the group of machines
+
+    .PARAMETER SingleSession
+    Single session delivery groups, usually desktops
+
+    .PARAMETER MultiSession
+    Return values for multi session delivery groups, usually applications
+
+    .PARAMETER All
+    Return values for all session types.
 
     .EXAMPLE
-    An example
+    Get-CVADworkload -Broker "ddc1.domain.com", "ddc2.domain.com" -MultiSession -ErrorLog "errors.txt"
+
+    .Example
+    Get-CVADworkload -Broker "ddc1.domain.com" -All -Verbose
 
     .NOTES
-    Current Version:    1.0
-    Creation Date:      2019/01/01
-
-    .CHANGE CONTROL
-    Name                 Version         Date            Change Detail
-    Adam Yarborough      1.0             2019/01/01      Function Creation
+    Need to have the permissions to run Get-BrokerSite, Get-BrokerMachine, Get-BrokerDesktopGroup, and
+    Get-BrokerSession against the brokers you intend to query
     #>
 
     [cmdletbinding()]
@@ -61,7 +71,7 @@ Function Get-CVADworkload {
         [Alias("Server")]
         [switch]$MultiSession,
 
-        [switch]$All, # AllSessionsTypes, AllTests
+        [switch]$All, # All Sessions Types
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
@@ -94,6 +104,7 @@ Function Get-CVADworkload {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Previous collection success, skipping $AdminAddress"
                     continue
                 }
+
                 # If we can't ping, skip and go to next broker.
                 if (-Not (Test-Connection -ComputerName $AdminAddress -Count 1 -Quiet -ErrorAction SilentlyContinue)) {
                     if ($ErrorLog) {
@@ -105,7 +116,7 @@ Function Get-CVADworkload {
                     continue
                 }
 
-
+                # Fetch the basic values if not previously specified.
                 if ($null -eq $SiteName) { $SiteName = (Get-BrokerSite -AdminAddress $AdminAddress).Name }
                 if ($null -eq $ZoneName) { $ZoneName = (Get-ConfigZone -AdminAddress $AdminAddress).Name }
                 if ($null -eq $DesktopGroupName) {
@@ -116,23 +127,30 @@ Function Get-CVADworkload {
                     if ($MultiSession -or $All) {
                         $SessionSupport += "MultiSession"
                     }
-                    if ($null -ne $SessionSupport) {
+
+                    # Get the Desktop Groups for the specified Session Support
+                    if (($null -ne $SessionSupport) -and ("" -ne $SessionSupport)) {
                         $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
                     }
+
+                    # If not specified, default go getting both SingleSession and MultiSession
                     else {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No specified session support.  Assuming all."
-                        $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport SingleSession, Multisession ).Name
+                        $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport "SingleSession", "Multisession" ).Name
                     }
                 }
 
                 # Realistically, this will generally just iterate once.
                 foreach ($Site in $SiteName) {
                     foreach ($Zone in $ZoneName) {
+
+                        # If the Catalogs aren't specified by parameters, grab all Catalogs
                         if ($null -eq $CatalogName) {
                             $CatalogName = (Get-BrokerCatalog -AdminAddress $AdminAddress -ZoneName $Zone).Name
                         }
 
                         foreach ($CatName in $CatalogName) {
+                            # We iterate the known desktop groups for each catalog since you can have multiple
                             foreach ($DesktopGroup in $DesktopGroupName) {
                                 # Grab all the machines associated with the DesktopGroup.
                                 $DG = Get-BrokerDesktopGroup -AdminAddress $AdminAddress -Name $DesktopGroup
