@@ -151,21 +151,37 @@ function Test-EUCServer {
                     }
 
                     # Windows Services
-                    foreach ($Service in $Services) {
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer Service $Service"
-
-                        $SvcStatus = (Get-Service -ErrorAction SilentlyContinue -ComputerName $Computer -Name $Service).Status
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $SvcStatus"
-                        if ("Running" -eq $SvcStatus) {
-                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
-                            $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 1
+                    # We previously used Get-Service, but it ended up being too slow.  Now, after confirming
+                    # that services need to be checked, we create a CimSession and check against that.
+                    if ($null -ne $Services) {
+                        [regex]$rx = "\d\.\d$"
+                        $data = test-wsman $Computer -ErrorAction STOP
+                        if ($rx.match($data.ProductVersion).value -eq '3.0') {
+                            $Session = New-CimSession -ComputerName $ComputerName
                         }
                         else {
-                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
-                            $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 0
-                            $Result.Status = "DEGRADED"
-                            $Result.State = 1
-                            $ErrString += "$Service "
+                            # We're older and need to revert to dcom
+                            $opt = New-CimSessionOption -Protocol Dcom
+                            $Session = New-CimSession -ComputerName $Computer -SessionOption $opt
+                        }
+
+                        foreach ($Service in $Services) {
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Testing $Computer Service $Service"
+
+                            # $SvcStatus = (Get-Service -ErrorAction SilentlyContinue -ComputerName $Computer -Name $Service).Status
+                            $SvcStatus = ($Session | Get-CimInstance win32_service -Filter "Name = `"$Service`"").State
+                            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $SvcStatus"
+                            if ("Running" -eq $SvcStatus) {
+                                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Success"
+                                $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 1
+                            }
+                            else {
+                                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
+                                $Result | Add-Member -MemberType NoteProperty -Name "$Service" -Value 0
+                                $Result.Status = "DEGRADED"
+                                $Result.State = 1
+                                $ErrString += "$Service "
+                            }
                         }
                     }
 
