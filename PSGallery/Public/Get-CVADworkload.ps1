@@ -8,38 +8,45 @@ Function Get-CVADworkload {
     session totals, power state totals, etc.  The specified
 
     .PARAMETER Broker
+    Alias: CloudConnector, DeliveryController, AdminAddress
     These are the Citrix VAD Brokers you want to test against. These are the delivery controllers, or cloud
     connectors, typically invoked in the Citrix PSSnapin as AdminAddress.
 
     .PARAMETER SiteName
+    Alias: Site
     Allows you to specify the name of the Sites you want queried.  If not specified, will query
-    against all Sites for the broker
+    against all Sites for the broker.
 
     .PARAMETER ZoneName
+    Alias: Zone
     Allows you to specify the name of the Zones you want queried.  If not specified, will query
     against all Zones for the broker
 
     .PARAMETER CatalogName
+    Alias: Catalog
     Allows you to specify the name of the Machine Catalogs you want queried.  If not specified, will query
     against all catalogs for the broker
 
     .PARAMETER DesktopGroupName
+    Alias: DeliveryGroup
     Also known as DeliveryGroup, this specifies the group of machines
 
     .PARAMETER SingleSession
+    Alias: Desktop
     Single session delivery groups, usually desktops
 
     .PARAMETER MultiSession
+    Alias: Server
     Return values for multi session delivery groups, usually applications
 
-    .PARAMETER All
+    .PARAMETER AllSessionTypes
     Return values for all session types.
 
     .EXAMPLE
     Get-CVADworkload -Broker "ddc1.domain.com", "ddc2.domain.com" -MultiSession -ErrorLog "errors.txt"
 
     .Example
-    Get-CVADworkload -Broker "ddc1.domain.com" -All -Verbose
+    Get-CVADworkload -Broker "ddc1.domain.com" -AllSessionTypes -Verbose
 
     .NOTES
     Need to have the permissions to run Get-BrokerSite, Get-BrokerMachine, Get-BrokerDesktopGroup, and
@@ -50,7 +57,7 @@ Function Get-CVADworkload {
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
-        [Alias("CloudConnector", "DeliveryController")]
+        [Alias("CloudConnector", "DeliveryController", "AdminAddress")]
         [string[]]$Broker,
 
         [Alias("Site")]
@@ -71,7 +78,7 @@ Function Get-CVADworkload {
         [Alias("Server")]
         [switch]$MultiSession,
 
-        [switch]$All, # All Sessions Types
+        [switch]$AllSessionTypes, # All Sessions Types
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
@@ -97,7 +104,10 @@ Function Get-CVADworkload {
         $ResultCount = 0
 
         try {
+            # Once we get a successful set of data, we'll set this and continue forward so that we don't
+            # return redundant information.
             $PrevSuccess = $false
+
             foreach ($AdminAddress in $Broker) {
                 # No need to repeat a first run
                 if ($PrevSuccess) {
@@ -105,7 +115,8 @@ Function Get-CVADworkload {
                     continue
                 }
 
-                # If we can't ping, skip and go to next broker.
+                # If we can't ping, skip and go to next broker.  WMI invocation usually a better test, but
+                # this is faster.
                 if (-Not (Test-Connection -ComputerName $AdminAddress -Count 1 -Quiet -ErrorAction SilentlyContinue)) {
                     if ($ErrorLog) {
                         Write-EUCError -Path $ErrorLog "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Connection Failure to Broker: $AdminAddress"
@@ -119,12 +130,14 @@ Function Get-CVADworkload {
                 # Fetch the basic values if not previously specified.
                 if ($null -eq $SiteName) { $SiteName = (Get-BrokerSite -AdminAddress $AdminAddress).Name }
                 if ($null -eq $ZoneName) { $ZoneName = (Get-ConfigZone -AdminAddress $AdminAddress).Name }
+
+                # We want to
                 if ($null -eq $DesktopGroupName) {
                     $SessionSupport = @()
-                    if ($SingleSession -or $All) {
+                    if ($SingleSession -or $AllSessionTypes) {
                         $SessionSupport += "SingleSession"
                     }
-                    if ($MultiSession -or $All) {
+                    if ($MultiSession -or $AllSessionTypes) {
                         $SessionSupport += "MultiSession"
                     }
 
@@ -140,8 +153,10 @@ Function Get-CVADworkload {
                     }
                 }
 
-                # Realistically, this will generally just iterate once.
+                # In theory, trying each permutation
+                # Realistically, the Site loop will generally just iterate once.
                 foreach ($Site in $SiteName) {
+
                     foreach ($Zone in $ZoneName) {
 
                         # If the Catalogs aren't specified by parameters, grab all Catalogs
@@ -150,9 +165,11 @@ Function Get-CVADworkload {
                         }
 
                         foreach ($CatName in $CatalogName) {
+
                             # We iterate the known desktop groups for each catalog since you can have multiple
                             foreach ($DesktopGroup in $DesktopGroupName) {
-                                # Grab all the machines associated with the DesktopGroup.
+                                # Grab all the machines associated with the DesktopGroup,
+                                # for this Zone and Catalog
                                 $DG = Get-BrokerDesktopGroup -AdminAddress $AdminAddress -Name $DesktopGroup
                                 $BMParams = @{
                                     AdminAddress     = $AdminAddress;
