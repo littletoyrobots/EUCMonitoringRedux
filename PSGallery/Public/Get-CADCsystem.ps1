@@ -8,12 +8,14 @@ function Get-CADCsystem {
     $ADC/nitro/v1/stats/system and returning useful values.
 
     .PARAMETER ADC
+    Alias: NSIP
     IP or DNS name of Citrix ADC Gateway
 
     .PARAMETER Credential
     ADC Credentials
 
     .PARAMETER ErrorLogPath
+    Alias: LogPath
     Path to a file where any errors can be appended to
 
     .EXAMPLE
