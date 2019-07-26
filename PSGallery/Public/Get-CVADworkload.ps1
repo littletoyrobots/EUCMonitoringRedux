@@ -27,8 +27,8 @@ Function Get-CVADworkload {
     Allows you to specify the name of the Machine Catalogs you want queried.  If not specified, will query
     against all catalogs for the broker
 
-    .PARAMETER DesktopGroupName
-    Alias: DeliveryGroup
+    .PARAMETER DeliveryGroupName
+    Alias: DesktopGroup, DeliveryGroup
     Also known as DeliveryGroup, this specifies the group of machines
 
     .PARAMETER SingleSession
@@ -69,8 +69,8 @@ Function Get-CVADworkload {
         [Alias("Zone")]
         [string[]]$ZoneName,
 
-        [Alias("DeliveryGroupName")]
-        [string[]]$DesktopGroupName,
+        [Alias("DesktopGroupName", "DeliveryGroup")]
+        [string[]]$DeliveryGroupName,
 
         [Alias("Catalog")]
         [string[]]$CatalogName,
@@ -135,7 +135,7 @@ Function Get-CVADworkload {
                 if ($null -eq $ZoneName) { $ZoneName = (Get-ConfigZone -AdminAddress $AdminAddress).Name }
 
                 # We want to default to everything unless otherwise specified
-                if ($null -eq $DesktopGroupName) {
+                if ($null -eq $DeliveryGroupName) {
                     $SessionSupport = @()
                     if ((-Not $SingleSession) -And (-Not $MultiSession)) {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No specified session support.  Assuming all."
@@ -148,7 +148,7 @@ Function Get-CVADworkload {
                         $SessionSupport += "MultiSession"
                     }
 
-                    $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
+                    $DeliveryGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
                 }
 
                 # In theory, trying each permutation
@@ -165,8 +165,8 @@ Function Get-CVADworkload {
                         foreach ($CatName in $CatalogName) {
 
                             # We iterate the known desktop groups for each catalog since you can have multiple
-                            foreach ($DesktopGroup in $DesktopGroupName) {
-                                # Grab all the machines associated with the DesktopGroup,
+                            foreach ($DesktopGroup in $DeliveryGroupName) {
+                                # Grab all the machines associated with the DeliveryGroup,
                                 # for this Zone and Catalog
                                 $DG = Get-BrokerDesktopGroup -AdminAddress $AdminAddress -Name $DesktopGroup
                                 $BMParams = @{

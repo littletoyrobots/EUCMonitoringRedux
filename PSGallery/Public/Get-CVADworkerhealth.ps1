@@ -27,8 +27,8 @@ Function Get-CVADworkerhealth {
     Allows you to specify the name of the Machine Catalogs you want queried.  If not specified, will query
     against all catalogs for the broker
 
-    .PARAMETER DesktopGroupName
-    Alias: DeliveryGroup
+    .PARAMETER DeliveryGroupName
+    Alias: DeliveryGroup, DesktopGroupName
     Also known as DeliveryGroup, this specifies the group of machines
 
     .PARAMETER SingleSession
@@ -86,8 +86,8 @@ Function Get-CVADworkerhealth {
         [Alias("Zone")]
         [string[]]$ZoneName,
 
-        [Alias("DeliveryGroupName")]
-        [string[]]$DesktopGroupName,
+        [Alias("DesktopGroupName", "DeliveryGroup")]
+        [string[]]$DeliveryGroupName,
 
         [Alias("Catalog")]
         [string[]]$CatalogName,
@@ -161,7 +161,7 @@ Function Get-CVADworkerhealth {
                 if ($null -eq $ZoneName) { $ZoneName = (Get-ConfigZone -AdminAddress $AdminAddress).Name }
 
                 # We want to default to everything unless otherwise specified
-                if ($null -eq $DesktopGroupName) {
+                if ($null -eq $DeliveryGroupName) {
                     $SessionSupport = @()
                     # Default behavior is to both.
                     if ((-Not $SingleSession) -And (-Not $MultiSession)) {
@@ -174,7 +174,7 @@ Function Get-CVADworkerhealth {
                     if ($MultiSession -or $AllSessionTypes) {
                         $SessionSupport += "MultiSession"
                     }
-                    $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
+                    $DeliveryGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
                 }
 
                 # Realistically, this will generally just iterate once.
@@ -187,7 +187,7 @@ Function Get-CVADworkerhealth {
                         }
 
                         foreach ($CatName in $CatalogName) {
-                            foreach ($DesktopGroup in $DesktopGroupName) {
+                            foreach ($DesktopGroup in $DeliveryGroupName) {
                                 $DG = Get-BrokerDesktopGroup -AdminAddress $AdminAddress -Name $DesktopGroup
                                 $Params = @{
                                     AdminAddress     = $AdminAddress;
