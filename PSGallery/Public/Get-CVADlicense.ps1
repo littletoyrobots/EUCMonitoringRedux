@@ -24,7 +24,7 @@ Function Get-CVADlicense {
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
-        [string]$ErrorLogPath
+        [string]$ErrorLog
     )
 
     Begin {
@@ -85,8 +85,8 @@ Function Get-CVADlicense {
 
             }
             catch [System.InvalidOperationException] {
-                if ($ErrorLogPath) {
-                    Write-EUCError -Message "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message) - Ensure Citrix Licensing WMI service started" -Path $ErrorLogPath
+                if ($ErrorLog) {
+                    Write-EUCError -Message "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message) - Ensure Citrix Licensing WMI service started" -Path $ErrorLog
                 }
                 else {
                     Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message) - Ensure Citrix Licensing WMI service started"
@@ -94,8 +94,8 @@ Function Get-CVADlicense {
                 throw $_
             }
             catch {
-                if ($ErrorLogPath) {
-                    Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+                if ($ErrorLog) {
+                    Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
                 }
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

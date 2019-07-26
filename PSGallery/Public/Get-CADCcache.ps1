@@ -14,12 +14,12 @@ function Get-CADCcache {
     .PARAMETER Credential
     ADC Credentials
 
-    .PARAMETER ErrorLogPath
+    .PARAMETER ErrorLog
     Alias: LogPath
     Path to a file where any errors can be appended to
 
     .EXAMPLE
-    Get-CADCcache -ADC 10.1.2.3 -Credential (Get-Credential) -ErrorLogPath "C:\Monitoring\ADC-Errors.txt"
+    Get-CADCcache -ADC 10.1.2.3 -Credential (Get-Credential) -ErrorLog "C:\Monitoring\ADC-Errors.txt"
 
     .NOTES
 
@@ -38,7 +38,7 @@ function Get-CADCcache {
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
-        [string]$ErrorLogPath
+        [string]$ErrorLog
     )
 
     Begin {
@@ -101,8 +101,8 @@ function Get-CADCcache {
             }
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

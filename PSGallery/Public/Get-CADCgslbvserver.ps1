@@ -14,12 +14,12 @@ function Get-CADCgslbvserver {
     .PARAMETER Credential
     ADC Credentials
 
-    .PARAMETER ErrorLogPath
+    .PARAMETER ErrorLog
     Alias: LogPath
     Path to a file where any errors can be appended to
 
     .EXAMPLE
-    Get-CADCgslbvserver -ADC 10.1.2.3 -Credential (Get-Credential) -ErrorLogPath "C:\Monitoring\ADC-Errors.txt"
+    Get-CADCgslbvserver -ADC 10.1.2.3 -Credential (Get-Credential) -ErrorLog "C:\Monitoring\ADC-Errors.txt"
 
     .NOTES
 
@@ -37,7 +37,7 @@ function Get-CADCgslbvserver {
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
-        [string]$ErrorLogPath
+        [string]$ErrorLog
     )
     Begin {
         # Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Starting session to $ADC"
@@ -80,8 +80,8 @@ function Get-CADCgslbvserver {
                 if ($Health -eq 100) { $Status = 2 }
                 elseif ($Health -gt 0) {
                     $Status = 1
-                    if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DEGRADED" -Path $ErrorLogPath
+                    if ($ErrorLog) {
+                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DEGRADED" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DEGRADED"
@@ -89,8 +89,8 @@ function Get-CADCgslbvserver {
                 }
                 else {
                     $Status = 0
-                    if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DOWN" -Path $ErrorLogPath
+                    if ($ErrorLog) {
+                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DOWN" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CitrixADCgslbvserver] $Name - DOWN"
@@ -123,8 +123,8 @@ function Get-CADCgslbvserver {
             }
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

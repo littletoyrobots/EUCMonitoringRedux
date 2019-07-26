@@ -1,8 +1,83 @@
 Function Get-CVADworkerhealth {
+    <#
+    .SYNOPSIS
+    Gets basic stats on worker health of Citrix Virtual Apps and Desktops
+
+    .DESCRIPTION
+    Get basic stats on Citrix Virtual Apps and Desktops, including Boot Threshold, Load Threshold, Disk Space
+    and Disk Queue thresholds, connectivity errors, etc.
+
+    .PARAMETER Broker
+    Alias: CloudConnector, DeliveryController, AdminAddress
+    These are the Citrix VAD Brokers you want to test against. These are the delivery controllers, or cloud
+    connectors, typically invoked in the Citrix PSSnapin as AdminAddress.
+
+    .PARAMETER SiteName
+    Alias: Site
+    Allows you to specify the name of the Sites you want queried.  If not specified, will query
+    against all Sites for the broker.
+
+    .PARAMETER ZoneName
+    Alias: Zone
+    Allows you to specify the name of the Zones you want queried.  If not specified, will query
+    against all Zones for the broker
+
+    .PARAMETER CatalogName
+    Alias: Catalog
+    Allows you to specify the name of the Machine Catalogs you want queried.  If not specified, will query
+    against all catalogs for the broker
+
+    .PARAMETER DesktopGroupName
+    Alias: DeliveryGroup
+    Also known as DeliveryGroup, this specifies the group of machines
+
+    .PARAMETER SingleSession
+    Alias: Desktop
+    Single session delivery groups, usually desktops
+
+    .PARAMETER MultiSession
+    Alias: Server
+    Return values for multi session delivery groups, usually applications
+
+    .PARAMETER ActiveOnly
+    Only test machines that are not in maintenance mode.
+
+    .PARAMETER AllSessionTypes
+    Return values for all session types.
+
+    .PARAMETER BootThreshold
+    Number of days since machine boot.  If the boot time of a machine is greater than this
+    value, it will be considered to have failed this health check
+
+    .PARAMETER LoadThreshold
+    Machine Load threshold, from 0 - 10000.  If the CVAD LoadIndex of a machines is greater than this value,
+    it will be considered to have failed this health check.
+
+    .PARAMETER DiskSpaceThreshold
+    Percentage used of system drive.  If the used percentage for a system drive of a machine is greater than
+    this value, it will be considered to have failed this health check
+
+    .PARAMETER DiskQueueThreshold
+    Percentage used of system drive.  If the used percentage for a system drive of a machine is greater than
+    this value, it will be considered to have failed this health check
+
+    .PARAMETER ErrorLog
+    Parameter description
+
+    .EXAMPLE
+    Get-CVADworkerhealth -A
+
+    .NOTES
+    Need to have the permissions to run Get-BrokerSite, Get-BrokerMachine, Get-BrokerDesktopGroup against
+    Delivery Controllers you intend to query
+    Need to have the permissions to run Get-CimInstance against all endpoints you intend to query.
+    #>
+
     [cmdletbinding()]
     Param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
+        [Alias("CloudConnector", "DeliveryController", "AdminAddress")]
         [string[]]$Broker,
 
         [Alias("Site")]
@@ -25,8 +100,10 @@ Function Get-CVADworkerhealth {
 
         [switch]$ActiveOnly,
 
+        [switch]$AllSessionTypes,
+
         # Tests
-        [switch]$ConnectivityTests,
+        #    [switch]$ConnectivityTests,
 
         [int]$BootThreshold,
 
@@ -36,7 +113,7 @@ Function Get-CVADworkerhealth {
 
         [int]$DiskQueueThreshold,
 
-        [switch]$All, # AllSessionsTypes, AllTests
+        #    [switch]$AllSessionTypes, # AllSessionsTypes, AllTests
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
@@ -79,17 +156,22 @@ Function Get-CVADworkerhealth {
                     continue
                 }
 
+                # Fetch the basic values if not previously specified.
                 if ($null -eq $SiteName) { $SiteName = (Get-BrokerSite -AdminAddress $AdminAddress).Name }
                 if ($null -eq $ZoneName) { $ZoneName = (Get-ConfigZone -AdminAddress $AdminAddress).Name }
 
+                # We want to default to everything unless otherwise specified
                 if ($null -eq $DesktopGroupName) {
                     $SessionSupport = @()
                     # Default behavior is to both.
-                    if ((-Not $SingleSession) -And (-Not $MultiSession)) { $All = $true }
-                    if ($SingleSession -or $All) {
+                    if ((-Not $SingleSession) -And (-Not $MultiSession)) {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No specified session support.  Assuming all."
+                        $AllSessionTypes = $true
+                    }
+                    if ($SingleSession -or $AllSessionTypes) {
                         $SessionSupport += "SingleSession"
                     }
-                    if ($MultiSession -or $All) {
+                    if ($MultiSession -or $AllSessionTypes) {
                         $SessionSupport += "MultiSession"
                     }
                     $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
@@ -159,8 +241,8 @@ Function Get-CVADworkerhealth {
             }
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

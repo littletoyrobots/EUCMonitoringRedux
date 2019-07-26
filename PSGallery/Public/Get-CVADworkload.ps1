@@ -42,6 +42,9 @@ Function Get-CVADworkload {
     .PARAMETER AllSessionTypes
     Return values for all session types.
 
+    .PARAMETER ErrorLog
+    Alias: LogPath
+
     .EXAMPLE
     Get-CVADworkload -Broker "ddc1.domain.com", "ddc2.domain.com" -MultiSession -ErrorLog "errors.txt"
 
@@ -131,9 +134,13 @@ Function Get-CVADworkload {
                 if ($null -eq $SiteName) { $SiteName = (Get-BrokerSite -AdminAddress $AdminAddress).Name }
                 if ($null -eq $ZoneName) { $ZoneName = (Get-ConfigZone -AdminAddress $AdminAddress).Name }
 
-                # We want to
+                # We want to default to everything unless otherwise specified
                 if ($null -eq $DesktopGroupName) {
                     $SessionSupport = @()
+                    if ((-Not $SingleSession) -And (-Not $MultiSession)) {
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No specified session support.  Assuming all."
+                        $AllSessionTypes = $true
+                    }
                     if ($SingleSession -or $AllSessionTypes) {
                         $SessionSupport += "SingleSession"
                     }
@@ -141,16 +148,7 @@ Function Get-CVADworkload {
                         $SessionSupport += "MultiSession"
                     }
 
-                    # Get the Desktop Groups for the specified Session Support
-                    if (($null -ne $SessionSupport) -and ("" -ne $SessionSupport)) {
-                        $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
-                    }
-
-                    # If not specified, default go getting both SingleSession and MultiSession
-                    else {
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No specified session support.  Assuming all."
-                        $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport "SingleSession", "Multisession" ).Name
-                    }
+                    $DesktopGroupName += (Get-BrokerDesktopGroup -AdminAddress $AdminAddress -SessionSupport $SessionSupport).Name
                 }
 
                 # In theory, trying each permutation
@@ -268,8 +266,8 @@ Function Get-CVADworkload {
             }
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

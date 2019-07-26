@@ -14,12 +14,12 @@ function Get-CADCvaluetemplate {
     .PARAMETER Credential
     ADC Credentials
 
-    .PARAMETER ErrorLogPath
+    .PARAMETER ErrorLog
     Alias: LogPath
     Path to a file where any errors can be appended to
 
     .EXAMPLE
-    Get-CADCvaluetemplate -ADC 10.1.2.3 -Credential (Get-Credential) -ErrorLogPath "C:\Monitoring\ADC-Errors.txt"
+    Get-CADCvaluetemplate -ADC 10.1.2.3 -Credential (Get-Credential) -ErrorLog "C:\Monitoring\ADC-Errors.txt"
 
     .NOTES
 
@@ -37,7 +37,7 @@ function Get-CADCvaluetemplate {
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
-        [string]$ErrorLogPath
+        [string]$ErrorLog
     )
 
     Begin {
@@ -68,8 +68,8 @@ function Get-CADCvaluetemplate {
                 if ($Health -eq 100) { $Status = 2 }
                 elseif ($Health -gt 0) {
                     $Status = 1
-                    if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $Name DEGRADED" -Path $ErrorLogPath
+                    if ($ErrorLog) {
+                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $Name DEGRADED" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CitrixADCcsvserver] $Name DEGRADED"
@@ -77,8 +77,8 @@ function Get-CADCvaluetemplate {
                 }
                 else {
                     $Status = 0
-                    if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $Name DOWN" -Path $ErrorLogPath
+                    if ($ErrorLog) {
+                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $Name DOWN" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CitrixADCcsvserver] $Name DOWN"
@@ -99,8 +99,8 @@ function Get-CADCvaluetemplate {
             }
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
