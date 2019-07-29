@@ -29,10 +29,10 @@ function Install-VisualizationSetup {
     param (
         [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$MonitoringPath = "C:\Monitoring",
         #    [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$DashboardPath = (Join-Path -Path (get-location).Path -ChildPath "Dashboard"),
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$GrafanaVersion = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.4.windows-amd64.zip",
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$InfluxVersion = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.6_windows_amd64.zip",
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$NSSMVersion = "https://nssm.cc/release/nssm-2.24.zip",
-        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.0_windows_amd64.zip"
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$GrafanaVersion ,
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$InfluxVersion ,
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$NSSMVersion,
+        [parameter(Mandatory = $false, ValueFromPipeline = $true)][string]$TelegrafVersion
     )
 
     begin {
@@ -173,6 +173,9 @@ providers:
         stop-service "EUCMonitoring-grafana-server"
         start-service "EUCMonitoring-grafana-server"
         <#
+        This commented section no longer needed for installation since grafana now using provisioning
+        files.  Keeping in case its useful for upgrade steps later.
+
         Write-Output "[$(Get-Date)] Setting up Grafana..."
         start-sleep 10
 
@@ -273,16 +276,6 @@ providers:
         Get-Service EUCMonitoring* | Select-Object Status, Name, StartType
         Write-Output "`nTo follow up, configure Telegraf instance in $MonitoringPath as described in Installation.md by testing"
         Write-Output "the input.exec scripts, start the service as appopriate user and then inport the dashboards to grafana."
-
-        #Write-Output "Please edit the json config template, setting the Influx enabled to true amongst your other changes"
-        #Write-Output "and save as euc-monitoring.json.`n"
-        #& "C:\Windows\System32\notepad.exe" $MonitoringPath\euc-monitoring.json
-
-        #Write-Output "After configuring, run Begin-EUCMonitoring under appropriate privs.  Each refresh cycle"
-        #Write-Output "it will upload to local influxdb as a single timestamp. You might want to invoke it like:"
-        #Write-Output "> $MonitoringPath\Begin-EUCMonitor.ps1 -MonitoringPath $MonitoringPath"
-        #Write-Output " - or - "
-        #Write-Output "> Set-Location $MonitoringPath; .\Begin-EUCMonitor.ps1"
     }
 
     end {
@@ -297,6 +290,6 @@ $Params = @{
     GrafanaVersion  = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.5.windows-amd64.zip"
     InfluxVersion   = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.7_windows_amd64.zip"
     NSSMVersion     = "https://nssm.cc/release/nssm-2.24.zip"
-    TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.2_windows_amd64.zip"
+    TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.3_windows_amd64.zip"
 }
 Install-VisualizationSetup @Params
