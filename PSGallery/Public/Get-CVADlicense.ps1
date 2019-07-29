@@ -52,7 +52,7 @@ Function Get-CVADlicense {
                 if (($null -eq $LicenseType) -or ("" -eq $LicenseType)) {
                     $LicenseType = "MPS", "XDT" # "MDT", "XDS" are deprecated.
                 }
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting all available XD licenses from $Computer"
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Getting all available Citrix licenses from $Computer"
                 $LicResults = Get-LicInventory -AdminAddress $Computer -CertHash $cert.CertHash
 
                 foreach ($Type in $LicenseType) {

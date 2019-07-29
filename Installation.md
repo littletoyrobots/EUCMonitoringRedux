@@ -5,7 +5,6 @@
 #### Citrix On-Premises
 
 - For Citrix Apps and Desktops, the location that you want to run this script from must have the XenDesktop Powershell SDK Installed. This is most easily installed by just installing Citrix Studio.
-- For Citrix Hypervisor, you must also install the XenServer SDK from the [XenServer](https://www.citrix.com/downloads/xenserver/product-software.html) download page.
 
 #### Citrix Cloud
 
@@ -31,7 +30,7 @@ NOTE: In the provided scripts **Broker** or **CloudConnector** should be set as 
 
 RDS / VMware support will be forthcoming
 
-## Method 1 - The local try-it-out way.
+## Method 1 - The local try-it-out method
 
 This is somewhat interactive until the initial Grafana user config is able to be bypassed.
 
@@ -42,7 +41,7 @@ NOTE: This will install local instances of influxdb, grafana, and telegraf agent
 1. Right-click the zip -> Properties -> Unblock.
 1. Right-click the zip-> Extract All and extract directly to your install directory, `C:\Monitoring`. It should leave a `C:\Monitoring\EUCMonitoringRedux-master` folder.
 
-   Note: If you need a local-only (no internet access) or different directory for the install, edit the params in EUCMonitoringRedux\Dashboard\Install-VisualizationSetup.ps1 at the bottom to point to the paths of the appropriate installer zips. Else, the defaults will fetch the required software for you. If local-only, you might get error messages about grafana plugin installation and some dashboards might not display correctly.
+   Note: If you need a local-only (no internet access) or different directory for the install, edit the params in EUCMonitoringRedux\Config\Install-VisualizationSetup.ps1 at the bottom to point to the paths of the appropriate installer zips. Else, the defaults will fetch the required software for you. If local-only, you might get error messages about grafana plugin installation and some dashboards might not display correctly.
 
 1. In powershell, running as Administrator,
 
@@ -50,9 +49,6 @@ NOTE: This will install local instances of influxdb, grafana, and telegraf agent
    set-location C:\Monitoring\EUCMonitoringRedux-master\Dashboard
    .\Install-VisualizationSetup.ps1
    ```
-
-1. The installer will open a browser instance where you must change your password for the Grafana instance. The default credentials are **admin** / **admin**
-1. Put your new admin password in the credential box popped up by the script.
 
 ### Configure Telegraf
 
@@ -77,17 +73,13 @@ Telegraf will run powershell scripts for you and push the data straight into you
 1. Set the telegraf service Log On to a user with appropriate permissions to run the scripts. Read-Only administrator role should be fine.
 1. Start the EUCMonitoring-telegraf service.
 
-### Load the dashboards into Grafana
+### Log into Grafana
 
 NOTE: As this grows, more scripts and dashboards will be created. There might be one big easy script eventually, or a json fed script that calls the smaller functions, but for now, we're starting small.
 
-1. When the testing is complete, return to your browser window (or browse to `http://localhost:3000`) and hovering over the left panel, select `Dashboards` -> `Manage`
-1. On the right side, click `Import`
-1. Click `Upload .json File` and browse to your `EUCMonitoringRedux-master\Dashboard` folder and pick `CADC-Overview.json`
-1. Where you see `Select a InfluxDB data source` select the drop down and select EUCMonitoring
-1. Click Import
-1. Repeat the process for `CVAD-Overview.json` or any subsequent dashboards you're interested in.
-1. Proceed to configure the scripts invoked by Telegraf
+1. When the testing is complete, browse to `http://localhost:3000`
+1. The initial login will be username: `admin` password: `admin`, and you'll be prompted to change it. Please do.
+1. After login, at the top of the page, there will be a drop down where you can select the dashboards you wish to see.
 
 ### Uninstall
 
@@ -102,6 +94,7 @@ set-location Path\to\EUCMonitoringRedux\Dashboard
 
 ## Method 2 - Setup environment for long term
 
+1. Install the module. It will soon be available in the PSgallery, but until then, you can create an EUCMonitoringRedux folder in `C:\program files\WindowsPowerShell\Modules\` and copy the PSGallery directory contents there. You'll need to update any scripts invoked by telegraf to import the module by name instead of by path.
 1. Install influxdb and grafana on dedicated host. There are many wonderful guides on this online, most involve a linux box somewhere. There are even [Raspberry Pi](https://www.influxdata.com/blog/running-the-tick-stack-on-a-raspberry-pi/) installs
 1. Create an EUCMonitoring database on influx
 
@@ -141,6 +134,10 @@ Look into authentication of Influx and Grafana. You can create custom dashboards
 You know your environment better than anyone else.
 
 Telegraf has an impressive list of [input plugins](https://github.com/influxdata/telegraf/tree/master/plugins/inputs) to collect data. You can easily collect whatever data your application exposes and then create a Grafana dashboard for it. For example, you could use [win_perf_counters](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/win_perf_counters) and Win10-1809+ / Server 2019's new [User Input Delay Counters](https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/rds-rdsh-performance-counters) to monitor specific applications that you care about, if you wanted to install the telegraf agent on your workers.
+
+### Create a playlist
+
+You can use playlists to cycle dashboards on TVs without user control. [Learn More](https://grafana.com/docs/reference/playlist/)
 
 ### Browse the Grafana Dashboards
 

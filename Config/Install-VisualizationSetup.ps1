@@ -132,20 +132,47 @@ function Install-VisualizationSetup {
         Write-Output "[$(Get-Date)] Creating EUCMonitoring database on InfluxDB"
         & $Influx\influx.exe -execute 'Create Database EUCMonitoring'
 
-
         # Import needed
         Write-Output "[$(Get-Date)] Importing Grafana plugins (will error if no net access)"
 
-        # need to import eventually grafana pages.
+        Write-Output "[$(Get-Date)] Setting up Grafana data sources and dashboards"
+
+
+        @"
+apiVersion: 1
+
+datasources:
+  - name: EUCMonitoring
+    type: influxdb
+    access: proxy
+    database: EUCMonitoring
+    url: http://localhost:8086
+"@ -replace '\\', '/' | Out-File (Join-Path $Grafana -ChildPath "conf\provisioning\datasources\EUCMonitoring.yaml" ) -Force -Encoding utf8
+
+        @"
+apiVersion: 1
+
+providers:
+  - name: "EUCMonitoring"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    editable: false
+    options:
+      path: $MonitoringPath/EUCMonitoringRedux-master/Dashboards
+"@ -replace '\\', '/' | Out-File (Join-Path $Grafana -ChildPath "conf\provisioning\dashboards\EUCMonitoring.yaml" ) -Force -Encoding utf8
+
         Push-Location $grafana\bin
         #    & .\Grafana-cli.exe plugins install btplc-status-dot-panel
         #    & .\Grafana-cli.exe plugins install vonage-status-panel
         #    & .\Grafana-cli.exe plugins install briangann-datatable-panel
         & .\Grafana-cli.exe plugins install grafana-piechart-panel
+
         Write-Output "[$(Get-Date)] Restarting Grafana Server"
         stop-service "EUCMonitoring-grafana-server"
         start-service "EUCMonitoring-grafana-server"
-
+        <#
         Write-Output "[$(Get-Date)] Setting up Grafana..."
         start-sleep 10
 
@@ -175,8 +202,8 @@ function Install-VisualizationSetup {
         }
 
         $Catch = Invoke-WebRequest -Uri $datasourceURI -Method Post -Body (Convertto-Json $Body) -Headers $headers -ContentType "application/json" -UseBasicParsing
-
-        Write-Output "[$(Get-Date)] Skipping Dashboard Import, please do manually after configuring Telegraf"
+#>
+        #       Write-Output "[$(Get-Date)] Skipping Dashboard Import, please do manually after configuring Telegraf"
 
         <#  For now, get the installer out, even if it requires some manual processes.
 
@@ -212,7 +239,7 @@ function Install-VisualizationSetup {
         $DashScripts = get-childitem . | Where-Object { $_.Name -match '.ps1' }
         # If this is empty, try the Dashboard/ folder
         if ($null -eq $DashScripts) {
-            $DashScriptPath = join-path $MonitoringPath -ChildPath "EUCMonitoringRedux-master/Dashboard"
+            $DashScriptPath = join-path $MonitoringPath -ChildPath "EUCMonitoringRedux-master/Config"
             Get-ChildItem $DashScriptPath | Where-Object { $_.Name -match '.ps1' }
         }
         foreach ($DashScript in $DashScripts) {

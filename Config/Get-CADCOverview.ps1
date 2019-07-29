@@ -10,7 +10,8 @@ $CitrixADCGateways = "10.1.2.3", "10.1.2.3"
 # I prefer readon-only users.  You don't really want to test run someone else's script with nsroot, do you?
 $ADCUser = "notnsroot"
 
-# Generate a credential for storage by running this as the account telegraf runs under.
+# Generate a credential for storage by running this as the account telegraf runs under.  You probably know a
+# better way of doing this. This is just an example.
 #> Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File -FilePath "C:\Monitoring\ADCcred.txt"
 
 $ADCPass = Get-Content -Path (Join-Path -Path $BaseDir -ChildPath "ADCcred.txt") | ConvertTo-SecureString

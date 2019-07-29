@@ -23,10 +23,11 @@ Navigate to "Identity and Access Management".
 Click "API Access".
 Enter a name for Secure Client and click Create Client.
 Once Secure Client is created, download Secure Client Credentials file (ie. downloaded to C:\Monitoring)
-Note the Customer ID located i
+Note the Customer ID located in this same page, this is case senstitive.
 #>
 # Set-XDCredentials -CustomerId "%Customer ID%" -SecureClientFile "C:\Monitoring\secureclient.csv" -ProfileType CloudApi -StoreAs "CloudAdmin"
 
+# Here's a poor man's log rotation.
 $WorkloadErrorLog = Join-Path $BaseDir -ChildPath "Workload-Errors.txt"
 $WorkloadErrorHistory = Join-Path -Path $BaseDir -ChildPath "Workload-ErrorHistory.txt"
 

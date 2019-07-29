@@ -1,3 +1,8 @@
+#
+#  Don't use this yet.
+#
+#
+
 # This is for single-site configuration.  Its easiest to copy this file and
 # edit the copy per site.   Do not comment out any of these lines.  We suggest
 # using fqdn for servernames, so any valid certificate checks associated will pass.
@@ -420,7 +425,9 @@ if ($null -ne $CVADCloudConnectors) {
         Series       = "CVADCC";
         ComputerName = $CCServers; # Example Value = "cc1", "cc2"
         Ports        = 80;
-        Services     = "CitrixWorkspaceCloudADProvider", "CitrixWorkspaceCloudAgentDiscovery", "CitrixWorkspaceCloudAgentLogger", "CitrixWorkspaceCloudAgentSystem", "CitrixWorkspaceCloudAgentWatchDog", "CitrixWorkspaceCloudCredentialProvider", "CitrixWorkspaceCloudWebRelayProvider", "CitrixConfigSyncService", "CitrixHighAvailabilityService", "Citrix NetScaler Cloud Gateway", "XaXdCloudProxy", "RemoteHCLServer", "SessionManagerProxy";
+        Services     = "CitrixWorkspaceCloudADProvider",
+        "CitrixWorkspaceCloudAgentDiscovery",
+        "CitrixWorkspaceCloudAgentLogger", "CitrixWorkspaceCloudAgentSystem", "CitrixWorkspaceCloudAgentWatchDog", "CitrixWorkspaceCloudCredentialProvider", "CitrixWorkspaceCloudWebRelayProvider", "CitrixConfigSyncService", "CitrixHighAvailabilityService", "Citrix NetScaler Cloud Gateway", "XaXdCloudProxy", "RemoteHCLServer", "SessionManagerProxy";
         ErrorLog     = $InfraErrorLog
     }
     $CCResults = Test-EUCServer @CCParams
