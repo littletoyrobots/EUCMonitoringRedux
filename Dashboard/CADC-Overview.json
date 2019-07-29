@@ -65,8 +65,14 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1563192281343,
-  "links": [],
+  "iteration": 1564413740187,
+  "links": [{
+    "icon": "external link",
+    "tags": [
+      "EUCMonitoring"
+    ],
+    "type": "dashboards"
+  }],
   "panels": [{
       "cacheTimeout": null,
       "colorBackground": false,
@@ -3773,10 +3779,13 @@
       }
     }
   ],
-  "refresh": "5m",
+  "refresh": "30s",
   "schemaVersion": 18,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "EUCMonitoring",
+    "CADC"
+  ],
   "templating": {
     "list": [{
         "allValue": null,
@@ -3900,5 +3909,5 @@
   "timezone": "",
   "title": "CADC Overview",
   "uid": "5PJoPBGZk",
-  "version": 26
+  "version": 29
 }

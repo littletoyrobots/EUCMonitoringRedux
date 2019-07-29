@@ -55,8 +55,15 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": null,
-    "iteration": 1563559805648,
-    "links": [],
+    "iteration": 1564413819865,
+    "links": [{
+        "asDropdown": false,
+        "icon": "external link",
+        "tags": [
+            "EUCMonitoring"
+        ],
+        "type": "dashboards"
+    }],
     "panels": [{
             "aliasColors": {},
             "bars": false,
@@ -92,7 +99,10 @@
             "pointradius": 5,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [{
+                "alias": "/Active/",
+                "linewidth": 2
+            }],
             "spaceLength": 10,
             "stack": true,
             "steppedLine": false,
@@ -619,7 +629,10 @@
             "pointradius": 5,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [{
+                "alias": "/Active/",
+                "linewidth": 2
+            }],
             "spaceLength": 10,
             "stack": true,
             "steppedLine": false,
@@ -801,7 +814,15 @@
             "pointradius": 5,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [{
+                    "alias": "/Avg/",
+                    "linewidth": 2
+                },
+                {
+                    "alias": "/Max/",
+                    "fill": 0
+                }
+            ],
             "spaceLength": 10,
             "stack": false,
             "steppedLine": false,
@@ -840,23 +861,6 @@
                 "select": [
                     [{
                             "params": [
-                                "LoadIndexMax"
-                            ],
-                            "type": "field"
-                        },
-                        {
-                            "params": [],
-                            "type": "sum"
-                        },
-                        {
-                            "params": [
-                                "Max"
-                            ],
-                            "type": "alias"
-                        }
-                    ],
-                    [{
-                            "params": [
                                 "LoadIndexAvg"
                             ],
                             "type": "field"
@@ -868,6 +872,23 @@
                         {
                             "params": [
                                 "Avg"
+                            ],
+                            "type": "alias"
+                        }
+                    ],
+                    [{
+                            "params": [
+                                "LoadIndexMax"
+                            ],
+                            "type": "field"
+                        },
+                        {
+                            "params": [],
+                            "type": "sum"
+                        },
+                        {
+                            "params": [
+                                "Max"
                             ],
                             "type": "alias"
                         }
@@ -1505,7 +1526,10 @@
             "pointradius": 5,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [{
+                "alias": "/Active/",
+                "linewidth": 2
+            }],
             "spaceLength": 10,
             "stack": true,
             "steppedLine": false,
@@ -1688,9 +1712,14 @@
             "points": false,
             "renderer": "flot",
             "seriesOverrides": [{
-                "alias": "/Test_GLD/i",
-                "fill": 0
-            }],
+                    "alias": "/Avg/",
+                    "linewidth": 2
+                },
+                {
+                    "alias": "/Max/",
+                    "fill": 0
+                }
+            ],
             "spaceLength": 10,
             "stack": false,
             "steppedLine": false,
@@ -1729,23 +1758,6 @@
                 "select": [
                     [{
                             "params": [
-                                "LoadIndexMax"
-                            ],
-                            "type": "field"
-                        },
-                        {
-                            "params": [],
-                            "type": "sum"
-                        },
-                        {
-                            "params": [
-                                "Max"
-                            ],
-                            "type": "alias"
-                        }
-                    ],
-                    [{
-                            "params": [
                                 "LoadIndexAvg"
                             ],
                             "type": "field"
@@ -1757,6 +1769,23 @@
                         {
                             "params": [
                                 "Avg"
+                            ],
+                            "type": "alias"
+                        }
+                    ],
+                    [{
+                            "params": [
+                                "LoadIndexMax"
+                            ],
+                            "type": "field"
+                        },
+                        {
+                            "params": [],
+                            "type": "sum"
+                        },
+                        {
+                            "params": [
+                                "Max"
                             ],
                             "type": "alias"
                         }
@@ -1963,7 +1992,10 @@
             "pointradius": 5,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [{
+                "alias": "/Active/",
+                "linewidth": 2
+            }],
             "spaceLength": 10,
             "stack": true,
             "steppedLine": false,
@@ -2267,19 +2299,11 @@
             "points": false,
             "renderer": "flot",
             "seriesOverrides": [{
-                    "alias": "/PRD_SCM163_EDBOARD/i",
-                    "fill": 0
-                },
-                {
-                    "alias": "/PRD_SCM163_GLD - PROD_GLD/i",
-                    "fill": 0
-                },
-                {
-                    "alias": "/PRD_SCM163_1 - PROD_1/i",
+                    "alias": "/Avg/",
                     "linewidth": 2
                 },
                 {
-                    "alias": "/PRD_SCM163_TSC - PROD_GLD/i",
+                    "alias": "/Max/",
                     "fill": 0
                 }
             ],
@@ -2327,23 +2351,6 @@
                 "select": [
                     [{
                             "params": [
-                                "LoadIndexMax"
-                            ],
-                            "type": "field"
-                        },
-                        {
-                            "params": [],
-                            "type": "sum"
-                        },
-                        {
-                            "params": [
-                                "Max"
-                            ],
-                            "type": "alias"
-                        }
-                    ],
-                    [{
-                            "params": [
                                 "LoadIndexAvg"
                             ],
                             "type": "field"
@@ -2355,6 +2362,23 @@
                         {
                             "params": [
                                 "Avg"
+                            ],
+                            "type": "alias"
+                        }
+                    ],
+                    [{
+                            "params": [
+                                "LoadIndexMax"
+                            ],
+                            "type": "field"
+                        },
+                        {
+                            "params": [],
+                            "type": "sum"
+                        },
+                        {
+                            "params": [
+                                "Max"
                             ],
                             "type": "alias"
                         }
@@ -2681,7 +2705,10 @@
             "pointradius": 5,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [{
+                "alias": "/Active/",
+                "linewidth": 2
+            }],
             "spaceLength": 10,
             "stack": true,
             "steppedLine": false,
@@ -2863,7 +2890,15 @@
             "pointradius": 5,
             "points": false,
             "renderer": "flot",
-            "seriesOverrides": [],
+            "seriesOverrides": [{
+                    "alias": "/Avg/",
+                    "linewidth": 2
+                },
+                {
+                    "alias": "/Max/",
+                    "fill": 0
+                }
+            ],
             "spaceLength": 10,
             "stack": false,
             "steppedLine": false,
@@ -2902,23 +2937,6 @@
                 "select": [
                     [{
                             "params": [
-                                "LoadIndexMax"
-                            ],
-                            "type": "field"
-                        },
-                        {
-                            "params": [],
-                            "type": "sum"
-                        },
-                        {
-                            "params": [
-                                "Max"
-                            ],
-                            "type": "alias"
-                        }
-                    ],
-                    [{
-                            "params": [
                                 "LoadIndexAvg"
                             ],
                             "type": "field"
@@ -2930,6 +2948,23 @@
                         {
                             "params": [
                                 "Avg"
+                            ],
+                            "type": "alias"
+                        }
+                    ],
+                    [{
+                            "params": [
+                                "LoadIndexMax"
+                            ],
+                            "type": "field"
+                        },
+                        {
+                            "params": [],
+                            "type": "sum"
+                        },
+                        {
+                            "params": [
+                                "Max"
                             ],
                             "type": "alias"
                         }
@@ -3225,7 +3260,10 @@
     "refresh": "5m",
     "schemaVersion": 18,
     "style": "dark",
-    "tags": [],
+    "tags": [
+        "EUCMonitoring",
+        "CVAD"
+    ],
     "templating": {
         "list": [{
                 "allValue": null,
@@ -3323,7 +3361,7 @@
                 "hide": 0,
                 "includeAll": false,
                 "label": null,
-                "multi": false,
+                "multi": true,
                 "name": "TRAIN",
                 "options": [],
                 "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
@@ -3371,5 +3409,5 @@
     "timezone": "",
     "title": "CVAD Overview",
     "uid": "fe9vbaQiz",
-    "version": 90
+    "version": 98
 }
