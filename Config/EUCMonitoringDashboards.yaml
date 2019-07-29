@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: "EUCMonitoring"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    editable: false
+    options:
+      path: C:/Monitoring/EUCMonitoringRedux-master/Dashboards
