@@ -69,19 +69,19 @@ function Get-CADCvaluetemplate {
                 elseif ($Health -gt 0) {
                     $Status = 1
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $Name DEGRADED" -Path $ErrorLog
+                        Write-EUCError -Message "[$(Get-Date)] [CADCcsvserver] $ADC - $Name`: DEGRADED" -Path $ErrorLog
                     }
                     else {
-                        Write-Verbose "[$(Get-Date)] [CitrixADCcsvserver] $Name DEGRADED"
+                        Write-Verbose "[$(Get-Date)] [CADCcsvserver] $ADC - $Name`: DEGRADED"
                     }
                 }
                 else {
                     $Status = 0
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $Name DOWN" -Path $ErrorLog
+                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $ADC - $Name`: DOWN" -Path $ErrorLog
                     }
                     else {
-                        Write-Verbose "[$(Get-Date)] [CitrixADCcsvserver] $Name DOWN"
+                        Write-Verbose "[$(Get-Date)] [CitrixADCcsvserver] $ADC - $Name`: DOWN"
                     }
                 }
                 #>

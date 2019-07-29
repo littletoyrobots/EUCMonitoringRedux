@@ -78,10 +78,10 @@ function Get-CADCsystem {
                 }
                 if ($Errors.Count -ge 1) {
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - $($Errors -join ' ')" -Path $ErrorLog
+                        Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - System: $($Errors -join ' ')" -Path $ErrorLog
                     }
                     else {
-                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - $($Errors -join ' ')"
+                        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $ADC - System: $($Errors -join ' ')"
                     }
                 }
 
