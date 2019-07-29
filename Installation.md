@@ -46,7 +46,7 @@ NOTE: This will install local instances of influxdb, grafana, and telegraf agent
 1. In powershell, running as Administrator,
 
    ```powershell
-   set-location C:\Monitoring\EUCMonitoringRedux-master\Dashboard
+   set-location C:\Monitoring\EUCMonitoringRedux-master\Config
    .\Install-VisualizationSetup.ps1
    ```
 
