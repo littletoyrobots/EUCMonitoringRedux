@@ -60,14 +60,14 @@ function Get-CADCcsvserver {
             foreach ($csvserver in $Results) {
                 $Name = $csvserver.name
                 $State = $csvserver.state
-                $Health = [int]$csvserver.vslbhealth
+                $Health = [int64]$csvserver.vslbhealth
 
                 # Rates
-                $HitsRate = [int]$csvserver.hitsrate
-                $RequestsRate = [int]$csvserver.requestsrate
-                $RequestBytesRate = [int]$csvserver.requestbytesrate
-                $ResponsesRate = [int]$csvserver.responsesrate
-                $ResponseBytesRate = [int]$csvserver.responsebytesrate
+                $HitsRate = [int64]$csvserver.hitsrate
+                $RequestsRate = [int64]$csvserver.requestsrate
+                $RequestBytesRate = [int64]$csvserver.requestbytesrate
+                $ResponsesRate = [int64]$csvserver.responsesrate
+                $ResponseBytesRate = [int64]$csvserver.responsebytesrate
 
                 #Totals
                 $TotalHits = [int64]$csvserver.tothits
@@ -75,9 +75,9 @@ function Get-CADCcsvserver {
                 $TotalResponses = [int64]$csvserver.totalresponses
 
                 # Current Connections
-                $EstablishedConnections = [int]$csvserver.establishedconn
-                $CurrentClientConnections = [int]$csvserver.curclntconnections
-                $CurrentServerConnections = [int]$csvserver.cursrvrconnections
+                $EstablishedConnections = [int64]$csvserver.establishedconn
+                $CurrentClientConnections = [int64]$csvserver.curclntconnections
+                $CurrentServerConnections = [int64]$csvserver.cursrvrconnections
 
                 if ($Health -eq 100) { $Status = 2 }
                 elseif ($Health -gt 0) {

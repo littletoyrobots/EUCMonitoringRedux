@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed
 
 - Update Dashboards from the "Export for sharing externally" to normal export, to avoid datasource templating errors.
+- Cast Nitro Values to [int64] instead of [int] for all instances. - Thanks to [Kevin Schwartzmiller](https://twitter.com/KSchwartzmiller) for the find
 
 ### Changed
 

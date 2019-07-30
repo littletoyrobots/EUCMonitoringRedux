@@ -59,14 +59,14 @@ function Get-CADClbvserver {
             foreach ($lbvserver in $Results) {
                 $Name = $lbvserver.name
                 $State = $lbvserver.state
-                $Health = [int]$lbvserver.vslbhealth
+                $Health = [int64]$lbvserver.vslbhealth
 
                 # Rates
-                $HitsRate = [int]$lbvserver.hitsrate
-                $RequestsRate = [int]$lbvserver.requestsrate
-                $RequestBytesRate = [int]$lbvserver.requestbytesrate
-                $ResponsesRate = [int]$lbvserver.responsesrate
-                $ResponseBytesRate = [int]$lbvserver.responsebytesrate
+                $HitsRate = [int64]$lbvserver.hitsrate
+                $RequestsRate = [int64]$lbvserver.requestsrate
+                $RequestBytesRate = [int64]$lbvserver.requestbytesrate
+                $ResponsesRate = [int64]$lbvserver.responsesrate
+                $ResponseBytesRate = [int64]$lbvserver.responsebytesrate
 
                 #Totals
                 $TotalHits = [int64]$lbvserver.tothits
@@ -74,9 +74,9 @@ function Get-CADClbvserver {
                 $TotalResponses = [int64]$lbvserver.totalresponses
 
                 # Current Connections
-                $EstablishedConnections = [int]$lbvserver.establishedconn
-                $CurrentClientConnections = [int]$lbvserver.curclntconnections
-                $CurrentServerConnections = [int]$lbvserver.cursrvrconnections
+                $EstablishedConnections = [int64]$lbvserver.establishedconn
+                $CurrentClientConnections = [int64]$lbvserver.curclntconnections
+                $CurrentServerConnections = [int64]$lbvserver.cursrvrconnections
 
                 if ($Health -eq 100) { $Status = 2 }
                 elseif ($Health -gt 0) {

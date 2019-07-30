@@ -58,14 +58,14 @@ function Get-CADCgslbvserver {
             foreach ($gslbvserver in $Results) {
                 $Name = $gslbvserver.name
                 $State = $gslbvserver.state
-                $Health = [int]$gslbvserver.vslbhealth
+                $Health = [int64]$gslbvserver.vslbhealth
 
                 # Rates
-                $HitsRate = [int]$gslbvserver.hitsrate
-                $RequestsRate = [int]$gslbvserver.requestsrate
-                $RequestBytesRate = [int]$gslbvserver.requestbytesrate
-                $ResponsesRate = [int]$gslbvserver.responsesrate
-                $ResponseBytesRate = [int]$gslbvserver.responsebytesrate
+                $HitsRate = [int64]$gslbvserver.hitsrate
+                $RequestsRate = [int64]$gslbvserver.requestsrate
+                $RequestBytesRate = [int64]$gslbvserver.requestbytesrate
+                $ResponsesRate = [int64]$gslbvserver.responsesrate
+                $ResponseBytesRate = [int64]$gslbvserver.responsebytesrate
 
                 #Totals
                 $TotalHits = [int64]$gslbvserver.tothits
@@ -73,9 +73,9 @@ function Get-CADCgslbvserver {
                 $TotalResponses = [int64]$gslbvserver.totalresponses
 
                 # Current Connections
-                $EstablishedConnections = [int]$gslbvserver.establishedconn
-                $CurrentClientConnections = [int]$gslbvserver.curclntconnections
-                $CurrentServerConnections = [int]$gslbvserver.cursrvrconnections
+                $EstablishedConnections = [int64]$gslbvserver.establishedconn
+                $CurrentClientConnections = [int64]$gslbvserver.curclntconnections
+                $CurrentServerConnections = [int64]$gslbvserver.cursrvrconnections
 
                 if ($Health -eq 100) { $Status = 2 }
                 elseif ($Health -gt 0) {
