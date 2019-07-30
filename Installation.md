@@ -32,9 +32,9 @@ RDS / VMware support will be forthcoming
 
 ## Method 1 - The local try-it-out method
 
-This is somewhat interactive until the initial Grafana user config is able to be bypassed.
+**This will not work out of the gate. You will have to edit provided scripts.** You will also need to change VerbosePreference to SilentlyContinue. This is done so that you will be gently reminded to confirm your targets and credentials are what you expect them to be, and running under the right context.
 
-NOTE: This will install local instances of influxdb, grafana, and telegraf agent on your machine to `C:\Monitoring`, then allow you to edit and import the dashboards
+NOTE: This will install local instances of influxdb, grafana, and telegraf agent on your machine to `C:\Monitoring`.
 
 1. Download [EUCMonitoringRedux](https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip) zip file wherever you like.
 1. Create your target install directory, I choose `C:\Monitoring`

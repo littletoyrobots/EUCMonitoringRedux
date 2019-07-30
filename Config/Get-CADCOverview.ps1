@@ -17,6 +17,10 @@ $ADCUser = "notnsroot"
 $ADCPass = Get-Content -Path (Join-Path -Path $BaseDir -ChildPath "ADCcred.txt") | ConvertTo-SecureString
 $ADCCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ADCUser, $ADCPass
 
+# If you're just testing and want to see the output without generating a credential file, this script can
+# also be run by commenting the above lines and uncommenting this.
+# $ADCCred = Get-Credential
+
 $ADCErrorLog = Join-Path -Path $BaseDir -ChildPath "ADC-Errors.txt"
 $ADCErrorHistory = Join-Path -Path $BaseDir -ChildPath "ADC-ErrorHistory.txt"
 
