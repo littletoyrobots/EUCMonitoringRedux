@@ -147,6 +147,7 @@ datasources:
     access: proxy
     database: EUCMonitoring
     url: http://localhost:8086
+    isDefault: true
 "@ -replace '\\', '/' | Out-File (Join-Path $Grafana -ChildPath "conf\provisioning\datasources\EUCMonitoring.yaml" ) -Force -Encoding utf8
 
         @"
@@ -158,7 +159,7 @@ providers:
     folder: ""
     type: file
     disableDeletion: false
-    editable: false
+    editable: true
     options:
       path: $MonitoringPath/EUCMonitoringRedux-master/Dashboards
 "@ -replace '\\', '/' | Out-File (Join-Path $Grafana -ChildPath "conf\provisioning\dashboards\EUCMonitoring.yaml" ) -Force -Encoding utf8
@@ -275,7 +276,7 @@ providers:
         Write-Output "`nNOTE: Grafana, Influx, and Telegraf are now installed as services."
         Get-Service EUCMonitoring* | Select-Object Status, Name, StartType
         Write-Output "`nTo follow up, configure Telegraf instance in $MonitoringPath as described in Installation.md by testing"
-        Write-Output "the input.exec scripts, start the service as appopriate user and then inport the dashboards to grafana."
+        Write-Output "the input.exec scripts and start the service as appopriate user."
     }
 
     end {

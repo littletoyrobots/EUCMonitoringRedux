@@ -1,43 +1,4 @@
 {
-    "__inputs": [{
-        "name": "DS_EUCMONITORING",
-        "label": "EUCMonitoring",
-        "description": "",
-        "type": "datasource",
-        "pluginId": "influxdb",
-        "pluginName": "InfluxDB"
-    }],
-    "__requires": [{
-            "type": "grafana",
-            "id": "grafana",
-            "name": "Grafana",
-            "version": "6.2.5"
-        },
-        {
-            "type": "panel",
-            "id": "grafana-piechart-panel",
-            "name": "Pie Chart",
-            "version": "1.3.3"
-        },
-        {
-            "type": "panel",
-            "id": "graph",
-            "name": "Graph",
-            "version": ""
-        },
-        {
-            "type": "datasource",
-            "id": "influxdb",
-            "name": "InfluxDB",
-            "version": "1.0.0"
-        },
-        {
-            "type": "panel",
-            "id": "singlestat",
-            "name": "Singlestat",
-            "version": ""
-        }
-    ],
     "annotations": {
         "list": [{
             "builtIn": 1,
@@ -54,8 +15,8 @@
     "editable": true,
     "gnetId": null,
     "graphTooltip": 0,
-    "id": null,
-    "iteration": 1564413819865,
+    "id": 42,
+    "iteration": 1564508515219,
     "links": [{
         "asDropdown": false,
         "icon": "external link",
@@ -69,7 +30,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 10,
@@ -253,7 +214,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#299c46"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -369,7 +330,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 5,
@@ -504,7 +465,7 @@
                 "label": "Others",
                 "threshold": 0
             },
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fontSize": "70%",
             "format": "short",
             "gridPos": {
@@ -599,7 +560,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -784,7 +745,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -963,7 +924,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -1069,7 +1030,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -1175,7 +1136,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 10000,
@@ -1288,7 +1249,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 10000,
@@ -1394,7 +1355,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -1496,7 +1457,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -1681,7 +1642,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -1860,7 +1821,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -1962,7 +1923,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 11,
@@ -2151,7 +2112,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#299c46"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -2268,7 +2229,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 11,
@@ -2453,7 +2414,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -2566,7 +2527,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -2675,7 +2636,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -2860,7 +2821,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "fill": 1,
             "gridPos": {
                 "h": 7,
@@ -3039,7 +3000,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -3152,7 +3113,7 @@
                 "rgba(237, 129, 40, 0.89)",
                 "#d44a3a"
             ],
-            "datasource": "${DS_EUCMONITORING}",
+            "datasource": "EUCMonitoring",
             "format": "none",
             "gauge": {
                 "maxValue": 100,
@@ -3267,8 +3228,14 @@
     "templating": {
         "list": [{
                 "allValue": null,
-                "current": {},
-                "datasource": "${DS_EUCMONITORING}",
+                "current": {
+                    "tags": [],
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                },
+                "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"SiteName\"",
                 "hide": 0,
                 "includeAll": true,
@@ -3289,8 +3256,13 @@
             },
             {
                 "allValue": null,
-                "current": {},
-                "datasource": "${DS_EUCMONITORING}",
+                "current": {
+                    "text": "Applications",
+                    "value": [
+                        "Applications"
+                    ]
+                },
+                "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
                 "includeAll": false,
@@ -3311,8 +3283,13 @@
             },
             {
                 "allValue": null,
-                "current": {},
-                "datasource": "${DS_EUCMONITORING}",
+                "current": {
+                    "text": "Legacy Applications",
+                    "value": [
+                        "Legacy Applications"
+                    ]
+                },
+                "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
                 "includeAll": false,
@@ -3333,17 +3310,133 @@
             },
             {
                 "allValue": null,
-                "current": {},
-                "datasource": "${DS_EUCMONITORING}",
+                "current": {
+                    "tags": [],
+                    "text": "TEST Applications",
+                    "value": [
+                        "TEST Applications"
+                    ]
+                },
+                "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
                 "includeAll": false,
                 "label": null,
                 "multi": true,
                 "name": "TEST",
-                "options": [],
+                "options": [{
+                        "selected": false,
+                        "text": "Applications",
+                        "value": "Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Desktops",
+                        "value": "Desktops"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Legacy Applications",
+                        "value": "Legacy Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "MS Office Based Applications",
+                        "value": "MS Office Based Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "OmniCenter OCRA",
+                        "value": "OmniCenter OCRA"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Remote Allscripts",
+                        "value": "Remote Allscripts"
+                    },
+                    {
+                        "selected": true,
+                        "text": "TEST Applications",
+                        "value": "TEST Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "WSG Legacy Applications",
+                        "value": "WSG Legacy Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "DEV_SCM163",
+                        "value": "DEV_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_1",
+                        "value": "PRD_SCM163_1"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_EDBOARD",
+                        "value": "PRD_SCM163_EDBOARD"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_GLD",
+                        "value": "PRD_SCM163_GLD"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_TSC",
+                        "value": "PRD_SCM163_TSC"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEST_PSS",
+                        "value": "TEST_PSS"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEST_SCM163",
+                        "value": "TEST_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEST_SCM163_GOLD",
+                        "value": "TEST_SCM163_GOLD"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TRN_SCM163",
+                        "value": "TRN_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Centricity+",
+                        "value": "Centricity+"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163",
+                        "value": "PRD_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEMP",
+                        "value": "TEMP"
+                    },
+                    {
+                        "selected": false,
+                        "text": "zApplications",
+                        "value": "zApplications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "ERROR",
+                        "value": "ERROR"
+                    }
+                ],
                 "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
-                "refresh": 1,
+                "refresh": 0,
                 "regex": "",
                 "skipUrlSync": false,
                 "sort": 0,
@@ -3355,17 +3448,131 @@
             },
             {
                 "allValue": null,
-                "current": {},
-                "datasource": "${DS_EUCMONITORING}",
+                "current": {
+                    "tags": [],
+                    "text": "MS Office Based Applications",
+                    "value": "MS Office Based Applications"
+                },
+                "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
                 "includeAll": false,
                 "label": null,
                 "multi": true,
                 "name": "TRAIN",
-                "options": [],
+                "options": [{
+                        "selected": true,
+                        "text": "Applications",
+                        "value": "Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Desktops",
+                        "value": "Desktops"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Legacy Applications",
+                        "value": "Legacy Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "MS Office Based Applications",
+                        "value": "MS Office Based Applications"
+                    },
+                    {
+                        "selected": true,
+                        "text": "OmniCenter OCRA",
+                        "value": "OmniCenter OCRA"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Remote Allscripts",
+                        "value": "Remote Allscripts"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEST Applications",
+                        "value": "TEST Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "WSG Legacy Applications",
+                        "value": "WSG Legacy Applications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "DEV_SCM163",
+                        "value": "DEV_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_1",
+                        "value": "PRD_SCM163_1"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_EDBOARD",
+                        "value": "PRD_SCM163_EDBOARD"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_GLD",
+                        "value": "PRD_SCM163_GLD"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163_TSC",
+                        "value": "PRD_SCM163_TSC"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEST_PSS",
+                        "value": "TEST_PSS"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEST_SCM163",
+                        "value": "TEST_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEST_SCM163_GOLD",
+                        "value": "TEST_SCM163_GOLD"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TRN_SCM163",
+                        "value": "TRN_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "Centricity+",
+                        "value": "Centricity+"
+                    },
+                    {
+                        "selected": false,
+                        "text": "PRD_SCM163",
+                        "value": "PRD_SCM163"
+                    },
+                    {
+                        "selected": false,
+                        "text": "TEMP",
+                        "value": "TEMP"
+                    },
+                    {
+                        "selected": false,
+                        "text": "zApplications",
+                        "value": "zApplications"
+                    },
+                    {
+                        "selected": false,
+                        "text": "ERROR",
+                        "value": "ERROR"
+                    }
+                ],
                 "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
-                "refresh": 1,
+                "refresh": 0,
                 "regex": "",
                 "skipUrlSync": false,
                 "sort": 0,
@@ -3378,7 +3585,7 @@
         ]
     },
     "time": {
-        "from": "now-6h",
+        "from": "now-12h",
         "to": "now"
     },
     "timepicker": {
