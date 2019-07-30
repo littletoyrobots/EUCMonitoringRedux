@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 42,
-    "iteration": 1564508515219,
+    "iteration": 1564511134119,
     "links": [{
         "asDropdown": false,
         "icon": "external link",
@@ -3228,13 +3228,7 @@
     "templating": {
         "list": [{
                 "allValue": null,
-                "current": {
-                    "tags": [],
-                    "text": "All",
-                    "value": [
-                        "$__all"
-                    ]
-                },
+                "current": {},
                 "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"SiteName\"",
                 "hide": 0,
@@ -3256,12 +3250,7 @@
             },
             {
                 "allValue": null,
-                "current": {
-                    "text": "Applications",
-                    "value": [
-                        "Applications"
-                    ]
-                },
+                "current": {},
                 "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
@@ -3283,12 +3272,7 @@
             },
             {
                 "allValue": null,
-                "current": {
-                    "text": "Legacy Applications",
-                    "value": [
-                        "Legacy Applications"
-                    ]
-                },
+                "current": {},
                 "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
@@ -3310,13 +3294,7 @@
             },
             {
                 "allValue": null,
-                "current": {
-                    "tags": [],
-                    "text": "TEST Applications",
-                    "value": [
-                        "TEST Applications"
-                    ]
-                },
+                "current": {},
                 "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
@@ -3324,119 +3302,9 @@
                 "label": null,
                 "multi": true,
                 "name": "TEST",
-                "options": [{
-                        "selected": false,
-                        "text": "Applications",
-                        "value": "Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Desktops",
-                        "value": "Desktops"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Legacy Applications",
-                        "value": "Legacy Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "MS Office Based Applications",
-                        "value": "MS Office Based Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "OmniCenter OCRA",
-                        "value": "OmniCenter OCRA"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Remote Allscripts",
-                        "value": "Remote Allscripts"
-                    },
-                    {
-                        "selected": true,
-                        "text": "TEST Applications",
-                        "value": "TEST Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "WSG Legacy Applications",
-                        "value": "WSG Legacy Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "DEV_SCM163",
-                        "value": "DEV_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_1",
-                        "value": "PRD_SCM163_1"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_EDBOARD",
-                        "value": "PRD_SCM163_EDBOARD"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_GLD",
-                        "value": "PRD_SCM163_GLD"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_TSC",
-                        "value": "PRD_SCM163_TSC"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEST_PSS",
-                        "value": "TEST_PSS"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEST_SCM163",
-                        "value": "TEST_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEST_SCM163_GOLD",
-                        "value": "TEST_SCM163_GOLD"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TRN_SCM163",
-                        "value": "TRN_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Centricity+",
-                        "value": "Centricity+"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163",
-                        "value": "PRD_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEMP",
-                        "value": "TEMP"
-                    },
-                    {
-                        "selected": false,
-                        "text": "zApplications",
-                        "value": "zApplications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "ERROR",
-                        "value": "ERROR"
-                    }
-                ],
+                "options": [],
                 "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
-                "refresh": 0,
+                "refresh": 1,
                 "regex": "",
                 "skipUrlSync": false,
                 "sort": 0,
@@ -3448,11 +3316,7 @@
             },
             {
                 "allValue": null,
-                "current": {
-                    "tags": [],
-                    "text": "MS Office Based Applications",
-                    "value": "MS Office Based Applications"
-                },
+                "current": {},
                 "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
                 "hide": 0,
@@ -3460,119 +3324,9 @@
                 "label": null,
                 "multi": true,
                 "name": "TRAIN",
-                "options": [{
-                        "selected": true,
-                        "text": "Applications",
-                        "value": "Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Desktops",
-                        "value": "Desktops"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Legacy Applications",
-                        "value": "Legacy Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "MS Office Based Applications",
-                        "value": "MS Office Based Applications"
-                    },
-                    {
-                        "selected": true,
-                        "text": "OmniCenter OCRA",
-                        "value": "OmniCenter OCRA"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Remote Allscripts",
-                        "value": "Remote Allscripts"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEST Applications",
-                        "value": "TEST Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "WSG Legacy Applications",
-                        "value": "WSG Legacy Applications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "DEV_SCM163",
-                        "value": "DEV_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_1",
-                        "value": "PRD_SCM163_1"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_EDBOARD",
-                        "value": "PRD_SCM163_EDBOARD"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_GLD",
-                        "value": "PRD_SCM163_GLD"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163_TSC",
-                        "value": "PRD_SCM163_TSC"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEST_PSS",
-                        "value": "TEST_PSS"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEST_SCM163",
-                        "value": "TEST_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEST_SCM163_GOLD",
-                        "value": "TEST_SCM163_GOLD"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TRN_SCM163",
-                        "value": "TRN_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "Centricity+",
-                        "value": "Centricity+"
-                    },
-                    {
-                        "selected": false,
-                        "text": "PRD_SCM163",
-                        "value": "PRD_SCM163"
-                    },
-                    {
-                        "selected": false,
-                        "text": "TEMP",
-                        "value": "TEMP"
-                    },
-                    {
-                        "selected": false,
-                        "text": "zApplications",
-                        "value": "zApplications"
-                    },
-                    {
-                        "selected": false,
-                        "text": "ERROR",
-                        "value": "ERROR"
-                    }
-                ],
+                "options": [],
                 "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
-                "refresh": 0,
+                "refresh": 1,
                 "regex": "",
                 "skipUrlSync": false,
                 "sort": 0,
@@ -3585,7 +3339,7 @@
         ]
     },
     "time": {
-        "from": "now-12h",
+        "from": "now-6h",
         "to": "now"
     },
     "timepicker": {
@@ -3616,5 +3370,5 @@
     "timezone": "",
     "title": "CVAD Overview",
     "uid": "fe9vbaQiz",
-    "version": 98
+    "version": 99
 }
