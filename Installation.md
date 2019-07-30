@@ -81,6 +81,10 @@ NOTE: As this grows, more scripts and dashboards will be created. There might be
 1. The initial login will be username: `admin` password: `admin`, and you'll be prompted to change it. Please do.
 1. After login, at the top of the page, there will be a drop down where you can select the dashboards you wish to see.
 
+   Note: You might need to give it some time to populate, and the drop-downs are set to refresh on page-load. As the default refresh is five minutes, expect the page to have your values.
+
+   Note: With the try-it-out method, you won't be able to save current variables from the dropdown by default. This is an [open issue](https://github.com/grafana/grafana/issues/11778) with grafana and provisioned dashboards, but will be addressed soon. If you use the long term installation option, you can import the dashboards manually.
+
 ### Uninstall
 
 Note: If you made any changes to the Install-VisualizationSetup, edit Uninstall-VisualizationSetup appropriately.
