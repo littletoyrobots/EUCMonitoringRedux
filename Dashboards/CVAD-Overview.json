@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 42,
-    "iteration": 1564511134119,
+    "iteration": 1564513765589,
     "links": [{
         "asDropdown": false,
         "icon": "external link",
@@ -1330,10 +1330,17 @@
                     ]
                 ],
                 "tags": [{
-                    "key": "SiteName",
-                    "operator": "=~",
-                    "value": "/^$SiteName$/"
-                }]
+                        "key": "SiteName",
+                        "operator": "=~",
+                        "value": "/^$SiteName$/"
+                    },
+                    {
+                        "condition": "AND",
+                        "key": "DeliveryGroupName",
+                        "operator": "=~",
+                        "value": "/^$PROD$/"
+                    }
+                ]
             }],
             "thresholds": "7500,8000",
             "title": "Current Max Prod Load",
@@ -3228,7 +3235,12 @@
     "templating": {
         "list": [{
                 "allValue": null,
-                "current": {},
+                "current": {
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                },
                 "datasource": "EUCMonitoring",
                 "definition": "SHOW TAG VALUES WITH KEY = \"SiteName\"",
                 "hide": 0,
@@ -3250,16 +3262,22 @@
             },
             {
                 "allValue": null,
-                "current": {},
+                "current": {
+                    "tags": [],
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                },
                 "datasource": "EUCMonitoring",
-                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /$SiteName$/ ",
                 "hide": 0,
-                "includeAll": false,
+                "includeAll": true,
                 "label": null,
                 "multi": true,
                 "name": "PROD",
                 "options": [],
-                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /$SiteName$/ ",
                 "refresh": 1,
                 "regex": "",
                 "skipUrlSync": false,
@@ -3272,16 +3290,22 @@
             },
             {
                 "allValue": null,
-                "current": {},
+                "current": {
+                    "tags": [],
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                },
                 "datasource": "EUCMonitoring",
-                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /^$SiteName$/",
                 "hide": 0,
-                "includeAll": false,
+                "includeAll": true,
                 "label": null,
                 "multi": true,
                 "name": "DEV",
                 "options": [],
-                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /^$SiteName$/",
                 "refresh": 1,
                 "regex": "",
                 "skipUrlSync": false,
@@ -3294,16 +3318,22 @@
             },
             {
                 "allValue": null,
-                "current": {},
+                "current": {
+                    "tags": [],
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                },
                 "datasource": "EUCMonitoring",
-                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /^$SiteName$/",
                 "hide": 0,
-                "includeAll": false,
+                "includeAll": true,
                 "label": null,
                 "multi": true,
                 "name": "TEST",
                 "options": [],
-                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /^$SiteName$/",
                 "refresh": 1,
                 "regex": "",
                 "skipUrlSync": false,
@@ -3316,16 +3346,22 @@
             },
             {
                 "allValue": null,
-                "current": {},
+                "current": {
+                    "tags": [],
+                    "text": "All",
+                    "value": [
+                        "$__all"
+                    ]
+                },
                 "datasource": "EUCMonitoring",
-                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "definition": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /^$SiteName$/",
                 "hide": 0,
-                "includeAll": false,
+                "includeAll": true,
                 "label": null,
                 "multi": true,
                 "name": "TRAIN",
                 "options": [],
-                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\"",
+                "query": "SHOW TAG VALUES WITH KEY = \"DeliveryGroupName\" WHERE \"SiteName\" =~ /^$SiteName$/",
                 "refresh": 1,
                 "regex": "",
                 "skipUrlSync": false,
@@ -3370,5 +3406,5 @@
     "timezone": "",
     "title": "CVAD Overview",
     "uid": "fe9vbaQiz",
-    "version": 99
+    "version": 103
 }
