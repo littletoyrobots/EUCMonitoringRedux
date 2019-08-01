@@ -1,37 +1,95 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_EUCMONITORING",
+      "label": "EUCMonitoring",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "6.2.5"
+    },
+    {
+      "type": "panel",
+      "id": "grafana-piechart-panel",
+      "name": "Pie Chart",
+      "version": "1.3.3"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "singlestat",
+      "name": "Singlestat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
   "annotations": {
-    "list": [{
-      "builtIn": 1,
-      "datasource": "-- Grafana --",
-      "enable": true,
-      "hide": true,
-      "iconColor": "rgba(0, 211, 255, 1)",
-      "name": "Annotations & Alerts",
-      "type": "dashboard"
-    }]
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 50,
-  "iteration": 1564508370583,
-  "links": [{
-    "icon": "external link",
-    "tags": [
-      "EUCMonitoring"
-    ],
-    "type": "dashboards"
-  }],
-  "panels": [{
+  "id": null,
+  "iteration": 1564660424498,
+  "links": [
+    {
+      "icon": "external link",
+      "tags": ["EUCMonitoring", "CADC"],
+      "type": "dashboards"
+    },
+    {
+      "icon": "external link",
+      "tags": ["EUCMonitoring", "Overview"],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": true,
-      "colors": [
-        "#d44a3a",
-        "rgba(237, 129, 40, 0.89)",
-        "#299c46"
-      ],
-      "datasource": "EUCMonitoring",
+      "colors": ["#d44a3a", "rgba(237, 129, 40, 0.89)", "#299c46"],
+      "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -50,7 +108,8 @@
       "interval": null,
       "links": [],
       "mappingType": 1,
-      "mappingTypes": [{
+      "mappingTypes": [
+        {
           "name": "value to text",
           "value": 1
         },
@@ -67,11 +126,13 @@
       "postfixFontSize": "50%",
       "prefix": "",
       "prefixFontSize": "50%",
-      "rangeMaps": [{
-        "from": "null",
-        "text": "N/A",
-        "to": "null"
-      }],
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
       "sparkline": {
         "fillColor": "rgba(31, 118, 189, 0.18)",
         "full": false,
@@ -79,67 +140,65 @@
         "show": false
       },
       "tableColumn": "",
-      "targets": [{
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "null"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgatewayuser",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "TotalUsers"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["null"],
+              "type": "fill"
+            }
+          ],
+          "measurement": "CADCgatewayuser",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["TotalUsers"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": "0,1",
       "timeFrom": null,
       "timeShift": null,
       "title": "Total GW Users",
       "type": "singlestat",
       "valueFontSize": "80%",
-      "valueMaps": [{
-        "op": "=",
-        "text": "N/A",
-        "value": "null"
-      }],
-      "valueName": "avg"
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
     },
     {
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": false,
-      "colors": [
-        "#d44a3a",
-        "rgba(237, 129, 40, 0.89)",
-        "#299c46"
-      ],
-      "datasource": "EUCMonitoring",
+      "colors": ["#d44a3a", "rgba(237, 129, 40, 0.89)", "#299c46"],
+      "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -158,7 +217,8 @@
       "interval": null,
       "links": [],
       "mappingType": 1,
-      "mappingTypes": [{
+      "mappingTypes": [
+        {
           "name": "value to text",
           "value": 1
         },
@@ -175,11 +235,13 @@
       "postfixFontSize": "50%",
       "prefix": "",
       "prefixFontSize": "50%",
-      "rangeMaps": [{
-        "from": "null",
-        "text": "N/A",
-        "to": "null"
-      }],
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
       "sparkline": {
         "fillColor": "rgba(31, 118, 189, 0.18)",
         "full": false,
@@ -187,67 +249,65 @@
         "show": false
       },
       "tableColumn": "",
-      "targets": [{
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "null"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgatewayuser",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "ICAUsers"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["null"],
+              "type": "fill"
+            }
+          ],
+          "measurement": "CADCgatewayuser",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["ICAUsers"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": "0,1",
       "timeFrom": null,
       "timeShift": null,
       "title": "ICA Users",
       "type": "singlestat",
       "valueFontSize": "80%",
-      "valueMaps": [{
-        "op": "=",
-        "text": "N/A",
-        "value": "null"
-      }],
-      "valueName": "avg"
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
     },
     {
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": false,
-      "colors": [
-        "#d44a3a",
-        "rgba(237, 129, 40, 0.89)",
-        "#299c46"
-      ],
-      "datasource": "EUCMonitoring",
+      "colors": ["#d44a3a", "rgba(237, 129, 40, 0.89)", "#299c46"],
+      "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -266,7 +326,8 @@
       "interval": null,
       "links": [],
       "mappingType": 1,
-      "mappingTypes": [{
+      "mappingTypes": [
+        {
           "name": "value to text",
           "value": 1
         },
@@ -283,11 +344,13 @@
       "postfixFontSize": "50%",
       "prefix": "",
       "prefixFontSize": "50%",
-      "rangeMaps": [{
-        "from": "null",
-        "text": "N/A",
-        "to": "null"
-      }],
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
       "sparkline": {
         "fillColor": "rgba(31, 118, 189, 0.18)",
         "full": false,
@@ -295,59 +358,61 @@
         "show": false
       },
       "tableColumn": "",
-      "targets": [{
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "null"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgatewayuser",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "VPNUsers"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["null"],
+              "type": "fill"
+            }
+          ],
+          "measurement": "CADCgatewayuser",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["VPNUsers"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": "0,1",
       "timeFrom": null,
       "timeShift": null,
       "title": "VPN Users",
       "type": "singlestat",
       "valueFontSize": "80%",
-      "valueMaps": [{
-        "op": "=",
-        "text": "N/A",
-        "value": "null"
-      }],
-      "valueName": "avg"
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
     },
     {
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "gridPos": {
         "h": 5,
         "w": 3,
@@ -358,9 +423,7 @@
       "links": [],
       "options": {
         "fieldOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "defaults": {
             "max": 100,
             "min": 0,
@@ -368,7 +431,8 @@
           },
           "mappings": [],
           "override": {},
-          "thresholds": [{
+          "thresholds": [
+            {
               "color": "red",
               "index": 0,
               "value": null
@@ -391,51 +455,50 @@
         "showThresholdMarkers": true
       },
       "pluginVersion": "6.2.5",
-      "targets": [{
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADClbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "Health"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["none"],
+              "type": "fill"
+            }
+          ],
+          "measurement": "CADClbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["Health"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
+            },
+            {
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$LBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$LBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "timeFrom": null,
       "timeShift": null,
       "title": "LBvServer Health",
@@ -447,7 +510,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -480,98 +543,87 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADClbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "CurrentClientConnections"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["Name"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Client"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "CurrentServerConnections"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Server"
-              ],
-              "type": "alias"
-            }
+          "measurement": "CADClbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["CurrentClientConnections"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Client"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["CurrentServerConnections"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Server"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["EstablishedConnections"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Established"],
+                "type": "alias"
+              }
+            ]
           ],
-          [{
-              "params": [
-                "EstablishedConnections"
-              ],
-              "type": "field"
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Established"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$LBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$LBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -590,7 +642,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -613,7 +666,7 @@
       }
     },
     {
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "gridPos": {
         "h": 5,
         "w": 3,
@@ -624,9 +677,7 @@
       "links": [],
       "options": {
         "fieldOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "defaults": {
             "max": 100,
             "min": 0,
@@ -634,7 +685,8 @@
           },
           "mappings": [],
           "override": {},
-          "thresholds": [{
+          "thresholds": [
+            {
               "color": "red",
               "index": 0,
               "value": null
@@ -657,51 +709,50 @@
         "showThresholdMarkers": true
       },
       "pluginVersion": "6.2.5",
-      "targets": [{
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCcsvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "Health"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["none"],
+              "type": "fill"
+            }
+          ],
+          "measurement": "CADCcsvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["Health"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
+            },
+            {
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$CSvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$CSvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "timeFrom": null,
       "timeShift": null,
       "title": "CSvServer Health",
@@ -713,7 +764,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -744,81 +795,73 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCcsvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "CurrentClientConnections"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["Name"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Client"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "CurrentServerConnections"
-              ],
-              "type": "field"
+          "measurement": "CADCcsvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["CurrentClientConnections"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Client"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["CurrentServerConnections"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Server"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Server"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$CSvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$CSvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -837,12 +880,13 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -860,7 +904,7 @@
       }
     },
     {
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "gridPos": {
         "h": 5,
         "w": 3,
@@ -871,9 +915,7 @@
       "links": [],
       "options": {
         "fieldOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "defaults": {
             "max": 100,
             "min": 0,
@@ -881,7 +923,8 @@
           },
           "mappings": [],
           "override": {},
-          "thresholds": [{
+          "thresholds": [
+            {
               "color": "red",
               "index": 0,
               "value": null
@@ -904,51 +947,50 @@
         "showThresholdMarkers": true
       },
       "pluginVersion": "6.2.5",
-      "targets": [{
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgslbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "Health"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["none"],
+              "type": "fill"
+            }
+          ],
+          "measurement": "CADCgslbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["Health"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
+            },
+            {
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$GSLBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$GSLBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "timeFrom": null,
       "timeShift": null,
       "title": "GSLBvServer Health",
@@ -960,7 +1002,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -991,81 +1033,73 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgslbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "CurrentClientConnections"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["Name"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Client"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "CurrentServerConnections"
-              ],
-              "type": "field"
+          "measurement": "CADCgslbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["CurrentClientConnections"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Client"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["CurrentServerConnections"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Server"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Server"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$GSLBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$GSLBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -1084,12 +1118,13 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -1111,7 +1146,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 6,
@@ -1142,74 +1177,67 @@
       "spaceLength": 10,
       "stack": true,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgatewayuser",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "ICAUsers"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "ICA Users"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "VPNUsers"
-              ],
-              "type": "field"
-            },
+          "measurement": "CADCgatewayuser",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["ICAUsers"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["ICA Users"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["VPNUsers"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["VPN Users"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "VPN Users"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -1228,7 +1256,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1255,7 +1284,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -1288,104 +1317,91 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADClbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "HitsRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Hits"
-              ],
-              "type": "alias"
+              "params": ["Name"],
+              "type": "tag"
+            },
+            {
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "RequestsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Requests"
-              ],
-              "type": "alias"
-            }
+          "measurement": "CADClbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["HitsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Hits"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["RequestsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Requests"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResponsesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Responses"],
+                "type": "alias"
+              }
+            ]
           ],
-          [{
-              "params": [
-                "ResponsesRate"
-              ],
-              "type": "field"
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Responses"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$LBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$LBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -1404,7 +1420,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1431,7 +1448,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -1462,104 +1479,91 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCcsvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "HitsRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Hits"
-              ],
-              "type": "alias"
+              "params": ["Name"],
+              "type": "tag"
+            },
+            {
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "RequestsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Requests"
-              ],
-              "type": "alias"
-            }
+          "measurement": "CADCcsvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["HitsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Hits"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["RequestsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Requests"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResponsesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Responses"],
+                "type": "alias"
+              }
+            ]
           ],
-          [{
-              "params": [
-                "ResponsesRate"
-              ],
-              "type": "field"
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Responses"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$CSvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$CSvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -1578,7 +1582,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1605,7 +1610,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -1636,104 +1641,91 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgslbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "HitsRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Hits"
-              ],
-              "type": "alias"
+              "params": ["Name"],
+              "type": "tag"
+            },
+            {
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "RequestsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Requests"
-              ],
-              "type": "alias"
-            }
+          "measurement": "CADCgslbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["HitsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Hits"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["RequestsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Requests"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResponsesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Responses"],
+                "type": "alias"
+              }
+            ]
           ],
-          [{
-              "params": [
-                "ResponsesRate"
-              ],
-              "type": "field"
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Responses"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$GSLBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$GSLBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -1752,7 +1744,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1777,9 +1770,10 @@
     {
       "aliasColors": {},
       "bars": false,
+      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -1805,6 +1799,7 @@
       "nullPointMode": "null",
       "options": {},
       "percentage": false,
+      "pluginVersion": "6.2.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1812,108 +1807,95 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCsystem",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "PktCpuUsagePcnt"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "last"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Pkt CPU"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "MgmtCpuUsagePcnt"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "last"
-            },
-            {
-              "params": [
-                "Mgmt CPU"
-              ],
-              "type": "alias"
-            }
+          "measurement": "CADCsystem",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["PktCpuUsagePcnt"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": ["Pkt CPU"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["MgmtCpuUsagePcnt"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": ["Mgmt CPU"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["MemUsagePcnt"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": ["Mem"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResCpuUsagePcnt"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": ["Res CPU"],
+                "type": "alias"
+              }
+            ]
           ],
-          [{
-              "params": [
-                "MemUsagePcnt"
-              ],
-              "type": "field"
-            },
+          "tags": [
             {
-              "params": [],
-              "type": "last"
-            },
-            {
-              "params": [
-                "Mem"
-              ],
-              "type": "alias"
-            }
-          ],
-          [{
-              "params": [
-                "ResCpuUsagePcnt"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "last"
-            },
-            {
-              "params": [
-                "Res CPU"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -1932,7 +1914,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -1959,7 +1942,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -1988,94 +1971,86 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Responses/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Responses/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADClbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RequestByteRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Requests"
-              ],
-              "type": "alias"
+              "params": ["Name"],
+              "type": "tag"
+            },
+            {
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "ResponseByteRate"
-              ],
-              "type": "field"
+          "measurement": "CADClbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RequestByteRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Requests"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResponseByteRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Responses"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Responses"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$LBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$LBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -2094,7 +2069,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -2121,7 +2097,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -2150,94 +2126,86 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Responses/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Responses/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCcsvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RequestByteRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Requests"
-              ],
-              "type": "alias"
+              "params": ["Name"],
+              "type": "tag"
+            },
+            {
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "ResponseByteRate"
-              ],
-              "type": "field"
+          "measurement": "CADCcsvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RequestByteRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Requests"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResponseByteRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Responses"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Responses"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$CSvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$CSvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -2256,7 +2224,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -2283,7 +2252,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -2312,94 +2281,86 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Responses/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Responses/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $tag_Name $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "Name"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCgslbvserver",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RequestByteRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $tag_Name $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Requests"
-              ],
-              "type": "alias"
+              "params": ["Name"],
+              "type": "tag"
+            },
+            {
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "ResponseByteRate"
-              ],
-              "type": "field"
+          "measurement": "CADCgslbvserver",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RequestByteRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Requests"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResponseByteRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Responses"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             },
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Responses"
-              ],
-              "type": "alias"
+              "condition": "AND",
+              "key": "Name",
+              "operator": "=~",
+              "value": "/^$GSLBvServerName$/"
             }
           ]
-        ],
-        "tags": [{
-            "key": "ADC",
-            "operator": "=~",
-            "value": "/^$ADC$/"
-          },
-          {
-            "condition": "AND",
-            "key": "Name",
-            "operator": "=~",
-            "value": "/^$GSLBvServerName$/"
-          }
-        ]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -2418,7 +2379,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -2445,7 +2407,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -2472,7 +2434,8 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
+      "seriesOverrides": [
+        {
           "alias": "/Tx/",
           "transform": "negative-Y"
         },
@@ -2481,74 +2444,67 @@
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCip",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RxBytesRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Rx"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "TxBytesRate"
-              ],
-              "type": "field"
-            },
+          "measurement": "CADCip",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RxBytesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Rx"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["TxBytesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Tx"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
             {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Tx"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -2567,7 +2523,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -2594,7 +2551,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -2621,81 +2578,76 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Tx/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Tx/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCtcp",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RxBytesRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Rx"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "TxBytesRate"
-              ],
-              "type": "field"
-            },
+          "measurement": "CADCtcp",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RxBytesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Rx"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["TxBytesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Tx"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
             {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Tx"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -2714,7 +2666,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "Bps",
           "label": null,
           "logBase": 1,
@@ -2737,11 +2690,13 @@
       }
     },
     {
-      "columns": [{
-        "text": "Current",
-        "value": "current"
-      }],
-      "datasource": "EUCMonitoring",
+      "columns": [
+        {
+          "text": "Current",
+          "value": "current"
+        }
+      ],
+      "datasource": "${DS_EUCMONITORING}",
       "fontSize": "90%",
       "gridPos": {
         "h": 10,
@@ -2759,7 +2714,8 @@
         "col": 1,
         "desc": false
       },
-      "styles": [{
+      "styles": [
+        {
           "alias": "Time",
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
           "pattern": "Time",
@@ -2775,77 +2731,66 @@
           ],
           "decimals": 0,
           "pattern": "/.*/",
-          "thresholds": [
-            "30",
-            "60"
-          ],
+          "thresholds": ["30", "60"],
           "type": "number",
           "unit": "short"
         }
       ],
-      "targets": [{
-        "alias": "$tag_ADC: $tag_Subject - Status $tag_Status",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "Subject"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "Status"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "null"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCsslcertkey",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "DaysToExpiration"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $tag_Subject - Status $tag_Status",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "last"
+              "params": ["Subject"],
+              "type": "tag"
             },
             {
-              "params": [
-                "DaysToExpiration"
-              ],
-              "type": "alias"
+              "params": ["Status"],
+              "type": "tag"
+            },
+            {
+              "params": ["ADC"],
+              "type": "tag"
+            },
+            {
+              "params": ["null"],
+              "type": "fill"
+            }
+          ],
+          "measurement": "CADCsslcertkey",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["DaysToExpiration"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": ["DaysToExpiration"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Certficate Expiration (days)",
@@ -2860,7 +2805,7 @@
         "label": "Others",
         "threshold": 0
       },
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fontSize": "100%",
       "format": "percent",
       "gridPos": {
@@ -2883,74 +2828,67 @@
       "options": {},
       "pieType": "donut",
       "strokeWidth": 1,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCcache",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "HitsPcnt"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Hits"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "MissPcnt"
-              ],
-              "type": "field"
-            },
+          "measurement": "CADCcache",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["HitsPcnt"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Hits"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["MissPcnt"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Miss"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
             {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Miss"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Cache Hits / Miss %",
@@ -2964,7 +2902,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -2991,98 +2929,90 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Response/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Response/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADChttp",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "GetsRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "sum"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Gets"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "PostsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Posts"
-              ],
-              "type": "alias"
-            }
+          "measurement": "CADChttp",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["GetsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Gets"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["PostsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Posts"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["OthersRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": ["Others"],
+                "type": "alias"
+              }
+            ]
           ],
-          [{
-              "params": [
-                "OthersRate"
-              ],
-              "type": "field"
-            },
+          "tags": [
             {
-              "params": [],
-              "type": "sum"
-            },
-            {
-              "params": [
-                "Others"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -3101,7 +3031,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -3128,7 +3059,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 10,
@@ -3155,81 +3086,76 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Response/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Response/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": true,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADChttp",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RequestsBytesRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Request"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "ResponsesBytesRate"
-              ],
-              "type": "field"
-            },
+          "measurement": "CADChttp",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RequestsBytesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Request"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["ResponsesBytesRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Response"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": [
             {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Response"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -3248,7 +3174,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "Bps",
           "label": null,
           "logBase": 1,
@@ -3275,7 +3202,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -3302,77 +3229,70 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Tx/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Tx/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCip",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RxPacketsRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Rx"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "TxPacketsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Tx"
-              ],
-              "type": "alias"
-            }
-          ]
-        ],
-        "tags": []
-      }],
+          "measurement": "CADCip",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RxPacketsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Rx"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["TxPacketsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Tx"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -3391,7 +3311,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -3418,7 +3339,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -3445,77 +3366,70 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [{
-        "alias": "/Tx/",
-        "transform": "negative-Y"
-      }],
+      "seriesOverrides": [
+        {
+          "alias": "/Tx/",
+          "transform": "negative-Y"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCtcp",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "RxPacketsRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Rx Mbits"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "TxPacketsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Tx Mbits"
-              ],
-              "type": "alias"
-            }
-          ]
-        ],
-        "tags": []
-      }],
+          "measurement": "CADCtcp",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["RxPacketsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Rx Mbits"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["TxPacketsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Tx Mbits"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -3534,7 +3448,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -3561,7 +3476,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "EUCMonitoring",
+      "datasource": "${DS_EUCMONITORING}",
       "fill": 1,
       "gridPos": {
         "h": 5,
@@ -3592,108 +3507,95 @@
       "spaceLength": 10,
       "stack": true,
       "steppedLine": false,
-      "targets": [{
-        "alias": "$tag_ADC: $col",
-        "groupBy": [{
-            "params": [
-              "$__interval"
-            ],
-            "type": "time"
-          },
-          {
-            "params": [
-              "ADC"
-            ],
-            "type": "tag"
-          },
-          {
-            "params": [
-              "none"
-            ],
-            "type": "fill"
-          }
-        ],
-        "measurement": "CADCssl",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": "A",
-        "resultFormat": "time_series",
-        "select": [
-          [{
-              "params": [
-                "SessionsRate"
-              ],
-              "type": "field"
+      "targets": [
+        {
+          "alias": "$tag_ADC: $col",
+          "groupBy": [
+            {
+              "params": ["$__interval"],
+              "type": "time"
             },
             {
-              "params": [],
-              "type": "mean"
+              "params": ["ADC"],
+              "type": "tag"
             },
             {
-              "params": [
-                "Sessions"
-              ],
-              "type": "alias"
+              "params": ["none"],
+              "type": "fill"
             }
           ],
-          [{
-              "params": [
-                "NewSessionsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "New Sessions"
-              ],
-              "type": "alias"
-            }
+          "measurement": "CADCssl",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": ["SessionsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Sessions"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["NewSessionsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["New Sessions"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["BackendSessionsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Backend Sessions"],
+                "type": "alias"
+              }
+            ],
+            [
+              {
+                "params": ["TransactionsRate"],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": ["Transactions"],
+                "type": "alias"
+              }
+            ]
           ],
-          [{
-              "params": [
-                "BackendSessionsRate"
-              ],
-              "type": "field"
-            },
+          "tags": [
             {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Backend Sessions"
-              ],
-              "type": "alias"
-            }
-          ],
-          [{
-              "params": [
-                "TransactionsRate"
-              ],
-              "type": "field"
-            },
-            {
-              "params": [],
-              "type": "mean"
-            },
-            {
-              "params": [
-                "Transactions"
-              ],
-              "type": "alias"
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
             }
           ]
-        ],
-        "tags": [{
-          "key": "ADC",
-          "operator": "=~",
-          "value": "/^$ADC$/"
-        }]
-      }],
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -3712,7 +3614,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -3738,21 +3641,13 @@
   "refresh": "30s",
   "schemaVersion": 18,
   "style": "dark",
-  "tags": [
-    "EUCMonitoring",
-    "CADC"
-  ],
+  "tags": ["EUCMonitoring", "CADC", "Overview"],
   "templating": {
-    "list": [{
+    "list": [
+      {
         "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "EUCMonitoring",
+        "current": {},
+        "datasource": "${DS_EUCMONITORING}",
         "definition": "SHOW TAG VALUES WITH KEY = \"ADC\"",
         "hide": 0,
         "includeAll": true,
@@ -3773,11 +3668,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": "EUCMonitoring",
+        "current": {},
+        "datasource": "${DS_EUCMONITORING}",
         "definition": " \tSHOW TAG VALUES FROM \"CADClbvserver\" WITH KEY = \"Name\" WHERE \"ADC\" =~ /$ADC$/ ",
         "hide": 0,
         "includeAll": true,
@@ -3798,11 +3690,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": "EUCMonitoring",
+        "current": {},
+        "datasource": "${DS_EUCMONITORING}",
         "definition": "SHOW TAG VALUES FROM \"CADCcsvserver\" WITH KEY = \"Name\" WHERE \"ADC\" =~ /$ADC$/",
         "hide": 0,
         "includeAll": true,
@@ -3823,12 +3712,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "isNone": true,
-          "text": "None",
-          "value": ""
-        },
-        "datasource": "EUCMonitoring",
+        "current": {},
+        "datasource": "${DS_EUCMONITORING}",
         "definition": "SHOW TAG VALUES FROM \"CADCgslbvserver\" WITH KEY = \"Name\" WHERE \"ADC\" =~ /$ADC$/",
         "hide": 0,
         "includeAll": false,
@@ -3866,20 +3751,10 @@
       "2h",
       "1d"
     ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
-    ]
+    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
   },
   "timezone": "",
   "title": "CADC Overview",
-  "uid": "5PJoPBGZk",
-  "version": 31
+  "uid": "",
+  "version": 1
 }
