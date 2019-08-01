@@ -4,18 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.1.2] - 2019-07-30
+## [0.1.2] - 2019-08-01
 
 ### Added
 
+**New Dashboard** - CADC LBvServer
+**New Dashboard** - CADC CSvServer
+**New Dashboard** - CADC GSLBvServer
+
 ### Fixed
 
-- Update Dashboards from the "Export for sharing externally" to normal export, to avoid datasource templating errors.
-- Cast Nitro Values to [int64] instead of [int] for all instances. - Thanks to [Kevin Schwartzmiller](https://twitter.com/KSchwartzmiller) for the find
+- Update Dashboards from the "Export for sharing externally" and dashboard import. This includes trying provisioning files, and then reverting to grafana http api.
+- Cast certain ADC Nitro Values to [int64] instead of [int] for csvserver, lbvserver, gslbvserver instances. - Thanks to [Kevin Schwartzmiller](https://twitter.com/KSchwartzmiller) for the find
 
 ### Changed
 
 - Made the error log output from the Get-CADC functions consistent with each other.
+- Insert links between similarly grouped dashboards
 
 ## [0.1.1] - 2019-07-29
 
