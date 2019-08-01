@@ -8,19 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### Added
 
-**New Dashboard** - CADC LBvServer
-**New Dashboard** - CADC CSvServer
-**New Dashboard** - CADC GSLBvServer
+**New Dashboard** - CADC LBvServers
+**New Dashboard** - CADC CSvServers
+**New Dashboard** - CADC GSLBvServers
 
 ### Fixed
 
 - Update Dashboards from the "Export for sharing externally" and dashboard import. This includes trying provisioning files, and then reverting to grafana http api.
-- Cast certain ADC Nitro Values to [int64] instead of [int] for csvserver, lbvserver, gslbvserver instances. - Thanks to [Kevin Schwartzmiller](https://twitter.com/KSchwartzmiller) for the find
+- Cast certain ADC Nitro Values to [int64] instead of [int] including csvserver, lbvserver, gslbvserver instances. - Thanks to [Kevin Schwartzmiller](https://twitter.com/KSchwartzmiller) for the find
 
 ### Changed
 
 - Made the error log output from the Get-CADC functions consistent with each other.
 - Insert links between similarly grouped dashboards
+- Renamed CVAD-DeliveryGroupsDetails.json to CVAD-DeliveryGroups.json
 
 ## [0.1.1] - 2019-07-29
 
