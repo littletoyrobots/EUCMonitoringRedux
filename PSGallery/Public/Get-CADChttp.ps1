@@ -59,23 +59,23 @@ function Get-CADChttp {
             foreach ($http in $Results) {
                 # Requests
                 $TotalRequests = [int64]$http.httptotrequests
-                $RequestsRate = $http.httprequestsrate
+                $RequestsRate = [int64]$http.httprequestsrate
                 $TotalRequestsBytes = [int64]$https.httptotrxrequestbytes
-                $RequestsBytesRate = $http.httprxrequestbytesrate
+                $RequestsBytesRate = [int64]$http.httprxrequestbytesrate
 
                 # Responses
                 $TotalResponses = [int64]$http.httptotresponses
-                $ResponsesRate = $http.httpresponsesrate
+                $ResponsesRate = [int64]$http.httpresponsesrate
                 $TotalResponsesBytes = [int64]$http.httptotrxresponsebytes
-                $ResponsesBytesRate = $http.httprxresponsebytesrate
+                $ResponsesBytesRate = [int64]$http.httprxresponsebytesrate
 
                 # Gets / Posts / Other
                 $TotalGets = [int64]$http.httptotgets
-                $GetsRate = $http.httpgetsrate
+                $GetsRate = [int64]$http.httpgetsrate
                 $TotalPosts = [int64]$http.httptotposts
-                $PostsRate = $http.httppostsrate
+                $PostsRate = [int64]$http.httppostsrate
                 $TotalOthers = [int64]$http.httptotothers
-                $OthersRate = $http.httpothersrate
+                $OthersRate = [int64]$http.httpothersrate
 
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalRequests: $TotalRequests, RequestsRate: $RequestsRate"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalRequestsBytes: $TotalRequestsBytes, RequestsBytesRate: $RequestsBytesRate"

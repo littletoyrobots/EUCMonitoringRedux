@@ -59,21 +59,21 @@ function Get-CADCtcp {
             foreach ($tcp in $Results) {
                 # Rx
                 $TotalRxPackets = [int64]$tcp.tcptotrxpkts
-                $RxPacketsRate = $tcp.tcprxpktsrate
+                $RxPacketsRate = [int64]$tcp.tcprxpktsrate
                 $TotalRxBytes = [int64]$tcp.tcptotrxbytes
-                $RxBytesRate = $tcp.tcprxbytesrate
+                $RxBytesRate = [int64]$tcp.tcprxbytesrate
 
                 # Tx
                 $TotalTxPackets = [int64]$tcp.tcptottxpkts
-                $TxPacketsRate = $tcp.tcptxpktsrate
+                $TxPacketsRate = [int64]$tcp.tcptxpktsrate
                 $TotalTxBytes = [int64]$tcp.tcptottxbytes
-                $TxBytesRate = $tcp.tcptxbytesrate
+                $TxBytesRate = [int64]$tcp.tcptxbytesrate
 
-                $ActiveServerConnections = [int]$tcp.activeserverconn
-                $CurClientConnEstablished = [int]$tcp.tcpcurclientconnestablished
-                $CurServerConnEstablished = [int]$tcp.tcpcurserverconnestablished
-                $CurrentClientConnections = [int]$tcp.tcpcurclientconn
-                $CurrentServerConnections = [int]$tcp.tcpcurserverconn
+                $ActiveServerConnections = [int64]$tcp.activeserverconn
+                $CurClientConnEstablished = [int64]$tcp.tcpcurclientconnestablished
+                $CurServerConnEstablished = [int64]$tcp.tcpcurserverconnestablished
+                $CurrentClientConnections = [int64]$tcp.tcpcurclientconn
+                $CurrentServerConnections = [int64]$tcp.tcpcurserverconn
 
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalRxPackets: $TotalRxPackets, RxPacketsRate: $RxPacketsRate"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalRxBytes: $TotalRxBytes, RxBytesRate: $RxBytesRate"

@@ -13,3 +13,4 @@
 1. Read config and tests from JSON file
 1. Get Start-EUCMonitor.ps1 working for legacy support
 1. Make in-place upgrade script, preferably named Upgrade-VisualizationSetup.ps1
+1. Make in-place dashboard upgrade script that can target either local or remote grafana instances (with proper credentials)

@@ -58,18 +58,18 @@ function Get-CADCcache {
             $Results = Get-CADCNitroValue -ADCSession $ADCSession -Stat "cache"
 
             foreach ($cache in $Results) {
-                $RecentHitPcnt = [int]$cache.cacherecentpercenthit
+                $RecentHitPcnt = [int64]$cache.cacherecentpercenthit
                 $RecentMissPcnt = 100 - $RecentHitPcnt
 
-                $CurrentHits = [int]$cache.cachecurhits
-                $CurrentMiss = [int]$cache.cachecurmisses
+                $CurrentHits = [int64]$cache.cachecurhits
+                $CurrentMiss = [int64]$cache.cachecurmisses
 
-                $HitsPcnt = [int]$cache.cachepercenthit
+                $HitsPcnt = [int64]$cache.cachepercenthit
                 $MissPcnt = 100 - $HitsPcnt
 
-                $HitsRate = [int]$cache.cachehitsrate
-                $RequestsRate = [int]$cache.cacherequestsrate
-                $MissRate = [int]$cache.cachemissesrate
+                $HitsRate = [int64]$cache.cachehitsrate
+                $RequestsRate = [int64]$cache.cacherequestsrate
+                $MissRate = [int64]$cache.cachemissesrate
 
                 $TotalHits = [int64]$cache.cachetothits
                 $TotalMisses = [int64]$cache.cachetotmisses

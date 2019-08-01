@@ -59,19 +59,19 @@ function Get-CADCip {
             foreach ($ip in $Results) {
                 # Rx
                 $TotalRxPackets = [int64]$ip.iptotrxpkts
-                $RxPacketsRate = $ip.iprxpktsrate
+                $RxPacketsRate = [int64]$ip.iprxpktsrate
                 $TotalRxBytes = [int64]$ip.iptotrxbytes
-                $RxBytesRate = $ip.iprxbytesrate
+                $RxBytesRate = [int64]$ip.iprxbytesrate
                 $TotalRxMbits = [int64]$ip.iptotrxmbits
-                $RxMbitsRate = $ip.iprxmbitsrate
+                $RxMbitsRate = [int64]$ip.iprxmbitsrate
 
                 # Tx
                 $TotalTxPackets = [int64]$ip.iptottxpkts
-                $TxPacketsRate = $ip.iptxpktsrate
+                $TxPacketsRate = [int64]$ip.iptxpktsrate
                 $TotalTxBytes = [int64]$ip.iptottxbytes
-                $TxBytesRate = $ip.iptxbytesrate
+                $TxBytesRate = [int64]$ip.iptxbytesrate
                 $TotalTxMbits = [int64]$ip.iptottxmbits
-                $TxMbitsRate = $ip.iptxmbitsrate
+                $TxMbitsRate = [int64]$ip.iptxmbitsrate
 
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalRxPackets: $TotalRxPackets, RxPacketsRate: $RxPacketsRate"
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] TotalRxBytes: $TotalRxBytes, RxBytesRate: $RxBytesRate"

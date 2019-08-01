@@ -58,19 +58,19 @@ function Get-CADCssl {
 
             foreach ($ssl in $Results) {
                 $TotalSessions = [int64]$ssl.ssltotsessions
-                $SessionsRate = $ssl.sslsessionsrate
+                $SessionsRate = [int64]$ssl.sslsessionsrate
                 $TotalTransactions = [int64]$ssl.ssltottransactions
-                $TransactionsRate = $ssl.ssltransactionsrate
+                $TransactionsRate = [int64]$ssl.ssltransactionsrate
 
                 $TotalNewSessions = [int64]$ssl.ssltotnewsessions
-                $NewSessionsRate = $ssl.sslnewsessionsrate
+                $NewSessionsRate = [int64]$ssl.sslnewsessionsrate
                 $TotalSessionMiss = [int64]$ssl.ssltotsessionmiss
-                $SessionsMissRate = $ssl.sslsessionmissrate
+                $SessionsMissRate = [int64]$ssl.sslsessionmissrate
                 $TotalSessionHits = [int64]$ssl.ssltotsessionhits
-                $SessionsHitsRate = $ssl.sslsessionhitsrate
+                $SessionsHitsRate = [int64]$ssl.sslsessionhitsrate
 
                 $TotalBackendSessions = [int64]$ssl.sslbetotsessions
-                $BackendSessionsRate = $ssl.sslbesessionsrate
+                $BackendSessionsRate = [int64]$ssl.sslbesessionsrate
 
                 if ($ssl.sslenginestatus -eq 1) {
                     $EngineStatus = "UP"
