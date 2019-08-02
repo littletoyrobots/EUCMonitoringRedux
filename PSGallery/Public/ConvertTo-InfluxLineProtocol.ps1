@@ -54,7 +54,8 @@ Function ConvertTo-InfluxLineProtocol {
         }
         elseif ($IncludeTimeStamp) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Fetching timestamp"
-            $Timestamp = Get-InfluxTimestamp
+            try { $Timestamp = Get-InfluxTimestamp }
+            catch { Throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Error getting InfluxTimestamp" }
         }
         else {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] No timestamp"
@@ -103,7 +104,8 @@ Function ConvertTo-InfluxLineProtocol {
                 # If its a string, we'll treat it as a tag
                 elseif ($_.Value -is [string]) {
                     # So, this is a little tricky, Thank you GoDaddy certs...
-                    $SeriesString += ",$($_.Name)=$($_.Value.trim() -replace '/', '\/' -replace '=', '\=')"
+                    # And digicert, and wildcart certs.
+                    $SeriesString += ",$($_.Name)=$($_.Value.trim() -replace ',', '\,' -replace '=', '\=' -replace '"', '\"')"
                 }
 
                 # Handles Integers, Floatin Points and Booleans just fine. Hopefully the ToString() of
@@ -140,7 +142,7 @@ Function ConvertTo-InfluxLineProtocol {
     } #PROCESS
 
     End {
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+        #    Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
     }
 }
 
