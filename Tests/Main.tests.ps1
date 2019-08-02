@@ -1,4 +1,6 @@
-# AppVeyor Testing
+<# AppVeyor Testing
+
+#>
 $projectRoot = $env:APPVEYOR_BUILD_FOLDER
 
 # Local Testing
@@ -61,33 +63,34 @@ Describe "Function validation" {
         $test[0].name | Should Be $file.basename
     }
 
-    It "<file> should have help block" {
-        param($file)
-        $file.fullname | Should -FileContentMatch '<#'
-        $file.fullname | Should -FileContentMatch '#>'
-    }
-    It "<file> should have a SYNOPSIS section in the help block" {
-        param($file)
-        $file.fullname | Should -FileContentMatch '.SYNOPSIS'
-    }
-    It "<file> should have a DESCRIPTION section in the help block" {
-        param($file)
-        $file.fullname | Should -FileContentMatch '.DESCRIPTION'
-    }
-    It "<file> should have a EXAMPLE section in the help block" {
-        param($file)
-        $file.fullname | Should -FileContentMatch '.EXAMPLE'
-    }
-
-    It "<file> should be an advanced function" {
-        param($file)
-        $file.fullname | Should -FileContentMatch 'function'
-        $file.fullname | Should -FileContentMatch 'cmdletbinding'
-        $file.fullname | Should -FileContentMatch 'param'
-    }
-    It "<file> should contain Write-Verbose blocks" {
-        $file.fullname | Should -FileContentMatch 'Write-Verbose'
-    }
+    # Templating for future tests.
+    #    It "<file> should have help block" {
+    #        param($file)
+    #        $file.fullname | Should -FileContentMatch '<#'
+    #        $file.fullname | Should -FileContentMatch '#>'
+    #    }
+    #    It "<file> should have a SYNOPSIS section in the help block" {
+    #        param($file)
+    #        $file.fullname | Should -FileContentMatch '.SYNOPSIS'
+    #    }
+    #    It "<file> should have a DESCRIPTION section in the help block" {
+    #        param($file)
+    #        $file.fullname | Should -FileContentMatch '.DESCRIPTION'
+    #    }
+    #    It "<file> should have a EXAMPLE section in the help block" {
+    #        param($file)
+    #        $file.fullname | Should -FileContentMatch '.EXAMPLE'
+    #    }
+    #
+    #    It "<file> should be an advanced function" {
+    #        param($file)
+    #        $file.fullname | Should -FileContentMatch 'function'
+    #        $file.fullname | Should -FileContentMatch 'cmdletbinding'
+    #        $file.fullname | Should -FileContentMatch 'param'
+    #    }
+    #    It "<file> should contain Write-Verbose blocks" {
+    #        $file.fullname | Should -FileContentMatch 'Write-Verbose'
+    #    }
 
 
 }
