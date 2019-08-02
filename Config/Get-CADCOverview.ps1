@@ -29,7 +29,9 @@ if ($null -ne $CitrixADCGateways) {
     #$ADCResults = @()
 
     # Its nice to have all the timestamps be the same when you're graphing in Grafana later.
-    $TimeStamp = Get-InfluxTimestamp
+
+    try { $Timestamp = Get-InfluxTimestamp }
+    catch { Throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Error getting InfluxTimestamp" }
 
     # We want the current log to only have just what's wrong with the latest run.
     if (Test-Path $ADCErrorLog) {

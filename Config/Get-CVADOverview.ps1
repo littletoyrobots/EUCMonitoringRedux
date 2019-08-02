@@ -12,8 +12,6 @@ $CVADSites = @( # Keep the prepended comma so that the sites work as expected.
 # Assume the easy-install.
 Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
 # Import-Module EUCMonitoringRedux
-Import-Module Citrix.*
-
 
 <# Citrix Cloud?
 Obtain a Citrix Cloud automation credential as follows:
@@ -35,7 +33,8 @@ if (Test-Path $WorkloadErrorLog) {
     Remove-Item -Path $WorkloadErrorLog -Force
 }
 
-$TimeStamp = Get-InfluxTimestamp
+try { $Timestamp = Get-InfluxTimestamp }
+catch { Throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Error getting InfluxTimestamp" }
 
 foreach ($Site in $CVADSites) {
     Try {
@@ -59,9 +58,9 @@ foreach ($Site in $CVADSites) {
     }
     catch {
         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
-        Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly."
+        Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - Site: $($Site -join ', ')"
         "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $WorkloadErrorLog -Append
-        "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly." | Out-File $WorkloadErrorLog -Append
+        "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly -  Site: $($Site -join ', ')" | Out-File $WorkloadErrorLog -Append
     }
 }
 

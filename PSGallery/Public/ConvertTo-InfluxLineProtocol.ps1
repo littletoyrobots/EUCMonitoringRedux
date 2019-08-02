@@ -42,7 +42,7 @@ Function ConvertTo-InfluxLineProtocol {
         [Parameter(Mandatory = $false)]
         [string]$Series,
 
-        [int64]$Timestamp,
+        [int64]$Timestamp = 0,
 
         [switch]$IncludeTimeStamp
     )
@@ -59,6 +59,7 @@ Function ConvertTo-InfluxLineProtocol {
         }
         else {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] No timestamp"
+            $IncludeTimeStamp = $false
         }
     } #BEGIN
 
