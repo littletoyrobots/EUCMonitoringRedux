@@ -26,7 +26,7 @@ $ADCErrorHistory = Join-Path -Path $BaseDir -ChildPath "ADC-ErrorHistory.txt"
 
 # Do the things.
 if ($null -ne $CitrixADCGateways) {
-    $ADCResults = @()
+    #$ADCResults = @()
 
     # Its nice to have all the timestamps be the same when you're graphing in Grafana later.
     $TimeStamp = Get-InfluxTimestamp
@@ -44,25 +44,28 @@ if ($null -ne $CitrixADCGateways) {
                 ErrorLog   = $ADCErrorLog
             }
 
-            $ADCResults += Get-CADCcache @ADCParams
-            $ADCResults += Get-CADCcsvserver @ADCParams
-            $ADCResults += Get-CADCgatewayuser @ADCParams
-            $ADCResults += Get-CADCgslbvserver @ADCParams
-            $ADCResults += Get-CADChttp @ADCParams
-            $ADCResults += Get-CADCip @ADCParams
-            $ADCResults += Get-CADClbvserver @ADCParams
-            $ADCResults += Get-CADCssl @ADCParams
-            $ADCResults += Get-CADCsslcertkey @ADCParams
-            $ADCResults += Get-CADCsystem @ADCParams
-            $ADCResults += Get-CADCtcp @ADCParams
+            Get-CADCcache @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADCcsvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADCgatewayuser @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADCgslbvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADChttp @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADCip @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADClbvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADCssl @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADCsystem @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            Get-CADCtcp @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
 
-            $ADCResults | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+            # If everything looks normal but you're not getting ADC data in your dashboard, its probably due
+            # to this function.  Exceptions have been made for wildcards, '=' and '@' symbols, but certs are
+            # weird.  Comment out this next function out.
+            Get-CADCsslcertkey @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+
         }
         catch {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
-            Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly."
+            Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - ADC: $ADC"
             "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
-            "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly." | Out-File $ADCErrorLog -Append
+            "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - ADC: $ADC" | Out-File $ADCErrorLog -Append
         }
     }
 }
