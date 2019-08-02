@@ -70,16 +70,22 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1564660424498,
+  "iteration": 1564749848218,
   "links": [
     {
       "icon": "external link",
-      "tags": ["EUCMonitoring", "CADC"],
+      "tags": [
+        "EUCMonitoring",
+        "CADC"
+      ],
       "type": "dashboards"
     },
     {
       "icon": "external link",
-      "tags": ["EUCMonitoring", "Overview"],
+      "tags": [
+        "EUCMonitoring",
+        "Overview"
+      ],
       "type": "dashboards"
     }
   ],
@@ -88,7 +94,11 @@
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": true,
-      "colors": ["#d44a3a", "rgba(237, 129, 40, 0.89)", "#299c46"],
+      "colors": [
+        "#d44a3a",
+        "rgba(237, 129, 40, 0.89)",
+        "#299c46"
+      ],
       "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
@@ -144,11 +154,15 @@
         {
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["null"],
+              "params": [
+                "null"
+              ],
               "type": "fill"
             }
           ],
@@ -160,7 +174,9 @@
           "select": [
             [
               {
-                "params": ["TotalUsers"],
+                "params": [
+                  "TotalUsers"
+                ],
                 "type": "field"
               },
               {
@@ -197,7 +213,11 @@
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": false,
-      "colors": ["#d44a3a", "rgba(237, 129, 40, 0.89)", "#299c46"],
+      "colors": [
+        "#d44a3a",
+        "rgba(237, 129, 40, 0.89)",
+        "#299c46"
+      ],
       "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
@@ -253,11 +273,15 @@
         {
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["null"],
+              "params": [
+                "null"
+              ],
               "type": "fill"
             }
           ],
@@ -269,7 +293,9 @@
           "select": [
             [
               {
-                "params": ["ICAUsers"],
+                "params": [
+                  "ICAUsers"
+                ],
                 "type": "field"
               },
               {
@@ -306,7 +332,11 @@
       "cacheTimeout": null,
       "colorBackground": false,
       "colorValue": false,
-      "colors": ["#d44a3a", "rgba(237, 129, 40, 0.89)", "#299c46"],
+      "colors": [
+        "#d44a3a",
+        "rgba(237, 129, 40, 0.89)",
+        "#299c46"
+      ],
       "datasource": "${DS_EUCMONITORING}",
       "format": "none",
       "gauge": {
@@ -362,11 +392,15 @@
         {
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["null"],
+              "params": [
+                "null"
+              ],
               "type": "fill"
             }
           ],
@@ -378,7 +412,9 @@
           "select": [
             [
               {
-                "params": ["VPNUsers"],
+                "params": [
+                  "VPNUsers"
+                ],
                 "type": "field"
               },
               {
@@ -423,7 +459,9 @@
       "links": [],
       "options": {
         "fieldOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "defaults": {
             "max": 100,
             "min": 0,
@@ -459,11 +497,15 @@
         {
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -475,7 +517,9 @@
           "select": [
             [
               {
-                "params": ["Health"],
+                "params": [
+                  "Health"
+                ],
                 "type": "field"
               },
               {
@@ -548,15 +592,21 @@
           "alias": "$tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -568,7 +618,9 @@
           "select": [
             [
               {
-                "params": ["CurrentClientConnections"],
+                "params": [
+                  "CurrentClientConnections"
+                ],
                 "type": "field"
               },
               {
@@ -576,13 +628,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Client"],
+                "params": [
+                  "Client"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["CurrentServerConnections"],
+                "params": [
+                  "CurrentServerConnections"
+                ],
                 "type": "field"
               },
               {
@@ -590,13 +646,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Server"],
+                "params": [
+                  "Server"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["EstablishedConnections"],
+                "params": [
+                  "EstablishedConnections"
+                ],
                 "type": "field"
               },
               {
@@ -604,7 +664,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Established"],
+                "params": [
+                  "Established"
+                ],
                 "type": "alias"
               }
             ]
@@ -677,7 +739,9 @@
       "links": [],
       "options": {
         "fieldOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "defaults": {
             "max": 100,
             "min": 0,
@@ -713,11 +777,15 @@
         {
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -729,7 +797,9 @@
           "select": [
             [
               {
-                "params": ["Health"],
+                "params": [
+                  "Health"
+                ],
                 "type": "field"
               },
               {
@@ -800,15 +870,21 @@
           "alias": "$tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -820,7 +896,9 @@
           "select": [
             [
               {
-                "params": ["CurrentClientConnections"],
+                "params": [
+                  "CurrentClientConnections"
+                ],
                 "type": "field"
               },
               {
@@ -828,13 +906,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Client"],
+                "params": [
+                  "Client"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["CurrentServerConnections"],
+                "params": [
+                  "CurrentServerConnections"
+                ],
                 "type": "field"
               },
               {
@@ -842,7 +924,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Server"],
+                "params": [
+                  "Server"
+                ],
                 "type": "alias"
               }
             ]
@@ -915,7 +999,9 @@
       "links": [],
       "options": {
         "fieldOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "defaults": {
             "max": 100,
             "min": 0,
@@ -951,11 +1037,15 @@
         {
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -967,7 +1057,9 @@
           "select": [
             [
               {
-                "params": ["Health"],
+                "params": [
+                  "Health"
+                ],
                 "type": "field"
               },
               {
@@ -1038,15 +1130,21 @@
           "alias": "$tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -1058,7 +1156,9 @@
           "select": [
             [
               {
-                "params": ["CurrentClientConnections"],
+                "params": [
+                  "CurrentClientConnections"
+                ],
                 "type": "field"
               },
               {
@@ -1066,13 +1166,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Client"],
+                "params": [
+                  "Client"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["CurrentServerConnections"],
+                "params": [
+                  "CurrentServerConnections"
+                ],
                 "type": "field"
               },
               {
@@ -1080,7 +1184,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Server"],
+                "params": [
+                  "Server"
+                ],
                 "type": "alias"
               }
             ]
@@ -1182,15 +1288,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -1202,7 +1314,9 @@
           "select": [
             [
               {
-                "params": ["ICAUsers"],
+                "params": [
+                  "ICAUsers"
+                ],
                 "type": "field"
               },
               {
@@ -1210,13 +1324,17 @@
                 "type": "sum"
               },
               {
-                "params": ["ICA Users"],
+                "params": [
+                  "ICA Users"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["VPNUsers"],
+                "params": [
+                  "VPNUsers"
+                ],
                 "type": "field"
               },
               {
@@ -1224,7 +1342,9 @@
                 "type": "sum"
               },
               {
-                "params": ["VPN Users"],
+                "params": [
+                  "VPN Users"
+                ],
                 "type": "alias"
               }
             ]
@@ -1322,19 +1442,27 @@
           "alias": "$tag_ADC: $tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -1346,7 +1474,9 @@
           "select": [
             [
               {
-                "params": ["HitsRate"],
+                "params": [
+                  "HitsRate"
+                ],
                 "type": "field"
               },
               {
@@ -1354,13 +1484,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Hits"],
+                "params": [
+                  "Hits"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["RequestsRate"],
+                "params": [
+                  "RequestsRate"
+                ],
                 "type": "field"
               },
               {
@@ -1368,13 +1502,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Requests"],
+                "params": [
+                  "Requests"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResponsesRate"],
+                "params": [
+                  "ResponsesRate"
+                ],
                 "type": "field"
               },
               {
@@ -1382,7 +1520,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Responses"],
+                "params": [
+                  "Responses"
+                ],
                 "type": "alias"
               }
             ]
@@ -1484,19 +1624,27 @@
           "alias": "$tag_ADC: $tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -1508,7 +1656,9 @@
           "select": [
             [
               {
-                "params": ["HitsRate"],
+                "params": [
+                  "HitsRate"
+                ],
                 "type": "field"
               },
               {
@@ -1516,13 +1666,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Hits"],
+                "params": [
+                  "Hits"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["RequestsRate"],
+                "params": [
+                  "RequestsRate"
+                ],
                 "type": "field"
               },
               {
@@ -1530,13 +1684,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Requests"],
+                "params": [
+                  "Requests"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResponsesRate"],
+                "params": [
+                  "ResponsesRate"
+                ],
                 "type": "field"
               },
               {
@@ -1544,7 +1702,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Responses"],
+                "params": [
+                  "Responses"
+                ],
                 "type": "alias"
               }
             ]
@@ -1646,19 +1806,27 @@
           "alias": "$tag_ADC: $tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -1670,7 +1838,9 @@
           "select": [
             [
               {
-                "params": ["HitsRate"],
+                "params": [
+                  "HitsRate"
+                ],
                 "type": "field"
               },
               {
@@ -1678,13 +1848,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Hits"],
+                "params": [
+                  "Hits"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["RequestsRate"],
+                "params": [
+                  "RequestsRate"
+                ],
                 "type": "field"
               },
               {
@@ -1692,13 +1866,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Requests"],
+                "params": [
+                  "Requests"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResponsesRate"],
+                "params": [
+                  "ResponsesRate"
+                ],
                 "type": "field"
               },
               {
@@ -1706,7 +1884,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Responses"],
+                "params": [
+                  "Responses"
+                ],
                 "type": "alias"
               }
             ]
@@ -1812,15 +1992,21 @@
           "alias": "$tag_ADC $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -1832,7 +2018,9 @@
           "select": [
             [
               {
-                "params": ["PktCpuUsagePcnt"],
+                "params": [
+                  "PktCpuUsagePcnt"
+                ],
                 "type": "field"
               },
               {
@@ -1840,13 +2028,17 @@
                 "type": "last"
               },
               {
-                "params": ["Pkt CPU"],
+                "params": [
+                  "Pkt CPU"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["MgmtCpuUsagePcnt"],
+                "params": [
+                  "MgmtCpuUsagePcnt"
+                ],
                 "type": "field"
               },
               {
@@ -1854,13 +2046,17 @@
                 "type": "last"
               },
               {
-                "params": ["Mgmt CPU"],
+                "params": [
+                  "Mgmt CPU"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["MemUsagePcnt"],
+                "params": [
+                  "MemUsagePcnt"
+                ],
                 "type": "field"
               },
               {
@@ -1868,13 +2064,17 @@
                 "type": "last"
               },
               {
-                "params": ["Mem"],
+                "params": [
+                  "Mem"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResCpuUsagePcnt"],
+                "params": [
+                  "ResCpuUsagePcnt"
+                ],
                 "type": "field"
               },
               {
@@ -1882,7 +2082,9 @@
                 "type": "last"
               },
               {
-                "params": ["Res CPU"],
+                "params": [
+                  "Res CPU"
+                ],
                 "type": "alias"
               }
             ]
@@ -1985,19 +2187,27 @@
           "alias": "$tag_ADC: $tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -2009,7 +2219,9 @@
           "select": [
             [
               {
-                "params": ["RequestByteRate"],
+                "params": [
+                  "RequestByteRate"
+                ],
                 "type": "field"
               },
               {
@@ -2017,13 +2229,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Requests"],
+                "params": [
+                  "Requests"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResponseByteRate"],
+                "params": [
+                  "ResponseByteRate"
+                ],
                 "type": "field"
               },
               {
@@ -2031,7 +2247,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Responses"],
+                "params": [
+                  "Responses"
+                ],
                 "type": "alias"
               }
             ]
@@ -2140,19 +2358,27 @@
           "alias": "$tag_ADC: $tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -2164,7 +2390,9 @@
           "select": [
             [
               {
-                "params": ["RequestByteRate"],
+                "params": [
+                  "RequestByteRate"
+                ],
                 "type": "field"
               },
               {
@@ -2172,13 +2400,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Requests"],
+                "params": [
+                  "Requests"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResponseByteRate"],
+                "params": [
+                  "ResponseByteRate"
+                ],
                 "type": "field"
               },
               {
@@ -2186,7 +2418,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Responses"],
+                "params": [
+                  "Responses"
+                ],
                 "type": "alias"
               }
             ]
@@ -2295,19 +2529,27 @@
           "alias": "$tag_ADC: $tag_Name $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["Name"],
+              "params": [
+                "Name"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -2319,7 +2561,9 @@
           "select": [
             [
               {
-                "params": ["RequestByteRate"],
+                "params": [
+                  "RequestByteRate"
+                ],
                 "type": "field"
               },
               {
@@ -2327,13 +2571,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Requests"],
+                "params": [
+                  "Requests"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResponseByteRate"],
+                "params": [
+                  "ResponseByteRate"
+                ],
                 "type": "field"
               },
               {
@@ -2341,7 +2589,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Responses"],
+                "params": [
+                  "Responses"
+                ],
                 "type": "alias"
               }
             ]
@@ -2449,15 +2699,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -2469,7 +2725,9 @@
           "select": [
             [
               {
-                "params": ["RxBytesRate"],
+                "params": [
+                  "RxBytesRate"
+                ],
                 "type": "field"
               },
               {
@@ -2477,13 +2735,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Rx"],
+                "params": [
+                  "Rx"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["TxBytesRate"],
+                "params": [
+                  "TxBytesRate"
+                ],
                 "type": "field"
               },
               {
@@ -2491,7 +2753,9 @@
                 "type": "mean"
               },
               {
-                "params": ["Tx"],
+                "params": [
+                  "Tx"
+                ],
                 "type": "alias"
               }
             ]
@@ -2592,15 +2856,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -2612,7 +2882,9 @@
           "select": [
             [
               {
-                "params": ["RxBytesRate"],
+                "params": [
+                  "RxBytesRate"
+                ],
                 "type": "field"
               },
               {
@@ -2620,13 +2892,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Rx"],
+                "params": [
+                  "Rx"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["TxBytesRate"],
+                "params": [
+                  "TxBytesRate"
+                ],
                 "type": "field"
               },
               {
@@ -2634,7 +2910,9 @@
                 "type": "mean"
               },
               {
-                "params": ["Tx"],
+                "params": [
+                  "Tx"
+                ],
                 "type": "alias"
               }
             ]
@@ -2731,7 +3009,10 @@
           ],
           "decimals": 0,
           "pattern": "/.*/",
-          "thresholds": ["30", "60"],
+          "thresholds": [
+            "30",
+            "60"
+          ],
           "type": "number",
           "unit": "short"
         }
@@ -2741,23 +3022,33 @@
           "alias": "$tag_ADC: $tag_Subject - Status $tag_Status",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["Subject"],
+              "params": [
+                "Subject"
+              ],
               "type": "tag"
             },
             {
-              "params": ["Status"],
+              "params": [
+                "Status"
+              ],
               "type": "tag"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["null"],
+              "params": [
+                "null"
+              ],
               "type": "fill"
             }
           ],
@@ -2769,7 +3060,9 @@
           "select": [
             [
               {
-                "params": ["DaysToExpiration"],
+                "params": [
+                  "DaysToExpiration"
+                ],
                 "type": "field"
               },
               {
@@ -2777,7 +3070,9 @@
                 "type": "last"
               },
               {
-                "params": ["DaysToExpiration"],
+                "params": [
+                  "DaysToExpiration"
+                ],
                 "type": "alias"
               }
             ]
@@ -2833,15 +3128,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -2853,7 +3154,9 @@
           "select": [
             [
               {
-                "params": ["HitsPcnt"],
+                "params": [
+                  "HitsPcnt"
+                ],
                 "type": "field"
               },
               {
@@ -2861,13 +3164,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Hits"],
+                "params": [
+                  "Hits"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["MissPcnt"],
+                "params": [
+                  "MissPcnt"
+                ],
                 "type": "field"
               },
               {
@@ -2875,7 +3182,9 @@
                 "type": "mean"
               },
               {
-                "params": ["Miss"],
+                "params": [
+                  "Miss"
+                ],
                 "type": "alias"
               }
             ]
@@ -2943,15 +3252,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -2963,7 +3278,9 @@
           "select": [
             [
               {
-                "params": ["GetsRate"],
+                "params": [
+                  "GetsRate"
+                ],
                 "type": "field"
               },
               {
@@ -2971,13 +3288,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Gets"],
+                "params": [
+                  "Gets"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["PostsRate"],
+                "params": [
+                  "PostsRate"
+                ],
                 "type": "field"
               },
               {
@@ -2985,13 +3306,17 @@
                 "type": "sum"
               },
               {
-                "params": ["Posts"],
+                "params": [
+                  "Posts"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["OthersRate"],
+                "params": [
+                  "OthersRate"
+                ],
                 "type": "field"
               },
               {
@@ -2999,7 +3324,9 @@
                 "type": "sum"
               },
               {
-                "params": ["Others"],
+                "params": [
+                  "Others"
+                ],
                 "type": "alias"
               }
             ]
@@ -3100,15 +3427,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -3120,7 +3453,9 @@
           "select": [
             [
               {
-                "params": ["RequestsBytesRate"],
+                "params": [
+                  "RequestsBytesRate"
+                ],
                 "type": "field"
               },
               {
@@ -3128,13 +3463,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Request"],
+                "params": [
+                  "Request"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["ResponsesBytesRate"],
+                "params": [
+                  "ResponsesBytesRate"
+                ],
                 "type": "field"
               },
               {
@@ -3142,7 +3481,9 @@
                 "type": "mean"
               },
               {
-                "params": ["Response"],
+                "params": [
+                  "Response"
+                ],
                 "type": "alias"
               }
             ]
@@ -3243,15 +3584,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -3263,7 +3610,9 @@
           "select": [
             [
               {
-                "params": ["RxPacketsRate"],
+                "params": [
+                  "RxPacketsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3271,13 +3620,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Rx"],
+                "params": [
+                  "Rx"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["TxPacketsRate"],
+                "params": [
+                  "TxPacketsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3285,12 +3638,20 @@
                 "type": "mean"
               },
               {
-                "params": ["Tx"],
+                "params": [
+                  "Tx"
+                ],
                 "type": "alias"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
+            }
+          ]
         }
       ],
       "thresholds": [],
@@ -3380,15 +3741,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -3400,7 +3767,9 @@
           "select": [
             [
               {
-                "params": ["RxPacketsRate"],
+                "params": [
+                  "RxPacketsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3408,13 +3777,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Rx Mbits"],
+                "params": [
+                  "Rx Mbits"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["TxPacketsRate"],
+                "params": [
+                  "TxPacketsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3422,19 +3795,27 @@
                 "type": "mean"
               },
               {
-                "params": ["Tx Mbits"],
+                "params": [
+                  "Tx Mbits"
+                ],
                 "type": "alias"
               }
             ]
           ],
-          "tags": []
+          "tags": [
+            {
+              "key": "ADC",
+              "operator": "=~",
+              "value": "/^$ADC$/"
+            }
+          ]
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "TCP Rx/Tx Packets",
+      "title": "TCP Rx/Tx Packets Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -3512,15 +3893,21 @@
           "alias": "$tag_ADC: $col",
           "groupBy": [
             {
-              "params": ["$__interval"],
+              "params": [
+                "$__interval"
+              ],
               "type": "time"
             },
             {
-              "params": ["ADC"],
+              "params": [
+                "ADC"
+              ],
               "type": "tag"
             },
             {
-              "params": ["none"],
+              "params": [
+                "none"
+              ],
               "type": "fill"
             }
           ],
@@ -3532,7 +3919,9 @@
           "select": [
             [
               {
-                "params": ["SessionsRate"],
+                "params": [
+                  "SessionsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3540,13 +3929,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Sessions"],
+                "params": [
+                  "Sessions"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["NewSessionsRate"],
+                "params": [
+                  "NewSessionsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3554,13 +3947,17 @@
                 "type": "mean"
               },
               {
-                "params": ["New Sessions"],
+                "params": [
+                  "New Sessions"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["BackendSessionsRate"],
+                "params": [
+                  "BackendSessionsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3568,13 +3965,17 @@
                 "type": "mean"
               },
               {
-                "params": ["Backend Sessions"],
+                "params": [
+                  "Backend Sessions"
+                ],
                 "type": "alias"
               }
             ],
             [
               {
-                "params": ["TransactionsRate"],
+                "params": [
+                  "TransactionsRate"
+                ],
                 "type": "field"
               },
               {
@@ -3582,7 +3983,9 @@
                 "type": "mean"
               },
               {
-                "params": ["Transactions"],
+                "params": [
+                  "Transactions"
+                ],
                 "type": "alias"
               }
             ]
@@ -3641,7 +4044,11 @@
   "refresh": "30s",
   "schemaVersion": 18,
   "style": "dark",
-  "tags": ["EUCMonitoring", "CADC", "Overview"],
+  "tags": [
+    "EUCMonitoring",
+    "CADC",
+    "Overview"
+  ],
   "templating": {
     "list": [
       {
@@ -3751,10 +4158,20 @@
       "2h",
       "1d"
     ],
-    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
   },
   "timezone": "",
   "title": "CADC Overview",
   "uid": "",
-  "version": 1
+  "version": 2
 }
