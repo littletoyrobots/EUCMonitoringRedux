@@ -57,10 +57,10 @@ foreach ($Site in $CVADSites) {
         Get-CVADworkload @CVADWorkloadParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
     }
     catch {
-        Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+        Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
         Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - Site: $($Site -join ', ')"
         "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $WorkloadErrorLog -Append
-        "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly -  Site: $($Site -join ', ')" | Out-File $WorkloadErrorLog -Append
+        "[$(Get-Date)] [$($myinvocation.mycommand)] Exception Caught -  Site: $($Site -join ', ')" | Out-File $WorkloadErrorLog -Append
     }
 }
 
