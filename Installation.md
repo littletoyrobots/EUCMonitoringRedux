@@ -40,7 +40,7 @@ In powershell, running as Administrator,
 
    ```powershell
    [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-   Invoke-WebRequest -Uri "https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip" -OutFile C:\Windows\Temp\Master.zip
+   Invoke-WebRequest -Uri "https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip" -OutFile "C:\Windows\Temp\Master.zip"
    New-Item -ItemType directory -Path "C:\Monitoring" | Out-Null
    Expand-Archive -Path "C:\Windows\Temp\Master.zip" -DestinationPath "C:\Monitoring"
    Set-Location C:\Monitoring\EUCMonitoringRedux-master\Config
