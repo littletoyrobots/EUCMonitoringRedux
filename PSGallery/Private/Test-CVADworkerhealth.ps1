@@ -229,8 +229,8 @@ Function Test-CVADworkerhealth {
                     $Runspaces += [PSCustomObject]@{ Pipe = $Runspace; Status = $Runspace.BeginInvoke() }
                 }
                 catch {
-                    if ($ErrorLogPath) {
-                        Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+                    if ($ErrorLog) {
+                        Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
@@ -261,7 +261,7 @@ Function Test-CVADworkerhealth {
                         $Ex = $Ex.InnerException
                     }
                     if ($ErrorLog) {
-                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$($myinvocation.mycommand)] $Ex"
+                        Write-EUCError -Path $ErrorLog "[$($myinvocation.mycommand)] $Ex"
                     }
                     else {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Ex"
@@ -303,7 +303,7 @@ Function Test-CVADworkerhealth {
 
 
                     if ($ErrorLog) {
-                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [CVADworkerhealth] $($Result.Host) - $ErrString"
+                        Write-EUCError -Path $ErrorLog "[CVADworkerhealth] $($Result.Host) - $ErrString"
                     }
                     else {
                         Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Unhealthy machine: $($Result.Host) - $ErrString"
@@ -337,8 +337,8 @@ Function Test-CVADworkerhealth {
 
 
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

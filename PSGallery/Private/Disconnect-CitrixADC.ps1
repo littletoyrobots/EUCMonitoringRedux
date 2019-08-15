@@ -1,17 +1,17 @@
 function Disconnect-CitrixADC {
-    <# 
-    .SYNOPSIS 
+    <#
+    .SYNOPSIS
         Logs out of a Citrix NetScaler.
 
-    .DESCRIPTION 
+    .DESCRIPTION
         Logs out of a Citrix NetScaler and clears the NSSession Global Variable.
 
     .PARAMETER ADCSession
-        CitrixADC Rest WebSession. 
+        CitrixADC Rest WebSession.
 
-    .PARAMETER ErrorLogPath
-        File path for error logs to be appended. 
-#> 
+    .PARAMETER ErrorLog
+        File path for error logs to be appended.
+#>
 
     [CmdletBinding()]
     Param (
@@ -20,15 +20,15 @@ function Disconnect-CitrixADC {
         $ADCSession,
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
-        [Alias("LogPath")] 
-        [string]$ErrorLogPath
+        [Alias("LogPath")]
+        [string]$ErrorLog
     )
-    
-    Begin { 
+
+    Begin {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Disconnecting from $($ADCSession.ADC) using NITRO"
-    } # Begin 
-    
-    Process { 
+    } # Begin
+
+    Process {
         $ADC = $ADCSession.ADC
         # Validate That the IP Address is valid
         # Test-IP $NSIP
@@ -61,15 +61,15 @@ function Disconnect-CitrixADC {
                 Headers    = @{"Content-Type" = "application/vnd.com.citrix.netscaler.logout+json"}
                 Method     = "POST"
             }
-            
-            $Response = Invoke-RestMethod @Params # -ErrorAction Stop 
+
+            $Response = Invoke-RestMethod @Params # -ErrorAction Stop
             if ('ERROR' -eq $Response.severity) {
                 throw "Error. See response: `n$($response | Format-List -Property * | Out-String)"
             }
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
@@ -79,7 +79,7 @@ function Disconnect-CitrixADC {
 
     } # Process
 
-    End { 
+    End {
         Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Logout Success"
     } # End
 }

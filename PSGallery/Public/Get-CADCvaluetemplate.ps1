@@ -69,7 +69,7 @@ function Get-CADCvaluetemplate {
                 elseif ($Health -gt 0) {
                     $Status = 1
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date)] [CADCcsvserver] $ADC - $Name`: DEGRADED" -Path $ErrorLog
+                       Write-EUCError -Message "[CADCcsvserver] $ADC - $Name`: DEGRADED" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CADCcsvserver] $ADC - $Name`: DEGRADED"
@@ -78,7 +78,7 @@ function Get-CADCvaluetemplate {
                 else {
                     $Status = 0
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date)] [CitrixADCcsvserver] $ADC - $Name`: DOWN" -Path $ErrorLog
+                       Write-EUCError -Message "[CitrixADCcsvserver] $ADC - $Name`: DOWN" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CitrixADCcsvserver] $ADC - $Name`: DOWN"
@@ -100,7 +100,7 @@ function Get-CADCvaluetemplate {
         }
         catch {
             if ($ErrorLog) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
+                Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

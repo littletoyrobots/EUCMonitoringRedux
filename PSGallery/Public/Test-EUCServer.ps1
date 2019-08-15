@@ -111,7 +111,7 @@ function Test-EUCServer {
                     }
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Failure"
                     if ($ErrorLog) {
-                        Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] $Computer DOWN"
+                        Write-EUCError -Path $ErrorLog "[$Series] $Computer DOWN"
                     }
                     $Result.Status = "DOWN"
                     $Result.State = 0
@@ -239,7 +239,7 @@ function Test-EUCServer {
                 }
 
                 if (($Result.Status -eq "DEGRADED") -and ($ErrorLog)) {
-                    Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] $Computer - $ErrString"
+                    Write-EUCError -Path $ErrorLog "[$Series] $Computer - $ErrString"
                 }
 
                 $Results += $Result
@@ -249,7 +249,7 @@ function Test-EUCServer {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $_"
 
                 if ($ErrorLog) {
-                    Write-EUCError -Path $ErrorLog "[$(Get-Date)] [$Series] Exception $_"
+                    Write-EUCError -Path $ErrorLog "[$Series] Exception $_"
                 }
 
                 $ErrorState = -1

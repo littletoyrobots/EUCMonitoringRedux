@@ -82,7 +82,7 @@ function Get-CADClbvserver {
                 elseif ($Health -gt 0) {
                     $Status = 1
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date)] [CADClbvserver] $ADC - $Name`: - DEGRADED" -Path $ErrorLog
+                       Write-EUCError -Message "[CADClbvserver] $ADC - $Name`: - DEGRADED" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CADClbvserver] $ADC - $Name`: - DEGRADED"
@@ -91,7 +91,7 @@ function Get-CADClbvserver {
                 else {
                     $Status = 0
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date)] [CADClbvserver] $ADC - $Name`: DOWN" -Path $ErrorLog
+                       Write-EUCError -Message "[CADClbvserver] $ADC - $Name`: DOWN" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [CADClbvserver] $ADC - $Name`: DOWN"
@@ -125,7 +125,7 @@ function Get-CADClbvserver {
         }
         catch {
             if ($ErrorLog) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
+                Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

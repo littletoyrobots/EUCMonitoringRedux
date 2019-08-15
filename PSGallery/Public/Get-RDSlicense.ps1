@@ -46,7 +46,7 @@ function Get-RDSLicense {
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
-        [string]$ErrorLogPath
+        [string]$ErrorLog
     )
 
     Begin {
@@ -106,8 +106,8 @@ function Get-RDSLicense {
                     }
 
                     if ($TotalIssued -gt $TotalLicenses) {
-                        if ($ErrorLogPath) {
-                            Write-EUCError -Message "[$(Get-Date)] [$($myinvocation.mycommand)] $Computer - License Overcommit of Type: $Type" -Path $ErrorLogPath
+                        if ($ErrorLog) {
+                           Write-EUCError -Message "[$($myinvocation.mycommand)] $Computer - License Overcommit of Type: $Type" -Path $ErrorLog
                         }
                         else {
                             Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] $Computer - License Overcommit of Type: $Type"
@@ -129,8 +129,8 @@ function Get-RDSLicense {
             }
             catch {
                 $ErrorActionPreference = $PrevError
-                if ($ErrorLogPath) {
-                    Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+                if ($ErrorLog) {
+                    Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
                 }
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

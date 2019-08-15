@@ -10,7 +10,7 @@ function Connect-CitrixADC {
         Credential to be used for login.
     .PARAMETER Timeout
         Timeout in seconds for the session, defaults to 180.
-    .PARAMETER ErrorLogPath
+    .PARAMETER ErrorLog
         File path for error logs to be appended.
     .OUTPUTS
         Microsoft.PowerShell.Commands.WebRequestSession
@@ -39,7 +39,7 @@ function Connect-CitrixADC {
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("LogPath")]
-        [string]$ErrorLogPath
+        [string]$ErrorLog
     )
 
     Begin {
@@ -93,8 +93,8 @@ function Connect-CitrixADC {
             return $Session
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

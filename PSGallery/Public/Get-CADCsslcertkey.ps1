@@ -76,7 +76,7 @@ function Get-CADCsslcertkey {
                 $DaysToExpiration = $sslcertkey.DaysToExpiration
                 if ($DaysToExpiration -lt 7) {
                     if ($ErrorLog) {
-                        Write-EUCError -Message "[$(Get-Date)] [$($myinvocation.mycommand)] $ADC - $Subject - DaysToExpiration: $DaysToExpiration" -Path $ErrorLog
+                       Write-EUCError -Message "[$($myinvocation.mycommand)] $ADC - $Subject - DaysToExpiration: $DaysToExpiration" -Path $ErrorLog
                     }
                     else {
                         Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] $ADC - $Subject - DaysToExpiration: $DaysToExpiration"
@@ -107,7 +107,7 @@ function Get-CADCsslcertkey {
         }
         catch {
             if ($ErrorLog) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
+                Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"

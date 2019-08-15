@@ -29,7 +29,7 @@ function Write-EUCError {
                 }
             }
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] > $Message"
-            $Message | Out-File -FilePath $Path -Append
+            "[$(Get-Date)] $Message" | Out-File -FilePath $Path -Append
         }
         else {
             Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No log path."

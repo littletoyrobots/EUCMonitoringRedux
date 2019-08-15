@@ -1,12 +1,12 @@
 function Get-CADCNitroValue {
-    <# 
-    .SYNOPSIS 
+    <#
+    .SYNOPSIS
         Logs into a Citrix NetScaler.
-    .DESCRIPTION 
+    .DESCRIPTION
         Logs into a NetScaler ADC and returns variable called $NSSession to be used to invoke NITRO Commands.
-    .PARAMETER ADC 
+    .PARAMETER ADC
         Citrix ADC IP (NSIP)
-    .PARAMETER Credential 
+    .PARAMETER Credential
         Credential to be used for login.
     .PARAMETER ADCUserName
         UserName to be used for login.
@@ -28,8 +28,8 @@ function Get-CADCNitroValue {
         $Config,
 
         [parameter(Mandatory = $false, ValueFromPipeline = $true)]
-        [Alias("LogPath")] 
-        [string]$ErrorLogPath
+        [Alias("LogPath")]
+        [string]$ErrorLog
     )
 
     Begin {
@@ -37,7 +37,7 @@ function Get-CADCNitroValue {
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Changing TLS Settings to tls12, tls11, tls"
         [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Trusting self-signed certs"
-        # source: https://blogs.technet.microsoft.com/bshukla/2010/04/12/ignoring-ssl-trust-in-powershell-system-net-webclient/ 
+        # source: https://blogs.technet.microsoft.com/bshukla/2010/04/12/ignoring-ssl-trust-in-powershell-system-net-webclient/
 
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
         if ($PSBoundParameters.ContainsKey('Stat')) {
@@ -52,10 +52,10 @@ function Get-CADCNitroValue {
             #$Uri = "$($ADCSession.ADC)/nitro/v1/config/$Config"
             $NitroName = $Config
         }
-        
+
     } # Begin
 
-    Process { 
+    Process {
         #$ADC = $ADCSession.ADC
         $Session = $ADCSession.WebSession
         $Method = "GET"
@@ -71,18 +71,18 @@ function Get-CADCNitroValue {
                 Method      = $Method
             }
             $NitroValue = Invoke-RestMethod @Params -ErrorAction Stop
-            
+
             if ($null -eq $NitroValue) {
-                if ($ErrorLogPath) {
-                    Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Uri - No values returned" -Path $ErrorLogPath
+                if ($ErrorLog) {
+                    Write-EUCError -Message "[$($myinvocation.mycommand)] $Uri - No values returned" -Path $ErrorLog
                 }
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] $Uri - No values returned"
                 }
             }
             elseif (0 -ne $NitroValue.Errorcode) {
-                if ($ErrorLogPath) {
-                    Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [Severity: $($NitroValue.Severity)] $($NitroValue.Message)" -Path $ErrorLogPath
+                if ($ErrorLog) {
+                    Write-EUCError -Message "[$($myinvocation.mycommand)] [Severity: $($NitroValue.Severity)] $($NitroValue.Message)" -Path $ErrorLog
                 }
                 else {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [Severity: $($NitroValue.Severity)] $($NitroValue.Message)"
@@ -94,8 +94,8 @@ function Get-CADCNitroValue {
             }
         }
         catch {
-            if ($ErrorLogPath) {
-                Write-EUCError -Message "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLogPath
+            if ($ErrorLog) {
+                Write-EUCError -Message "[$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" -Path $ErrorLog
             }
             else {
                 Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
@@ -107,8 +107,8 @@ function Get-CADCNitroValue {
     }
 
     End {
-        if ($Results) { 
-            Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Returned $($Results.Count) value(s)" 
+        if ($Results) {
+            Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Returned $($Results.Count) value(s)"
         }
     }
 }
