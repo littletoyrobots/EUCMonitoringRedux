@@ -1,9 +1,10 @@
 $BaseDir = "C:\Monitoring"
 Import-Module (Join-Path -Path $BaseDir -ChildPath "EUCMonitoringRedux-master\PSGallery\EUCMonitoringRedux.psd1")
 
-# This is going to default to verbose output, to make sure that you're testing and
-#$VerbosePreference = 'SilentlyContinue' #
-$VerbosePreference = 'Continue'
+# This is going to default to silent output, so that all that is output is in InfluxLineProtocol
+$VerbosePreference = 'SilentlyContinue' #
+# Set this if you want to debug, or see the verbose output of this script.
+#$VerbosePreference = 'Continue'
 
 #  You can have multiple Gateways as long as the creds work on each, and they're accessible
 $CitrixADCGateways = "10.1.2.3", "10.1.2.3"
@@ -25,52 +26,53 @@ $ADCErrorLog = Join-Path -Path $BaseDir -ChildPath "ADC-Errors.txt"
 $ADCErrorHistory = Join-Path -Path $BaseDir -ChildPath "ADC-ErrorHistory.txt"
 
 # Do the things.
-if ($null -ne $CitrixADCGateways) {
-    #$ADCResults = @()
+# Its nice to have all the timestamps be the same when you're graphing in Grafana later.
 
-    # Its nice to have all the timestamps be the same when you're graphing in Grafana later.
+try { $Timestamp = Get-InfluxTimestamp }
+catch {
+    "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
+    "[$(Get-Date)] [$($myinvocation.mycommand)] Exception Caught - Getting Timestamp" | Out-File $ADCErrorLog -Append
+    Throw "[$($myinvocation.mycommand)] Error getting InfluxTimestamp"
+}
 
-    try { $Timestamp = Get-InfluxTimestamp }
-    catch { Throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Error getting InfluxTimestamp" }
+# We want the current log to only have just what's wrong with the latest run.
+if (Test-Path $ADCErrorLog) {
+    Remove-Item -Path $ADCErrorLog -Force
+}
 
-    # We want the current log to only have just what's wrong with the latest run.
-    if (Test-Path $ADCErrorLog) {
-        Remove-Item -Path $ADCErrorLog -Force
+foreach ($ADC in $CitrixADCGateways) {
+    try {
+        $ADCParams = @{
+            ADC        = $ADC; # Example value = "10.1.2.3","10.1.2.4"
+            Credential = $ADCCred;
+            ErrorLog   = $ADCErrorLog
+        }
+
+        Get-CADCcache @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADCcsvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADCgatewayuser @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADCgslbvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADChttp @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADCip @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADClbvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADCssl @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADCsystem @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+        Get-CADCtcp @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+
+        # If everything looks normal but you're not getting ADC data in your dashboard, its probably due
+        # to this function.  Exceptions have been made for wildcards, '=' and '@' symbols, but certs are
+        # weird.  Comment out this next function out.
+        Get-CADCsslcertkey @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
+
     }
-
-    foreach ($ADC in $CitrixADCGateways) {
-        try {
-            $ADCParams = @{
-                ADC        = $ADC; # Example value = "10.1.2.3","10.1.2.4"
-                Credential = $ADCCred;
-                ErrorLog   = $ADCErrorLog
-            }
-
-            Get-CADCcache @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADCcsvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADCgatewayuser @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADCgslbvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADChttp @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADCip @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADClbvserver @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADCssl @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADCsystem @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-            Get-CADCtcp @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-
-            # If everything looks normal but you're not getting ADC data in your dashboard, its probably due
-            # to this function.  Exceptions have been made for wildcards, '=' and '@' symbols, but certs are
-            # weird.  Comment out this next function out.
-            Get-CADCsslcertkey @ADCParams | ConvertTo-InfluxLineProtocol -Timestamp $TimeStamp
-
-        }
-        catch {
-            Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
-            Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - ADC: $ADC"
-            "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
-            "[$(Get-Date)] [$($myinvocation.mycommand)] Exception Caught - ADC: $ADC" | Out-File $ADCErrorLog -Append
-        }
+    catch {
+        Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+        Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - ADC: $ADC"
+        "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
+        "[$(Get-Date)] [$($myinvocation.mycommand)] Exception Caught - ADC: $ADC" | Out-File $ADCErrorLog -Append
     }
 }
+
 
 # If this file exists, we have errors, currently.
 if (Test-Path $ADCErrorLog) {
