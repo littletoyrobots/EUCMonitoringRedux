@@ -1,12 +1,12 @@
 $BaseDir = "C:\Monitoring"
 
 # Keep this Verbose while testing, change to SilentlyContinue when complete.
-# $VerbosePreference = 'SilentlyContinue'
-$VerbosePreference = 'Continue'
+$VerbosePreference = 'SilentlyContinue'
+# $VerbosePreference = 'Continue'
 
 $CVADSites = @( # Keep the prepended comma so that the sites work as expected.
     , ("ddc1.mydomain.com", "ddc2.mydomain.com") # DDCs in Site 1
-    , ("ddc3.mydomain.com", "ddc4.mydomain.com")  # DDCs in Site 2
+    # , ("ddc3.mydomain.com", "ddc4.mydomain.com") # DDCs in Site 2
 )
 
 # Assume the easy-install.
@@ -34,7 +34,11 @@ if (Test-Path $WorkloadErrorLog) {
 }
 
 try { $Timestamp = Get-InfluxTimestamp }
-catch { Throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Error getting InfluxTimestamp" }
+catch {
+    "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
+    "[$(Get-Date)] [$($myinvocation.mycommand)] Exception Caught - Getting Timestamp" | Out-File $ADCErrorLog -Append
+    Throw "[$($myinvocation.mycommand)] Error getting InfluxTimestamp"
+}
 
 foreach ($Site in $CVADSites) {
     Try {
