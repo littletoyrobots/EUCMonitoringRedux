@@ -25,6 +25,6 @@ Describe "how to test timestamp functions" {
     }
 
     It "returns a known value for a known datetime" {
-        Get-InfluxTimestamp -DateTime ([datetime]”01/01/2020 00:00”) | Should -Be 1577854800000000000
+        Get-InfluxTimestamp -DateTime ([datetime]"01/01/2020 00:00") | Should -Be 1577854800000000000
     }
 }
