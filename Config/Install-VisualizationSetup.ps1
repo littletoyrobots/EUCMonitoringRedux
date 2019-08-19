@@ -242,9 +242,9 @@ function Install-VisualizationSetup {
 # offline installs.
 $Params = @{
     MonitoringPath  = "C:\Monitoring"
-    GrafanaVersion  = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.2.5.windows-amd64.zip"
+    GrafanaVersion  = "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.3.3.windows-amd64.zip"
     InfluxVersion   = "https://dl.influxdata.com/influxdb/releases/influxdb-1.7.7_windows_amd64.zip"
     NSSMVersion     = "https://www.nssm.cc/release/nssm-2.24.zip"
-    TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.3_windows_amd64.zip"
+    TelegrafVersion = "https://dl.influxdata.com/telegraf/releases/telegraf-1.11.4_windows_amd64.zip"
 }
 Install-VisualizationSetup @Params
