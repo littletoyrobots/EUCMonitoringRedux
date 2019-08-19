@@ -1,16 +1,18 @@
 function Test-EUCServer {
     <#
     .SYNOPSIS
-    Short description
+    Gives a basic overview of a target machines status by way of user defined checks.
 
     .DESCRIPTION
-    Long description
+    Gives a basic overview of a target machines status by way of user defined checks. These include port
+    checks, services, http & https paths, certificate validation, etc.
 
     .PARAMETER Series
-    Parameter description
+    This specifies the series you wish to monitor.  For example, "RDSlicensing" or "CVADstorefront"
 
     .PARAMETER ComputerName
-    Parameter description
+    Alias: Server
+    Specifies the server(s) in question
 
     .PARAMETER Ports
     Parameter description
@@ -79,7 +81,9 @@ function Test-EUCServer {
     )
 
     Begin {
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Setting Warning and Progress Preferences to SilentlyContinue"
+        $OldProgressPref = $ProgressPreference
+        $OldWarningPref = $WarningPreference
         $WarningPreference = 'SilentlyContinue'
     }
 
@@ -287,7 +291,9 @@ function Test-EUCServer {
     }
 
     End {
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)]"
+        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] Resetting Warning and Progress Preferences"
+        $WarningPreference = $OldWarningPref
+        $ProgressPreference = $OldProgressPref
     }
 }
 
