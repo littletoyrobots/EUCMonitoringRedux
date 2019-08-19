@@ -36,7 +36,6 @@ Function ConvertTo-InfluxLineProtocol {
     [OutputType([String])]
     Param(
         [Parameter(ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
         [object[]]$InputObject,
 
         [Parameter(Mandatory = $false)]
@@ -47,15 +46,15 @@ Function ConvertTo-InfluxLineProtocol {
         [switch]$IncludeTimeStamp
     )
     Begin {
-        # Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
-        if (($null -ne $Timestamp) -or (0 -ne $Timestamp)) {
+        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] `$Timestamp = $Timestamp"
+        if (($null -ne $Timestamp) -and (0 -ne $Timestamp)) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Using provided timestamp: $Timestamp"
             $IncludeTimeStamp = $true
         }
         elseif ($IncludeTimeStamp) {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Fetching timestamp"
             try { $Timestamp = Get-InfluxTimestamp }
-            catch { Throw "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Error getting InfluxTimestamp" }
+            catch { Throw "[$($myinvocation.mycommand)] Error getting InfluxTimestamp" }
         }
         else {
             Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] No timestamp"
@@ -87,7 +86,7 @@ Function ConvertTo-InfluxLineProtocol {
             # If we can't find a specified Series name or a Series property, then we won't be able to convert
             # propertly.  Abort!
             if ("" -eq $SeriesString) {
-                throw "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Series Blank!"
+                throw "[$($myinvocation.mycommand)] Series Blank"
             }
 
             $Obj.PSObject.Properties | ForEach-Object {
