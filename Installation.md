@@ -36,19 +36,19 @@ RDS / VMware support will be forthcoming
 
 NOTE: This will install local instances of influxdb, grafana, and telegraf agent on your machine to `C:\Monitoring`.
 
-1. Download [EUCMonitoringRedux](https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip) zip file wherever you like.
-1. Create your target install directory, I choose `C:\Monitoring`
-1. Right-click the zip -> Properties -> Unblock.
-1. Right-click the zip-> Extract All and extract directly to your install directory, `C:\Monitoring`. It should leave a `C:\Monitoring\EUCMonitoringRedux-master` folder.
-
-   Note: If you need a local-only (no internet access) or different directory for the install, edit the params in EUCMonitoringRedux\Config\Install-VisualizationSetup.ps1 at the bottom to point to the paths of the appropriate installer zips. Else, the defaults will fetch the required software for you. If local-only, you might get error messages about grafana plugin installation and some dashboards might not display correctly.
-
-1. In powershell, running as Administrator,
+In powershell, running as Administrator,
 
    ```powershell
-   set-location C:\Monitoring\EUCMonitoringRedux-master\Config
+   [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+   Invoke-WebRequest -Uri "https://github.com/littletoyrobots/EUCMonitoringRedux/archive/master.zip" -OutFile "C:\Windows\Temp\Master.zip"
+   New-Item -ItemType directory -Path "C:\Monitoring" | Out-Null
+   Expand-Archive -Path "C:\Windows\Temp\Master.zip" -DestinationPath "C:\Monitoring"
+   Set-Location C:\Monitoring\EUCMonitoringRedux-master\Config
    .\Install-VisualizationSetup.ps1
+   Set-Location C:\Monitoring
    ```
+
+Note: Thanks to [Eric Haavarstein](https://twitter.com/xenappblog) for the simplified install script!
 
 ### Configure Telegraf
 

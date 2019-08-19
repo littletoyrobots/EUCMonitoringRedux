@@ -64,10 +64,10 @@ if ($null -ne $CitrixADCGateways) {
 
         }
         catch {
-            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
+            Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)"
             Write-Verbose "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - ADC: $ADC"
             "[$(Get-Date)] [$($myinvocation.mycommand)] [$($_.Exception.GetType().FullName)] $($_.Exception.Message)" | Out-File $ADCErrorLog -Append
-            "[$(Get-Date)] [$($myinvocation.mycommand)] Exiting uncleanly - ADC: $ADC" | Out-File $ADCErrorLog -Append
+            "[$(Get-Date)] [$($myinvocation.mycommand)] Exception Caught - ADC: $ADC" | Out-File $ADCErrorLog -Append
         }
     }
 }

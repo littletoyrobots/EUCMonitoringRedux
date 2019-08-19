@@ -64,7 +64,7 @@ function Get-RDSLicense {
 
                 # Check to see if we need to revert to Dcom for communication
                 [regex]$rx = "\d\.\d$"
-                $data = test-wsman $Computer -ErrorAction STOP
+                $data = Test-WSMan $Computer -ErrorAction STOP
                 if ($rx.match($data.ProductVersion).value -eq '3.0') {
                     $Session = New-CimSession -ComputerName $ComputerName
                 }
@@ -77,9 +77,15 @@ function Get-RDSLicense {
                 if (($null -eq $LicenseType) -or ("" -eq $LicenseType)) {
                     Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Querying available licenses"
 
-                    $LicenseType = $Session | Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ErrorAction STOP | `
-                        Where-Object TypeAndModel -NotLike "Built-in TS Per Device Cal" | `
-                        Select-Object -ExpandProperty TypeAndModel -Unique -ErrorAction Stop
+                    if ($IgnoreBuiltIn) {
+                        $LicenseType = $Session | Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ErrorAction STOP | `
+                            Where-Object TypeAndModel -NotLike "Built-in TS Per Device Cal" | `
+                            Select-Object -ExpandProperty TypeAndModel -Unique -ErrorAction Stop
+                    }
+                    else {
+                        $LicenseType = $Session | Get-CimInstance -ClassName Win32_TSLicenseKeyPack -ErrorAction STOP | `
+                            Select-Object -ExpandProperty TypeAndModel -Unique -ErrorAction Stop
+                    }
                 }
 
                 foreach ($Type in $LicenseType) {
