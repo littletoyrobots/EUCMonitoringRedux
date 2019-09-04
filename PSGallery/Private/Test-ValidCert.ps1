@@ -15,8 +15,9 @@ function Test-ValidCert {
     Name                    Version         Date                Change Detail
     Adam Yarborough         1.0             22/02/2018          Function Creation
     David Brett             1.1             16/06/2018          Updated Function Parameters
-    Ryan Butler             1.2             09/08/2018          Validate on date vs Chain to avoid 
-                                                                odd PS conditions. 
+    Ryan Butler             1.2             09/08/2018          Validate on date vs Chain to avoid
+                                                                odd PS conditions.
+    Adam Yarborough         1.3             04/09/2019          Added more verbose messages
 .CREDIT
     Original code by Rob VandenBrink, https://bit.ly/2IDf5Gd
 .OUTPUT
@@ -30,12 +31,10 @@ function Test-ValidCert {
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]$ComputerName,
         [parameter(Mandatory = $true, ValueFromPipeline = $true)][int]$Port
     )
-    begin { 
-        Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
+    begin {
+        #    Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)]"
         Write-Verbose "[$(Get-Date) BEGIN  ] [$($myinvocation.mycommand)] Changing TLS Settings"
         [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-        
-        
     }
 
     process {
@@ -57,22 +56,33 @@ function Test-ValidCert {
         }
         catch { Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Could not connect to $ComputerName on $Port to test Cert" }
 
-        if ($null -eq $Certificate) { return $false }
+        if ($null -eq $Certificate) {
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] No authenticated certificate returned"
+            return $false
+        }
         else {
-            $daysleft = $Certificate.NotAfter - (get-date)
-            if ($daysleft.Days -le 5) {
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Cert about to expire"
-                return $false
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] DNSNameList: $($Certificate.DNSNameList -join ', ') "
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Issuer: $($Certificate.Issuer)"
+            Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Valid from: $($Certificate.NotBefore) - $($Certificate.NotAfter)"
+            if ($Certificate.Verify()) {
+                $daysleft = $Certificate.NotAfter - (get-date)
+                if ($daysleft.Days -le 5) {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Cert about to expire"
+                    return $false
+                }
+                else {
+                    Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Certificate valid"
+                    return $true
+                }
             }
             else {
-                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Certificate valid"
-                return $true
+                Write-Verbose "[$(Get-Date) PROCESS] [$($myinvocation.mycommand)] Certificate not valid"
+                return $false
             }
-
         }
     }
-    
+
     end {
-        Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] "
+        # Write-Verbose "[$(Get-Date) END    ] [$($myinvocation.mycommand)] "
     }
 }
